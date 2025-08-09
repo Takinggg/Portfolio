@@ -8,16 +8,18 @@ import About from './components/About';
 import BlogSection from './components/BlogSection';
 import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
+import ProjectDetail from './components/ProjectDetail';
 import ProjectsPage from './components/ProjectsPage';
 import Projects from './components/Projects';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
 
-type PageType = 'home' | 'blog' | 'post' | 'projects';
+type PageType = 'home' | 'blog' | 'post' | 'projects' | 'project';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [currentPostSlug, setCurrentPostSlug] = useState<string>('');
+  const [currentProjectId, setCurrentProjectId] = useState<string>('');
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -38,23 +40,34 @@ function App() {
   const navigateToHome = () => {
     setCurrentPage('home');
     setCurrentPostSlug('');
+    setCurrentProjectId('');
   };
 
   const navigateToBlog = () => {
     setCurrentPage('blog');
     setCurrentPostSlug('');
+    setCurrentProjectId('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToProjects = () => {
     setCurrentPage('projects');
     setCurrentPostSlug('');
+    setCurrentProjectId('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToPost = (slug: string) => {
     setCurrentPostSlug(slug);
+    setCurrentProjectId('');
     setCurrentPage('post');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToProject = (projectId: string) => {
+    setCurrentProjectId(projectId);
+    setCurrentPostSlug('');
+    setCurrentPage('project');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -115,6 +128,18 @@ function App() {
   if (currentPage === 'projects') {
     return (
       <ProjectsPage 
+        onNavigateHome={navigateToHome}
+        onNavigateToBlog={navigateToBlog}
+        onNavigateToProject={navigateToProject}
+      />
+    );
+  }
+
+  if (currentPage === 'project' && currentProjectId) {
+    return (
+      <ProjectDetail 
+        projectId={currentProjectId}
+        onBack={navigateToProjects}
         onNavigateHome={navigateToHome}
         onNavigateToBlog={navigateToBlog}
       />
