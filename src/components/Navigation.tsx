@@ -135,7 +135,7 @@ const Navigation: React.FC<NavigationProps> = ({
             </div>
             
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center flex-1 justify-start ml-8">
+            <div className="hidden lg:flex items-center flex-1 justify-center">
               <div className="flex items-center bg-white/80 backdrop-blur-2xl border border-gray-200/50 rounded-full p-2 shadow-2xl">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
