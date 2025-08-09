@@ -234,18 +234,26 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           <div className="space-y-2">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
+              const hasNotification = item.id === 'messages' && stats.unreadMessages > 0;
               return (
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all duration-200 ${
                     activeTab === item.id
                       ? 'bg-purple-100 text-purple-700 font-medium'
                       : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                   }`}
                 >
-                  <Icon size={20} />
-                  {item.label}
+                  <div className="flex items-center gap-3">
+                    <Icon size={20} />
+                    {item.label}
+                  </div>
+                  {hasNotification && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full min-w-[20px] text-center">
+                      {stats.unreadMessages}
+                    </span>
+                  )}
                 </button>
               );
             })}
