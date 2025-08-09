@@ -3,7 +3,6 @@ import Navigation from './components/Navigation';
 import RightSidebar from './components/RightSidebar';
 import Hero from './components/Hero';
 import About from './components/About';
-import Projects from './components/Projects';
 import BlogSection from './components/BlogSection';
 import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
@@ -111,6 +110,7 @@ function App() {
       )}
       <Hero />
       <About />
+      <Projects />
       <BlogSection onNavigateToBlog={navigateToBlog} />
       <Contact />
       <Footer />

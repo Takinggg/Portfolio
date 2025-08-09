@@ -85,6 +85,8 @@ const Navigation: React.FC<NavigationProps> = ({
   const navItems = [
     { id: 'hero', label: 'Accueil', icon: Home, type: 'anchor' },
     { id: 'about', label: 'À propos', icon: User, type: 'anchor' },
+    { id: 'projects', label: 'Projet', icon: Briefcase, type: 'anchor' },
+    { id: 'blog', label: 'Blog', icon: BookOpen, type: 'anchor' },
     { id: 'projects', label: 'Projets', icon: Briefcase, type: 'page' },
     { id: 'blog', label: 'Blog', icon: BookOpen, type: 'page' },
     { id: 'contact', label: 'Contact', icon: Mail, type: 'anchor' }
@@ -135,7 +137,7 @@ const Navigation: React.FC<NavigationProps> = ({
             </div>
             
             {/* Desktop Menu */}
-            <div className={`hidden lg:flex items-center ${showBackButton ? 'absolute left-1/2 transform -translate-x-1/2' : ''}`}>
+            <div className="hidden lg:flex items-center flex-1 justify-start ml-8">
               <div className="flex items-center bg-white/80 backdrop-blur-2xl border border-gray-200/50 rounded-full p-2 shadow-2xl">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
@@ -169,7 +171,7 @@ const Navigation: React.FC<NavigationProps> = ({
             </div>
 
             {/* CTA Button */}
-            <div className={`hidden md:flex items-center gap-4 ${showBackButton ? 'invisible' : ''}`}>
+            <div className="hidden md:flex items-center gap-4">
               <button 
                 onClick={() => handleNavigation('contact')}
                 className="group relative px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold text-sm overflow-hidden shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
@@ -253,15 +255,6 @@ const Navigation: React.FC<NavigationProps> = ({
           </div>
         </div>
       </nav>
-
-      {/* Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 z-40 h-1">
-        <div className="h-full bg-gradient-to-r from-gray-200 to-gray-300" />
-        <div 
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 via-purple-600 to-pink-600 transition-all duration-300 ease-out shadow-lg"
-          style={{ width: `${scrollProgress}%` }}
-        />
-      </div>
 
       {/* Cursor Follower */}
       <div 
