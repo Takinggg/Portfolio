@@ -76,6 +76,7 @@ function App() {
       <Navigation 
         onNavigateToSection={navigateToSection}
         onNavigateToBlog={navigateToBlog}
+        currentPage={currentPage}
       />
       <Hero />
       <About />

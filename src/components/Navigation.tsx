@@ -7,6 +7,7 @@ interface NavigationProps {
   showBackButton?: boolean;
   onBack?: () => void;
   backLabel?: string;
+  currentPage?: 'home' | 'blog' | 'post';
 }
 
 const Navigation: React.FC<NavigationProps> = ({ 
@@ -14,7 +15,8 @@ const Navigation: React.FC<NavigationProps> = ({
   onNavigateToBlog, 
   showBackButton = false,
   onBack,
-  backLabel = "Retour"
+  backLabel = "Retour",
+  currentPage = 'home'
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,17 +27,19 @@ const Navigation: React.FC<NavigationProps> = ({
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
       
-      // Update active section based on scroll position
-      const sections = ['hero', 'about', 'projects', 'blog', 'contact'];
-      const scrollPosition = window.scrollY + 200;
-      
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section);
-            break;
+      // Only update active section based on scroll position if we're on home page
+      if (currentPage === 'home') {
+        const sections = ['hero', 'about', 'projects', 'blog', 'contact'];
+        const scrollPosition = window.scrollY + 200;
+        
+        for (const section of sections) {
+          const element = document.getElementById(section);
+          if (element) {
+            const { offsetTop, offsetHeight } = element;
+            if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+              setActiveSection(section);
+              break;
+            }
           }
         }
       }
@@ -51,7 +55,16 @@ const Navigation: React.FC<NavigationProps> = ({
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [currentPage]);
+
+  // Set active section based on current page
+  useEffect(() => {
+    if (currentPage === 'blog' || currentPage === 'post') {
+      setActiveSection('blog-page');
+    } else if (currentPage === 'home') {
+      setActiveSection('hero');
+    }
+  }, [currentPage]);
 
   const scrollToSection = (id: string) => {
     if (id === 'blog-page') {

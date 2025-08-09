@@ -58,11 +58,12 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
       {/* Navigation with Back Button */}
       <Navigation 
-        onNavigateToSection={() => {}}
+        onNavigateToSection={onNavigateHome}
         onNavigateToBlog={() => {}}
         showBackButton={true}
         onBack={onNavigateHome}
         backLabel="Retour au portfolio"
+        currentPage="blog"
       />
 
       {/* Header */}
