@@ -60,10 +60,10 @@ const Hero = () => {
       })}
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-20 text-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-32 text-center">
         <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {/* Badge */}
-          <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-xl border border-white/20 rounded-full text-sm font-medium mb-8 shadow-2xl">
+          <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-xl border border-white/20 rounded-full text-sm font-medium mb-8 shadow-2xl mt-8">
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
             <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
               Disponible pour nouveaux projets
