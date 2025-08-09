@@ -107,25 +107,28 @@ const Navigation: React.FC<NavigationProps> = ({
             )}
 
             {/* Logo */}
-            <div 
-              className={`flex items-center gap-4 cursor-pointer group ${showBackButton ? 'mx-auto sm:mx-0' : ''}`}
-              onClick={() => handleNavigation('hero')}
-            >
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl">
-                  <Sparkles className="text-white" size={20} />
+            {/* Logo - Only show on home page */}
+            {currentPage === 'home' && (
+              <div 
+                className={`flex items-center gap-4 cursor-pointer group ${showBackButton ? 'mx-auto sm:mx-0' : ''}`}
+                onClick={() => handleNavigation('hero')}
+              >
+                <div className="relative">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl">
+                    <Sparkles className="text-white" size={20} />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                <div className="hidden sm:block">
+                  <div className="text-xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                    FOULON
+                  </div>
+                  <div className="text-sm text-gray-500 font-medium -mt-1">
+                    UI/UX Designer
+                  </div>
+                </div>
               </div>
-              <div className="hidden sm:block">
-                <div className="text-xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  FOULON
-                </div>
-                <div className="text-sm text-gray-500 font-medium -mt-1">
-                  UI/UX Designer
-                </div>
-              </div>
-            </div>
+            )}
             
             {/* Desktop Menu */}
             <div className="hidden lg:flex items-center justify-center flex-1">
@@ -163,6 +166,15 @@ const Navigation: React.FC<NavigationProps> = ({
 
             {/* CTA Button */}
             <div className="hidden lg:flex items-center gap-3">
+              <button 
+                onClick={() => {
+                  window.history.pushState({}, '', '/admin');
+                  window.location.href = '/admin';
+                }}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors duration-200"
+              >
+                Admin
+              </button>
               <button 
                 onClick={() => handleNavigation('contact')}
                 className="group relative px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold text-sm overflow-hidden shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
