@@ -6,9 +6,10 @@ import Navigation from './Navigation';
 interface BlogPageProps {
   onNavigateHome: () => void;
   onNavigateToPost: (slug: string) => void;
+  onNavigateToProjects: () => void;
 }
 
-const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost }) => {
+const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, onNavigateToProjects }) => {
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>(blogPosts);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -60,7 +61,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
       <Navigation 
         onNavigateToSection={onNavigateHome}
         onNavigateToBlog={() => {}}
-        onNavigateToProjects={() => {}}
+        onNavigateToProjects={onNavigateToProjects}
         showBackButton={true}
         onBack={onNavigateHome}
         backLabel="Retour au portfolio"

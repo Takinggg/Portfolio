@@ -4,6 +4,7 @@ import Navigation from './Navigation';
 
 interface ProjectsPageProps {
   onNavigateHome: () => void;
+  onNavigateToBlog: () => void;
 }
 
 interface Project {
@@ -23,7 +24,7 @@ interface Project {
   bgGradient: string;
 }
 
-const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome }) => {
+const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateToBlog }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
@@ -194,7 +195,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome }) => {
       {/* Navigation */}
       <Navigation 
         onNavigateToSection={onNavigateHome}
-        onNavigateToBlog={() => {}}
+        onNavigateToBlog={onNavigateToBlog}
         onNavigateToProjects={() => {}}
         showBackButton={true}
         onBack={onNavigateHome}

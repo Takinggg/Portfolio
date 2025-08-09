@@ -7,9 +7,10 @@ interface BlogPostProps {
   post: BlogPostType;
   onBack: () => void;
   onNavigateHome: () => void;
+  onNavigateToProjects: () => void;
 }
 
-const BlogPost: React.FC<BlogPostProps> = ({ post, onBack, onNavigateHome }) => {
+const BlogPost: React.FC<BlogPostProps> = ({ post, onBack, onNavigateHome, onNavigateToProjects }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       year: 'numeric',
@@ -53,7 +54,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack, onNavigateHome }) => 
       <Navigation 
         onNavigateToSection={onNavigateHome}
         onNavigateToBlog={onBack}
-        onNavigateToProjects={() => {}}
+        onNavigateToProjects={onNavigateToProjects}
         showBackButton={true}
         onBack={onBack}
         backLabel="Retour au blog"

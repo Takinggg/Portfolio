@@ -68,6 +68,7 @@ function App() {
       <BlogPage 
         onNavigateHome={navigateToHome}
         onNavigateToPost={navigateToPost}
+        onNavigateToProjects={navigateToProjects}
       />
     );
   }
@@ -76,6 +77,7 @@ function App() {
     return (
       <ProjectsPage 
         onNavigateHome={navigateToHome}
+        onNavigateToBlog={navigateToBlog}
       />
     );
   }
@@ -86,6 +88,7 @@ function App() {
         post={currentPost}
         onBack={navigateToBlog}
         onNavigateHome={navigateToHome}
+        onNavigateToProjects={navigateToProjects}
       />
     );
   }
