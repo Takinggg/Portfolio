@@ -2,18 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { ArrowDown, Palette, Smartphone, Sparkles, Star, Zap } from 'lucide-react';
 
 const Hero = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   const scrollToProjects = () => {
@@ -48,8 +40,7 @@ const Hero = () => {
             className={`absolute ${element.position} animate-bounce hidden lg:block`}
             style={{ 
               animationDelay: element.delay,
-              animationDuration: '3s',
-              transform: `translate(${(mousePosition.x - window.innerWidth / 2) * 0.02}px, ${(mousePosition.y - window.innerHeight / 2) * 0.02}px)`
+              animationDuration: '3s'
             }}
           >
             <div className={`w-16 h-16 bg-gradient-to-br ${element.color} rounded-2xl flex items-center justify-center shadow-2xl rotate-12 hover:rotate-0 transition-transform duration-500`}>
