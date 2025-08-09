@@ -1,3 +1,6 @@
+import { BlogPost as SupabaseBlogPost } from '../lib/supabase';
+
+// Legacy interface for backward compatibility
 export interface BlogPost {
   id: string;
   title: string;
@@ -14,6 +17,24 @@ export interface BlogPost {
   featured: boolean;
 }
 
+// Convert Supabase blog post to legacy format
+export const convertSupabaseBlogPost = (post: SupabaseBlogPost): BlogPost => ({
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  excerpt: post.excerpt || '',
+  content: post.content,
+  author: post.author,
+  publishedAt: post.published_at,
+  updatedAt: post.updated_at || undefined,
+  featuredImage: post.featured_image || '',
+  tags: post.tags || [],
+  category: post.category,
+  readTime: post.read_time || 5,
+  featured: post.featured || false
+});
+
+// Legacy mock data - kept for fallback
 export const blogPosts: BlogPost[] = [
   {
     id: '1',
