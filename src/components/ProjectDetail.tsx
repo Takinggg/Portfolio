@@ -247,12 +247,19 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {project.images.map((image, index) => (
                   <div key={index} className="relative group">
-                    <img 
-                      src={image}
-                      alt={`${project.title} - Image ${index + 1}`}
-                      className="w-full h-64 md:h-80 object-cover rounded-2xl shadow-xl group-hover:shadow-2xl transition-shadow duration-300"
-                      loading="lazy"
-                    />
+                    <a
+                      href={image}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block cursor-pointer"
+                    >
+                      <img 
+                        src={image}
+                        alt={`${project.title} - Image ${index + 1}`}
+                        className="w-full h-64 md:h-80 object-cover rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                        loading="lazy"
+                      />
+                    </a>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                 ))}
@@ -330,18 +337,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
               >
                 <ExternalLink size={18} />
                 Voir le projet live
-              </a>
-            )}
-            
-            {project.githubUrl && project.githubUrl !== '#' && (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-              >
-                <Github size={18} />
-                Code source
               </a>
             )}
           </div>
