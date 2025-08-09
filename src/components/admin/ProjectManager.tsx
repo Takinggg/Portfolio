@@ -548,11 +548,11 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionner un budget</option>
-                  <option value="< 5k €">< 5k €</option>
-                  <option value="5k-15k €">5k-15k €</option>
-                  <option value="15k-30k €">15k-30k €</option>
-                  <option value="30k-50k €">30k-50k €</option>
-                  <option value="50k+ €">50k+ €</option>
+                  <option value="&lt; 5k &euro;">&lt; 5k &euro;</option>
+                  <option value="5k-15k &euro;">5k-15k &euro;</option>
+                  <option value="15k-30k &euro;">15k-30k &euro;</option>
+                  <option value="30k-50k &euro;">30k-50k &euro;</option>
+                  <option value="50k+ &euro;">50k+ &euro;</option>
                 </select>
               </div>
             </div>
