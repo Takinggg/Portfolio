@@ -117,8 +117,6 @@ function App() {
     );
   }
 
-  if (currentPage === 'post' && currentPost) {
-  }
   if (currentPage === 'post' && currentPostSlug) {
     return (
       <BlogPost 
