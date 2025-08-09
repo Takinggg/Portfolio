@@ -26,14 +26,6 @@ const About = memo(() => {
   const skills = [
     { name: 'Figma', level: 95, color: 'from-purple-500 to-pink-500' },
     { name: 'Adobe XD', level: 90, color: 'from-blue-500 to-cyan-500' },
-    { name: 'Sketch', level: 85, color: 'from-yellow-500 to-orange-500' },
-    { name: 'Photoshop', level: 88, color: 'from-indigo-500 to-purple-500' },
-    { name: 'Illustrator', level: 82, color: 'from-green-500 to-teal-500' },
-    { name: 'Principle', level: 78, color: 'from-red-500 to-pink-500' },
-    { name: 'InVision', level: 80, color: 'from-cyan-500 to-blue-500' },
-    { name: 'Miro', level: 92, color: 'from-emerald-500 to-green-500' },
-    { name: 'HTML/CSS', level: 75, color: 'from-orange-500 to-red-500' },
-    { name: 'React', level: 70, color: 'from-blue-400 to-blue-600' }
   ];
 
   const values = [
