@@ -126,16 +126,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               </div>
 
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Visiteurs uniques</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {loading ? '...' : Math.floor(stats.totalViews * 0.65).toLocaleString()}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                  <Users className="text-orange-600" size={24} />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Visiteurs uniques</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {loading ? '...' : Math.floor(stats.totalViews * 0.65).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <Users className="text-orange-600" size={24} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -148,19 +148,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                   { action: 'Nouvel article publié', item: 'L\'avenir du Design UI/UX', time: '2h', type: 'blog' },
                   { action: 'Projet mis à jour', item: 'FinTech Mobile Revolution', time: '4h', type: 'project' },
                   { action: 'Commentaire reçu', item: 'Design System : Créer une Cohérence', time: '6h', type: 'comment' },
-                { action: 'Nouveau visiteur', item: 'Page projets consultée', time: '6h', type: 'visitor' },
+                  { action: 'Nouveau visiteur', item: 'Page projets consultée', time: '6h', type: 'visitor' },
                 ].map((activity, index) => (
                   <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       activity.type === 'blog' ? 'bg-blue-100' :
-                      activity.type === 'project' ? 'bg-purple-100' : 'bg-green-100'
-                    activity.type === 'project' ? 'bg-purple-100' : 
-                    activity.type === 'visitor' ? 'bg-green-100' : 'bg-gray-100'
+                      activity.type === 'project' ? 'bg-purple-100' : 
+                      activity.type === 'visitor' ? 'bg-green-100' : 'bg-gray-100'
+                    }`}>
                       {activity.type === 'blog' ? <FileText size={16} className="text-blue-600" /> :
                        activity.type === 'project' ? <Briefcase size={16} className="text-purple-600" /> :
-                       <Users size={16} className="text-green-600" />}
-                     activity.type === 'visitor' ? <Eye size={16} className="text-green-600" /> :
-                     <Users size={16} className="text-gray-600" />}
+                       activity.type === 'visitor' ? <Eye size={16} className="text-green-600" /> :
+                       <Users size={16} className="text-gray-600" />}
+                    </div>
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{activity.action}</p>
                       <p className="text-sm text-gray-600">{activity.item}</p>
