@@ -340,6 +340,13 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
                         )}
                         {project.githubUrl && (
                           <button className="p-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all duration-200 transform hover:scale-110">
+                            <Github size={20} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="p-6">
                     {/* Meta */}
                     <div className="flex items-center justify-between mb-3">
