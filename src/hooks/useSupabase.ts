@@ -20,75 +20,80 @@ export const useBlogPosts = (filters?: {
     setLoading(true);
     setError(null);
 
-    // Always use Supabase if available, otherwise use mock data
-    try {
-      if (isSupabaseAvailable()) {
-        console.log('Fetching posts from Supabase with filters:', filters);
-        
-        let query = supabase!
-          .from('blog_posts')
-          .select('*')
-          .order('published_at', { ascending: false });
+    // Try Supabase first, fallback to mock data if it fails
+        try {
+          let query = supabase!
+            .from('blog_posts')
+            .select('*')
+            .order('published_at', { ascending: false });
 
-        if (filters?.category) {
-          query = query.eq('category', filters.category);
+          if (filters?.category) {
+            query = query.eq('category', filters.category);
+          }
+
+          if (filters?.featured !== undefined) {
+            query = query.eq('featured', filters.featured);
+          }
+
+          if (filters?.limit) {
+            query = query.limit(filters.limit);
+          }
+
+          if (filters?.offset) {
+            query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+          }
+
+          const { data, error } = await query;
+
+          if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+          }
+
+          console.log('Supabase data received:', data);
+          setPosts(data || []);
+        } catch (supabaseError) {
+          console.warn('Supabase fetch failed, falling back to mock data:', supabaseError);
+          throw supabaseError; // Re-throw to trigger fallback
         }
-
-        if (filters?.featured !== undefined) {
-          query = query.eq('featured', filters.featured);
-        }
-
-        if (filters?.limit) {
-          query = query.limit(filters.limit);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error('Supabase error:', error);
-          throw error;
-        }
-
-        console.log('Supabase data received:', data);
-        setPosts(data || []);
       } else {
-        // Fallback to mock data if Supabase is not available
         console.log('Supabase not available, using mock data');
-        
-        let filteredData = mockBlogPosts.map(post => ({
-          id: post.id,
-          title: post.title,
-          slug: post.slug,
-          excerpt: post.excerpt,
-          content: post.content,
-          author: post.author,
-          published_at: post.publishedAt,
-          updated_at: post.updatedAt,
-          featured_image: post.featuredImage,
-          tags: post.tags,
-          category: post.category,
-          read_time: post.readTime,
-          featured: post.featured,
-          created_at: post.publishedAt
-        }));
-
-        if (filters?.category) {
-          filteredData = filteredData.filter(post => post.category === filters.category);
-        }
-
-        if (filters?.featured !== undefined) {
-          filteredData = filteredData.filter(post => post.featured === filters.featured);
-        }
-
-        if (filters?.limit) {
-          filteredData = filteredData.slice(0, filters.limit);
-        }
-
-        setPosts(filteredData);
+        throw new Error('Supabase not configured');
       }
     } catch (err) {
-      console.error('Error loading posts:', err);
-      setError('Erreur lors du chargement des articles');
+      console.warn('Primary data source failed, using mock data fallback:', err);
+      
+      // Fallback to mock data
+      let filteredData = mockBlogPosts.map(post => ({
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        content: post.content,
+        author: post.author,
+        published_at: post.publishedAt,
+        updated_at: post.updatedAt,
+        featured_image: post.featuredImage,
+        tags: post.tags,
+        category: post.category,
+        read_time: post.readTime,
+        featured: post.featured,
+        created_at: post.publishedAt
+      }));
+
+      if (filters?.category) {
+        filteredData = filteredData.filter(post => post.category === filters.category);
+      }
+
+      if (filters?.featured !== undefined) {
+        filteredData = filteredData.filter(post => post.featured === filters.featured);
+      }
+
+      if (filters?.limit) {
+        filteredData = filteredData.slice(0, filters.limit);
+      }
+
+      setPosts(filteredData);
     } finally {
       setLoading(false);
     }
