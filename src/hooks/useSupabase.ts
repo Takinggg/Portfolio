@@ -20,7 +20,46 @@ export const useBlogPosts = (filters?: {
     setLoading(true);
     setError(null);
 
-    // Always use mock data for now to avoid connection issues
+    // Try Supabase first, fallback to mock data if needed
+    if (isSupabaseAvailable()) {
+      try {
+        console.log('Fetching posts from Supabase with filters:', filters);
+        
+        let query = supabase
+          .from('blog_posts')
+          .select('*')
+          .order('published_at', { ascending: false });
+
+        if (filters?.category) {
+          query = query.eq('category', filters.category);
+        }
+
+        if (filters?.featured !== undefined) {
+          query = query.eq('featured', filters.featured);
+        }
+
+        if (filters?.limit) {
+          query = query.limit(filters.limit);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+
+        console.log('Supabase data received:', data);
+        setPosts(data || []);
+        setError(null);
+        setLoading(false);
+        return;
+      } catch (err) {
+        console.error('Error fetching from Supabase, falling back to mock data:', err);
+      }
+    }
+
+    // Fallback to mock data
     try {
       console.log('Loading blog posts from mock data...');
       console.log('Filters applied:', filters);
@@ -151,7 +190,34 @@ export const useBlogPost = (slug: string) => {
     setLoading(true);
     setError(null);
 
-    // Always use mock data for now
+    // Try Supabase first, fallback to mock data
+    if (isSupabaseAvailable()) {
+      try {
+        console.log('Fetching post from Supabase:', slug);
+        
+        const { data, error } = await supabase
+          .from('blog_posts')
+          .select('*')
+          .eq('slug', slug)
+          .single();
+
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+
+        if (data) {
+          console.log('Post loaded from Supabase:', data.title);
+          setPost(data);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error('Error fetching from Supabase, falling back to mock data:', err);
+      }
+    }
+
+    // Fallback to mock data
     try {
       console.log('Loading blog post:', slug);
       const mockPost = mockBlogPosts.find(p => p.slug === slug);

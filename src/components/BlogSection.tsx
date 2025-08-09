@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Calendar, Clock, User, BookOpen, Sparkles } from 'lucide-react';
 import { useBlogPosts } from '../hooks/useSupabase';
+import { isSupabaseAvailable } from '../lib/supabase';
 
 interface BlogSectionProps {
   onNavigateToBlog: () => void;
@@ -28,6 +29,11 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
       featured: p.featured,
       published_at: p.published_at
     })));
+    console.log('BlogSection - Supabase available:', isSupabaseAvailable());
+    console.log('BlogSection - Environment check:', {
+      supabaseUrl: import.meta.env.VITE_SUPABASE_URL ? 'Set' : 'Missing',
+      supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Set' : 'Missing'
+    });
   }, [featuredPosts, loading, error]);
 
   useEffect(() => {

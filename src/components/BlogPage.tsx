@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, Calendar, Clock, User, Tag, Home, BookOpen } from 'lucide-react';
 import { useBlogPosts } from '../hooks/useSupabase';
 import { BlogPost as SupabaseBlogPost } from '../lib/supabase';
+import { isSupabaseAvailable } from '../lib/supabase';
 import Navigation from './Navigation';
 
 // Convert Supabase blog post to display format
@@ -52,6 +53,8 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
     console.log('BlogPage - Posts:', supabasePosts);
     console.log('BlogPage - Loading:', loading);
     console.log('BlogPage - Error:', error);
+    console.log('BlogPage - Supabase available:', isSupabaseAvailable());
+    console.log('BlogPage - Total posts from Supabase:', supabasePosts.length);
   }, [supabasePosts, loading, error]);
 
   // Convert Supabase posts to display format
