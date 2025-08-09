@@ -25,11 +25,13 @@ function App() {
   const navigateToBlog = () => {
     setCurrentPage('blog');
     setCurrentPost(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToProjects = () => {
     setCurrentPage('projects');
     setCurrentPost(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToPost = (slug: string) => {
@@ -37,6 +39,7 @@ function App() {
     if (post) {
       setCurrentPost(post);
       setCurrentPage('post');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

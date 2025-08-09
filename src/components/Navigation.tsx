@@ -85,9 +85,9 @@ const Navigation: React.FC<NavigationProps> = ({
   const navItems = [
     { id: 'hero', label: 'Accueil', icon: Home, type: 'anchor' },
     { id: 'about', label: 'À propos', icon: User, type: 'anchor' },
-    { id: 'contact', label: 'Contact', icon: Mail, type: 'anchor' },
     { id: 'projects', label: 'Projets', icon: Briefcase, type: 'page' },
-    { id: 'blog', label: 'Blog', icon: BookOpen, type: 'page' }
+    { id: 'blog', label: 'Blog', icon: BookOpen, type: 'page' },
+    { id: 'contact', label: 'Contact', icon: Mail, type: 'anchor' }
   ];
 
   const scrollProgress = Math.min(100, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
