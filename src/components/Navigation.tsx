@@ -135,8 +135,8 @@ const Navigation: React.FC<NavigationProps> = ({
             </div>
             
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center flex-1 justify-center">
-              <div className="flex items-center bg-white/80 backdrop-blur-2xl border border-gray-200/50 rounded-full p-2 shadow-2xl">
+            <div className="hidden lg:flex items-center justify-center flex-1">
+              <div className="flex items-center bg-white/80 backdrop-blur-2xl border border-gray-200/50 rounded-full p-1 shadow-2xl">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -144,7 +144,7 @@ const Navigation: React.FC<NavigationProps> = ({
                     <button
                       key={item.id}
                       onClick={() => handleNavigation(item.id)}
-                      className={`relative flex items-center gap-3 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-500 group ${
+                      className={`relative flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-500 group ${
                         isActive
                           ? 'text-white shadow-lg'
                           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -158,9 +158,9 @@ const Navigation: React.FC<NavigationProps> = ({
                         </>
                       )}
                       <Icon size={16} className={`relative z-10 ${isActive ? 'animate-bounce' : 'group-hover:scale-110'} transition-transform duration-300`} />
-                      <span className="relative z-10">{item.label}</span>
+                      <span className="relative z-10 whitespace-nowrap">{item.label}</span>
                       {isActive && (
-                        <ArrowRight size={14} className="relative z-10 animate-pulse" />
+                        <ArrowRight size={12} className="relative z-10 animate-pulse" />
                       )}
                     </button>
                   );
@@ -169,10 +169,10 @@ const Navigation: React.FC<NavigationProps> = ({
             </div>
 
             {/* CTA Button */}
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-3">
               <button 
                 onClick={() => window.location.href = '/admin'}
-                className="group relative px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium text-sm transition-all duration-300 transform hover:scale-105 border border-gray-200 hover:border-gray-300"
+                className="group relative px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-105 border border-gray-200 hover:border-gray-300"
                 title="Administration"
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -183,7 +183,7 @@ const Navigation: React.FC<NavigationProps> = ({
               
               <button 
                 onClick={() => handleNavigation('contact')}
-                className="group relative px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold text-sm overflow-hidden shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
+                className="group relative px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold text-sm overflow-hidden shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative z-10 flex items-center gap-2">
