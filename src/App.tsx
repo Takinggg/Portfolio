@@ -7,7 +7,6 @@ import BlogSection from './components/BlogSection';
 import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
 import ProjectsPage from './components/ProjectsPage';
-import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { getPostBySlug, BlogPost as BlogPostType } from './data/blogPosts';
 
@@ -95,11 +94,11 @@ function App() {
       <Navigation 
         onNavigateToSection={navigateToSection}
         onNavigateToBlog={navigateToBlog}
+        onNavigateToProjects={navigateToProjects}
         currentPage={currentPage}
       />
       <Hero />
       <About />
-      <Projects />
       <BlogSection onNavigateToBlog={navigateToBlog} />
       <Contact />
       <Footer />

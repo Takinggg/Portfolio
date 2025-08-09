@@ -195,6 +195,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome }) => {
       <Navigation 
         onNavigateToSection={onNavigateHome}
         onNavigateToBlog={() => {}}
+        onNavigateToProjects={() => {}}
         showBackButton={true}
         onBack={onNavigateHome}
         backLabel="Retour au portfolio"

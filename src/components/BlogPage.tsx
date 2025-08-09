@@ -60,6 +60,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
       <Navigation 
         onNavigateToSection={onNavigateHome}
         onNavigateToBlog={() => {}}
+        onNavigateToProjects={() => {}}
         showBackButton={true}
         onBack={onNavigateHome}
         backLabel="Retour au portfolio"

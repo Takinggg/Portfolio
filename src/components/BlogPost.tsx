@@ -53,6 +53,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack, onNavigateHome }) => 
       <Navigation 
         onNavigateToSection={onNavigateHome}
         onNavigateToBlog={onBack}
+        onNavigateToProjects={() => {}}
         showBackButton={true}
         onBack={onBack}
         backLabel="Retour au blog"
