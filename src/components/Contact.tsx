@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { memo, useCallback } from 'react';
 import { Mail, Phone, MapPin, Send, MessageCircle, Calendar, Sparkles } from 'lucide-react';
 
-const Contact = () => {
+const Contact = memo(() => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,7 +32,7 @@ const Contact = () => {
     return () => observer.disconnect();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -50,14 +51,14 @@ const Contact = () => {
       budget: '',
       timeline: ''
     });
-  };
+  }, [formData]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
-  };
+  }, [formData]);
 
   const contactMethods = [
     {
@@ -325,6 +326,8 @@ const Contact = () => {
       </div>
     </section>
   );
-};
+});
+
+Contact.displayName = 'Contact';
 
 export default Contact;

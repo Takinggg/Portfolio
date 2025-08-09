@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase, BlogPost, Project, isSupabaseAvailable } from '../lib/supabase';
 import { blogPosts as mockBlogPosts } from '../data/blogPosts';
 

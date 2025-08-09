@@ -8,7 +8,6 @@ interface BlogSectionProps {
 
 const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [hoveredPost, setHoveredPost] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   
   // Use the custom hook to fetch featured posts
@@ -124,8 +123,6 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
                 index === 0 ? 'lg:col-span-2 lg:row-span-2' : ''
               } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
               style={{ transitionDelay: `${index * 200}ms` }}
-              onMouseEnter={() => setHoveredPost(post.id)}
-              onMouseLeave={() => setHoveredPost(null)}
             >
               {/* Featured Badge */}
               <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
@@ -213,12 +210,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
                   className="group/btn flex items-center gap-2 text-purple-600 font-semibold hover:text-purple-700 transition-colors duration-200"
                 >
                   <span>Lire la suite</span>
-                  <ArrowRight 
-                    size={16} 
-                    className={`transition-transform duration-300 ${
-                      hoveredPost === post.id ? 'translate-x-1' : ''
-                    }`} 
-                  />
+                  <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform duration-300" />
                 </button>
               </div>
             </article>

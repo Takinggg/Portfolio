@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { memo } from 'react';
 import { Code, Users, Zap, Award, Target, Lightbulb, Heart, Coffee } from 'lucide-react';
 
-const About = () => {
+const About = memo(() => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -196,6 +197,8 @@ const About = () => {
       </div>
     </section>
   );
-};
+});
+
+About.displayName = 'About';
 
 export default About;

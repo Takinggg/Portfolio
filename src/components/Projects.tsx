@@ -5,7 +5,6 @@ import { useProjects } from '../hooks/useSupabase';
 const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isVisible, setIsVisible] = useState(false);
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   
   // Use the custom hook to fetch projects
@@ -196,8 +195,6 @@ const Projects = () => {
                 project.featured ? 'md:col-span-2 lg:col-span-1' : ''
               } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
               style={{ transitionDelay: `${index * 150}ms` }}
-              onMouseEnter={() => setHoveredProject(project.id)}
-              onMouseLeave={() => setHoveredProject(null)}
             >
               {/* Featured Badge */}
               {project.featured && (
@@ -250,12 +247,7 @@ const Projects = () => {
                   <span className="text-sm font-medium text-purple-600 bg-purple-100 px-3 py-1 rounded-full">
                     {project.type}
                   </span>
-                  <ArrowRight 
-                    size={20} 
-                    className={`text-gray-400 transition-all duration-300 ${
-                      hoveredProject === project.id ? 'text-purple-600 translate-x-1' : ''
-                    }`} 
-                  />
+                  <ArrowRight size={20} className="text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all duration-300" />
                 </div>
                 
                 <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors duration-300">
