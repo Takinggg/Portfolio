@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase, BlogPost, Project } from '../lib/supabase';
+import { supabase, BlogPost, Project, isSupabaseAvailable } from '../lib/supabase';
+import { blogPosts as mockBlogPosts } from '../data/blogPosts';
 
 // Custom hook for blog posts
 export const useBlogPosts = (filters?: {
@@ -18,6 +19,47 @@ export const useBlogPosts = (filters?: {
   const fetchPosts = async () => {
     setLoading(true);
     setError(null);
+
+    // Use mock data if Supabase is not available
+    if (!isSupabaseAvailable()) {
+      try {
+        let filteredData = mockBlogPosts.map(post => ({
+          id: post.id,
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+          content: post.content,
+          author: post.author,
+          published_at: post.publishedAt,
+          updated_at: post.updatedAt,
+          featured_image: post.featuredImage,
+          tags: post.tags,
+          category: post.category,
+          read_time: post.readTime,
+          featured: post.featured,
+          created_at: post.publishedAt
+        }));
+
+        if (filters?.category) {
+          filteredData = filteredData.filter(post => post.category === filters.category);
+        }
+
+        if (filters?.featured !== undefined) {
+          filteredData = filteredData.filter(post => post.featured === filters.featured);
+        }
+
+        if (filters?.limit) {
+          filteredData = filteredData.slice(0, filters.limit);
+        }
+
+        setPosts(filteredData);
+      } catch (err) {
+        setError('Erreur lors du chargement des données');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     try {
       const { data, error } = await supabase
@@ -72,6 +114,13 @@ export const useProjects = (filters?: {
   const fetchProjects = async () => {
     setLoading(true);
     setError(null);
+
+    // Use empty array if Supabase is not available
+    if (!isSupabaseAvailable()) {
+      setProjects([]);
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
@@ -128,6 +177,38 @@ export const useBlogPost = (slug: string) => {
     setLoading(true);
     setError(null);
 
+    // Use mock data if Supabase is not available
+    if (!isSupabaseAvailable()) {
+      try {
+        const mockPost = mockBlogPosts.find(p => p.slug === slug);
+        if (mockPost) {
+          setPost({
+            id: mockPost.id,
+            title: mockPost.title,
+            slug: mockPost.slug,
+            excerpt: mockPost.excerpt,
+            content: mockPost.content,
+            author: mockPost.author,
+            published_at: mockPost.publishedAt,
+            updated_at: mockPost.updatedAt,
+            featured_image: mockPost.featuredImage,
+            tags: mockPost.tags,
+            category: mockPost.category,
+            read_time: mockPost.readTime,
+            featured: mockPost.featured,
+            created_at: mockPost.publishedAt
+          });
+        } else {
+          setError('Article non trouvé');
+        }
+      } catch (err) {
+        setError('Erreur lors du chargement de l\'article');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('blog_posts')
@@ -162,6 +243,13 @@ export const useProject = (id: string) => {
   const fetchProject = async () => {
     setLoading(true);
     setError(null);
+
+    // Return error if Supabase is not available
+    if (!isSupabaseAvailable()) {
+      setError('Projet non trouvé');
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
