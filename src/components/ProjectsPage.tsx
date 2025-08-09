@@ -392,6 +392,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
                     <div className="flex items-center gap-3">
                       <button className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                         onClick={() => onNavigateToProject && onNavigateToProject(project.id.toString())}
+                      >
                         <span>Voir le projet</span>
                         <ArrowRight size={16} />
                       </button>
