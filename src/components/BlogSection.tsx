@@ -16,6 +16,13 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
     limit: 3 
   });
 
+  // Debug logging
+  useEffect(() => {
+    console.log('BlogSection - Posts:', featuredPosts);
+    console.log('BlogSection - Loading:', loading);
+    console.log('BlogSection - Error:', error);
+  }, [featuredPosts, loading, error]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {

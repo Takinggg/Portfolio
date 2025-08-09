@@ -47,6 +47,13 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
   // Fetch posts from Supabase
   const { posts: supabasePosts, loading, error } = useBlogPosts();
   
+  // Debug logging
+  useEffect(() => {
+    console.log('BlogPage - Posts:', supabasePosts);
+    console.log('BlogPage - Loading:', loading);
+    console.log('BlogPage - Error:', error);
+  }, [supabasePosts, loading, error]);
+
   // Convert Supabase posts to display format
   const blogPosts = supabasePosts.map(convertSupabaseBlogPost);
   

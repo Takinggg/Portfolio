@@ -55,6 +55,7 @@ export const useBlogPosts = (filters?: {
         setPosts(filteredData);
       } catch (err) {
         setError('Erreur lors du chargement des données');
+        console.error('Error loading mock data:', err);
       } finally {
         setLoading(false);
       }
@@ -62,12 +63,12 @@ export const useBlogPosts = (filters?: {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error: supabaseError } = await supabase
         .from('blog_posts')
         .select('*')
         .order('published_at', { ascending: false });
 
-      if (error) throw error;
+      if (supabaseError) throw supabaseError;
 
       let filteredData = data || [];
 
@@ -85,7 +86,43 @@ export const useBlogPosts = (filters?: {
 
       setPosts(filteredData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Supabase error, falling back to mock data:', err);
+      // Fallback to mock data if Supabase fails
+      try {
+        let filteredData = mockBlogPosts.map(post => ({
+          id: post.id,
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+          content: post.content,
+          author: post.author,
+          published_at: post.publishedAt,
+          updated_at: post.updatedAt,
+          featured_image: post.featuredImage,
+          tags: post.tags,
+          category: post.category,
+          read_time: post.readTime,
+          featured: post.featured,
+          created_at: post.publishedAt
+        }));
+
+        if (filters?.category) {
+          filteredData = filteredData.filter(post => post.category === filters.category);
+        }
+
+        if (filters?.featured !== undefined) {
+          filteredData = filteredData.filter(post => post.featured === filters.featured);
+        }
+
+        if (filters?.limit) {
+          filteredData = filteredData.slice(0, filters.limit);
+        }
+
+        setPosts(filteredData);
+        setError(null);
+      } catch (fallbackErr) {
+        setError('Erreur lors du chargement des articles');
+      }
     } finally {
       setLoading(false);
     }
@@ -203,6 +240,7 @@ export const useBlogPost = (slug: string) => {
         }
       } catch (err) {
         setError('Erreur lors du chargement de l\'article');
+        console.error('Error loading mock post:', err);
       } finally {
         setLoading(false);
       }
@@ -210,16 +248,43 @@ export const useBlogPost = (slug: string) => {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error: supabaseError } = await supabase
         .from('blog_posts')
         .select('*')
         .eq('slug', slug)
         .single();
 
-      if (error) throw error;
+      if (supabaseError) throw supabaseError;
       setPost(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Post not found');
+      console.error('Supabase error, falling back to mock data:', err);
+      // Fallback to mock data if Supabase fails
+      try {
+        const mockPost = mockBlogPosts.find(p => p.slug === slug);
+        if (mockPost) {
+          setPost({
+            id: mockPost.id,
+            title: mockPost.title,
+            slug: mockPost.slug,
+            excerpt: mockPost.excerpt,
+            content: mockPost.content,
+            author: mockPost.author,
+            published_at: mockPost.publishedAt,
+            updated_at: mockPost.updatedAt,
+            featured_image: mockPost.featuredImage,
+            tags: mockPost.tags,
+            category: mockPost.category,
+            read_time: mockPost.readTime,
+            featured: mockPost.featured,
+            created_at: mockPost.publishedAt
+          });
+          setError(null);
+        } else {
+          setError('Article non trouvé');
+        }
+      } catch (fallbackErr) {
+        setError('Article non trouvé');
+      }
     } finally {
       setLoading(false);
     }
