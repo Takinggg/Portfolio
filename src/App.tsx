@@ -12,13 +12,12 @@ import ProjectsPage from './components/ProjectsPage';
 import Projects from './components/Projects';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
-import { getPostBySlug, BlogPost as BlogPostType } from './data/blogPosts';
 
 type PageType = 'home' | 'blog' | 'post' | 'projects';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
-  const [currentPost, setCurrentPost] = useState<BlogPostType | null>(null);
+  const [currentPostSlug, setCurrentPostSlug] = useState<string>('');
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -38,28 +37,25 @@ function App() {
 
   const navigateToHome = () => {
     setCurrentPage('home');
-    setCurrentPost(null);
+    setCurrentPostSlug('');
   };
 
   const navigateToBlog = () => {
     setCurrentPage('blog');
-    setCurrentPost(null);
+    setCurrentPostSlug('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToProjects = () => {
     setCurrentPage('projects');
-    setCurrentPost(null);
+    setCurrentPostSlug('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToPost = (slug: string) => {
-    const post = getPostBySlug(slug);
-    if (post) {
-      setCurrentPost(post);
-      setCurrentPage('post');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    setCurrentPostSlug(slug);
+    setCurrentPage('post');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToSection = (sectionId: string) => {
@@ -122,9 +118,11 @@ function App() {
   }
 
   if (currentPage === 'post' && currentPost) {
+  }
+  if (currentPage === 'post' && currentPostSlug) {
     return (
       <BlogPost 
-        post={currentPost}
+        slug={currentPostSlug}
         onBack={navigateToBlog}
         onNavigateHome={navigateToHome}
         onNavigateToProjects={navigateToProjects}

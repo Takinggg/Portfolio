@@ -1,7 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Calendar, Clock, User, Tag, Home, BookOpen } from 'lucide-react';
-import { blogPosts, getAllCategories, getAllTags, searchPosts, BlogPost } from '../data/blogPosts';
+import { useBlogPosts } from '../hooks/useSupabase';
+import { BlogPost as SupabaseBlogPost } from '../lib/supabase';
 import Navigation from './Navigation';
+
+// Convert Supabase blog post to display format
+const convertSupabaseBlogPost = (post: SupabaseBlogPost) => ({
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  excerpt: post.excerpt || '',
+  content: post.content,
+  author: post.author,
+  publishedAt: post.published_at,
+  updatedAt: post.updated_at || undefined,
+  featuredImage: post.featured_image || '',
+  tags: post.tags || [],
+  category: post.category,
+  readTime: post.read_time || 5,
+  featured: post.featured || false
+});
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  publishedAt: string;
+  updatedAt?: string;
+  featuredImage: string;
+  tags: string[];
+  category: string;
+  readTime: number;
+  featured: boolean;
+}
 
 interface BlogPageProps {
   onNavigateHome: () => void;
@@ -10,6 +44,12 @@ interface BlogPageProps {
 }
 
 const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, onNavigateToProjects }) => {
+  // Fetch posts from Supabase
+  const { posts: supabasePosts, loading, error } = useBlogPosts();
+  
+  // Convert Supabase posts to display format
+  const blogPosts = supabasePosts.map(convertSupabaseBlogPost);
+  
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>(blogPosts);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -18,10 +58,32 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   const postsPerPage = 6;
-  const categories = getAllCategories();
-  const tags = getAllTags();
+  
+  // Generate categories and tags from fetched posts
+  const categories = React.useMemo(() => {
+    return [...new Set(blogPosts.map(post => post.category))];
+  }, [blogPosts]);
+  
+  const tags = React.useMemo(() => {
+    return [...new Set(blogPosts.flatMap(post => post.tags))];
+  }, [blogPosts]);
+  
+  const searchPosts = (query: string): BlogPost[] => {
+    const lowercaseQuery = query.toLowerCase();
+    return blogPosts.filter(post => 
+      post.title.toLowerCase().includes(lowercaseQuery) ||
+      post.excerpt.toLowerCase().includes(lowercaseQuery) ||
+      post.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery))
+    );
+  };
 
   useEffect(() => {
+    if (!loading && blogPosts.length > 0) {
+      filterPosts();
+    }
+  }, [blogPosts, searchQuery, selectedCategory, selectedTag, loading]);
+
+  const filterPosts = () => {
     let filtered = blogPosts;
 
     // Search filter
@@ -41,7 +103,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
 
     setFilteredPosts(filtered);
     setCurrentPage(1);
-  }, [searchQuery, selectedCategory, selectedTag]);
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -54,6 +116,57 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
   const startIndex = (currentPage - 1) * postsPerPage;
   const currentPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+        <Navigation 
+          onNavigateToSection={onNavigateHome}
+          onNavigateToBlog={() => {}}
+          onNavigateToProjects={onNavigateToProjects}
+          showBackButton={true}
+          onBack={onNavigateHome}
+          backLabel="Retour au portfolio"
+          currentPage="blog"
+        />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement des articles...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+        <Navigation 
+          onNavigateToSection={onNavigateHome}
+          onNavigateToBlog={() => {}}
+          onNavigateToProjects={onNavigateToProjects}
+          showBackButton={true}
+          onBack={onNavigateHome}
+          backLabel="Retour au portfolio"
+          currentPage="blog"
+        />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Erreur lors du chargement des articles</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
@@ -111,7 +224,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
             <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                 <div className="text-2xl font-bold text-white mb-1">
-                  {blogPosts.length}
+                  {supabasePosts.length}
                 </div>
                 <div className="text-sm text-white/80">Articles</div>
               </div>

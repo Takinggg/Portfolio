@@ -1,16 +1,56 @@
 import React from 'react';
 import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home } from 'lucide-react';
-import { BlogPost as BlogPostType } from '../data/blogPosts';
+import { useBlogPost } from '../hooks/useSupabase';
+import { BlogPost as SupabaseBlogPost } from '../lib/supabase';
 import Navigation from './Navigation';
 
+// Convert Supabase blog post to display format
+const convertSupabaseBlogPost = (post: SupabaseBlogPost) => ({
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  excerpt: post.excerpt || '',
+  content: post.content,
+  author: post.author,
+  publishedAt: post.published_at,
+  updatedAt: post.updated_at || undefined,
+  featuredImage: post.featured_image || '',
+  tags: post.tags || [],
+  category: post.category,
+  readTime: post.read_time || 5,
+  featured: post.featured || false
+});
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  publishedAt: string;
+  updatedAt?: string;
+  featuredImage: string;
+  tags: string[];
+  category: string;
+  readTime: number;
+  featured: boolean;
+}
+
 interface BlogPostProps {
-  post: BlogPostType;
+  slug: string;
   onBack: () => void;
   onNavigateHome: () => void;
   onNavigateToProjects: () => void;
 }
 
-const BlogPost: React.FC<BlogPostProps> = ({ post, onBack, onNavigateHome, onNavigateToProjects }) => {
+const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNavigateToProjects }) => {
+  // Fetch post from Supabase
+  const { post: supabasePost, loading, error } = useBlogPost(slug);
+  
+  // Convert to display format
+  const post = supabasePost ? convertSupabaseBlogPost(supabasePost) : null;
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       year: 'numeric',
@@ -47,6 +87,57 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack, onNavigateHome, onNav
     // Vous pourriez ajouter une notification toast ici
     alert('Lien copié dans le presse-papiers !');
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+        <Navigation 
+          onNavigateToSection={onNavigateHome}
+          onNavigateToBlog={onBack}
+          onNavigateToProjects={onNavigateToProjects}
+          showBackButton={true}
+          onBack={onBack}
+          backLabel="Retour au blog"
+          currentPage="post"
+        />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement de l'article...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !post) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+        <Navigation 
+          onNavigateToSection={onNavigateHome}
+          onNavigateToBlog={onBack}
+          onNavigateToProjects={onNavigateToProjects}
+          showBackButton={true}
+          onBack={onBack}
+          backLabel="Retour au blog"
+          currentPage="post"
+        />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Article non trouvé</p>
+            <button 
+              onClick={onBack}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            >
+              Retour au blog
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
