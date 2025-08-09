@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, User, Mail, ChevronRight } from 'lucide-react';
+import { Home, User, Mail, ChevronRight, Briefcase, BookOpen } from 'lucide-react';
 
 interface RightSidebarProps {
   onNavigateToSection: (sectionId: string) => void;
