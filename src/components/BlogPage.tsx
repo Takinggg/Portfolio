@@ -66,126 +66,78 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
       />
 
       {/* Header */}
-      <header className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white py-32 pt-40 relative overflow-hidden">
+      <header className="bg-gradient-to-br from-purple-600 to-pink-600 text-white py-20 pt-32 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-br from-pink-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-400/10 to-indigo-400/10 rounded-full blur-3xl animate-spin" style={{ animationDuration: '20s' }} />
-          
-          {/* Floating Icons */}
-          <div className="absolute top-32 left-1/4 animate-float">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500/30 to-cyan-500/30 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center rotate-12">
-              <BookOpen className="text-white/80" size={24} />
-            </div>
-          </div>
-          <div className="absolute bottom-40 right-1/4 animate-float" style={{ animationDelay: '2s' }}>
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-500/30 to-rose-500/30 rounded-xl backdrop-blur-sm border border-white/20 flex items-center justify-center -rotate-12">
-              <Tag className="text-white/80" size={16} />
-            </div>
-          </div>
-          <div className="absolute top-1/2 right-20 animate-float" style={{ animationDelay: '1s' }}>
-            <div className="w-14 h-14 bg-gradient-to-br from-purple-500/30 to-indigo-500/30 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center rotate-6">
-              <Search className="text-white/80" size={20} />
-            </div>
-          </div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           {/* Breadcrumb Navigation */}
-          <nav className="flex items-center gap-2 text-white/70 mb-12 animate-fade-in">
+          <nav className="flex items-center gap-2 text-white/80 mb-8">
             <button 
               onClick={onNavigateHome}
-              className="flex items-center gap-2 hover:text-white transition-all duration-300 hover:translate-x-1 px-3 py-2 rounded-lg hover:bg-white/10 backdrop-blur-sm"
+              className="flex items-center gap-2 hover:text-white transition-colors duration-200"
             >
               <Home size={16} />
-              <span className="font-medium">Accueil</span>
+              Accueil
             </button>
-            <div className="w-1 h-1 bg-white/50 rounded-full mx-2" />
-            <span className="text-white font-semibold bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">Blog</span>
+            <span>/</span>
+            <span className="text-white font-medium">Blog</span>
           </nav>
           
-          <div className="text-center animate-slide-up">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-sm font-semibold mb-8 shadow-2xl">
-              <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full animate-pulse" />
-              <span className="bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
-                Articles & Insights Design
-              </span>
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
               <BookOpen className="text-white/80" size={18} />
+              <span>Articles & Insights Design</span>
             </div>
 
             {/* Main Title */}
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black mb-8 leading-none">
-              <span className="block bg-gradient-to-r from-white via-blue-100 to-cyan-100 bg-clip-text text-transparent animate-pulse">
-                Blog &
-              </span>
-              <span className="block bg-gradient-to-r from-pink-200 via-purple-200 to-indigo-200 bg-clip-text text-transparent" style={{ animationDelay: '0.5s' }}>
-                Insights
-              </span>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+              <span className="block text-white">Blog &</span>
+              <span className="block text-white/90">Insights</span>
             </h1>
             
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-12 font-light">
-              Découvrez mes réflexions sur le design UI/UX, les tendances digitales 
-              <br className="hidden md:block" />
-              <span className="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-transparent font-medium">
-                et les meilleures pratiques du design moderne
-              </span>
+            <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-8">
+              Découvrez mes réflexions sur le design UI/UX, les tendances digitales et les meilleures pratiques du design moderne
             </p>
 
-            {/* Enhanced Stats */}
-            <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-12">
-              <div className="group text-center bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 shadow-2xl">
-                <div className="text-4xl font-black bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
+            {/* Stats */}
+            <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div className="text-2xl font-bold text-white mb-1">
                   {blogPosts.length}
                 </div>
-                <div className="text-sm text-white/80 font-medium">Articles Publiés</div>
+                <div className="text-sm text-white/80">Articles</div>
               </div>
               
-              <div className="group text-center bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 shadow-2xl">
-                <div className="text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div className="text-2xl font-bold text-white mb-1">
                   {categories.length}
                 </div>
-                <div className="text-sm text-white/80 font-medium">Catégories</div>
+                <div className="text-sm text-white/80">Catégories</div>
               </div>
               
-              <div className="group text-center bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 shadow-2xl">
-                <div className="text-4xl font-black bg-gradient-to-r from-pink-400 to-orange-400 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div className="text-2xl font-bold text-white mb-1">
                   {tags.length}
                 </div>
-                <div className="text-sm text-white/80 font-medium">Tags Uniques</div>
-              </div>
-              
-              <div className="group text-center bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 shadow-2xl">
-                <div className="text-4xl font-black bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
-                  2024
-                </div>
-                <div className="text-sm text-white/80 font-medium">Année Active</div>
+                <div className="text-sm text-white/80">Tags</div>
               </div>
             </div>
             
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
-              <button className="group px-8 py-4 bg-white text-purple-900 rounded-2xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center gap-3">
-                <Search size={20} className="group-hover:rotate-12 transition-transform duration-300" />
-                Explorer les articles
-              </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button 
                 onClick={onNavigateHome}
-                className="group px-8 py-4 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl font-bold text-lg hover:bg-white/20 transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center gap-3"
+                className="px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 flex items-center gap-2"
               >
-                <Home size={20} className="group-hover:-translate-x-1 transition-transform duration-300" />
-                Retour Portfolio
+                <Home size={18} />
+                Retour au Portfolio
               </button>
             </div>
-          </div>
-        </div>
-        
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm">
-            <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse" />
           </div>
         </div>
       </header>
