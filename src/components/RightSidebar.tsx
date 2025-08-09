@@ -90,21 +90,6 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ onNavigateToSection }) => {
             );
           })}
         </div>
-        
-        {/* Progress Indicator */}
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-blue-500 via-purple-600 to-pink-600 transition-all duration-300 ease-out"
-              style={{ 
-                width: `${Math.min(100, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100)}%` 
-              }}
-            />
-          </div>
-          <div className="text-xs text-gray-500 text-center mt-2">
-            {Math.round(Math.min(100, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100))}%
-          </div>
-        </div>
       </div>
     </div>
   );
