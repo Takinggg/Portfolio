@@ -21,6 +21,8 @@ export const useBlogPosts = (filters?: {
     setError(null);
 
     // Try Supabase first, fallback to mock data if it fails
+    try {
+      if (isSupabaseAvailable()) {
         try {
           let query = supabase!
             .from('blog_posts')
