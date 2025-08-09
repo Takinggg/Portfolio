@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Sparkles, Home, User, Briefcase, Mail, ArrowRight, BookOpen } from 'lucide-react';
 
-const Navigation = () => {
+interface NavigationProps {
+  onNavigateToSection: (sectionId: string) => void;
+  onNavigateToBlog: () => void;
+}
+
+const Navigation: React.FC<NavigationProps> = ({ onNavigateToSection, onNavigateToBlog }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -40,9 +45,10 @@ const Navigation = () => {
   }, []);
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (id === 'blog-page') {
+      onNavigateToBlog();
+    } else {
+      onNavigateToSection(id);
     }
     setIsMobileMenuOpen(false);
   };
@@ -51,7 +57,7 @@ const Navigation = () => {
     { id: 'hero', label: 'Accueil', icon: Home },
     { id: 'about', label: 'À propos', icon: User },
     { id: 'projects', label: 'Projets', icon: Briefcase },
-    { id: 'blog', label: 'Blog', icon: BookOpen },
+    { id: 'blog-page', label: 'Blog', icon: BookOpen },
     { id: 'contact', label: 'Contact', icon: Mail }
   ];
 

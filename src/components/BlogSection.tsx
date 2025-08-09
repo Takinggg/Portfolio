@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Calendar, Clock, User, BookOpen, Sparkles } from 'lucide-react';
 import { getFeaturedPosts, BlogPost } from '../data/blogPosts';
 
-const BlogSection = () => {
+interface BlogSectionProps {
+  onNavigateToBlog: () => void;
+}
+
+const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredPost, setHoveredPost] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
@@ -35,18 +39,11 @@ const BlogSection = () => {
   };
 
   const navigateToBlog = () => {
-    // Pour l'instant, on scroll vers le contact
-    // Plus tard, on pourra implémenter le routing
-    const element = document.getElementById('contact');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    onNavigateToBlog();
   };
 
   const readPost = (slug: string) => {
-    // Pour l'instant, on affiche une alerte
-    // Plus tard, on pourra implémenter le routing vers l'article
-    alert(`Navigation vers l'article: ${slug}`);
+    onNavigateToBlog();
   };
 
   return (
