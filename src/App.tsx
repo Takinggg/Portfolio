@@ -7,6 +7,7 @@ import BlogSection from './components/BlogSection';
 import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
 import ProjectsPage from './components/ProjectsPage';
+import Projects from './components/Projects';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
 import { getPostBySlug, BlogPost as BlogPostType } from './data/blogPosts';
