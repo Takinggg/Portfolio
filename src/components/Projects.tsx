@@ -304,7 +304,15 @@ const Projects = () => {
             <div className="relative z-10">
               <h3 className="text-3xl font-bold mb-4">Prêt à créer quelque chose d'extraordinaire ?</h3>
               <p className="text-xl mb-8 opacity-90">Collaborons pour donner vie à votre vision</p>
-              <button className="bg-white text-purple-600 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+              <button 
+                onClick={() => {
+                  const contactElement = document.getElementById('contact');
+                  if (contactElement) {
+                    contactElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+                className="bg-white text-purple-600 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl"
+              >
                 Démarrer un projet
               </button>
             </div>
