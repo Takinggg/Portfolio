@@ -37,7 +37,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ onNavigateToSection }) => {
   const sidebarItems = [
     { id: 'hero', label: 'Accueil', icon: Home },
     { id: 'about', label: 'À propos', icon: User },
-    { id: 'projects', label: 'Projet', icon: Briefcase },
+    { id: 'projects', label: 'Projets', icon: Briefcase },
     { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'contact', label: 'Contact', icon: Mail }
   ];

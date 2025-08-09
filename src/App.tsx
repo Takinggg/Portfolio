@@ -45,11 +45,6 @@ function App() {
   };
 
   const navigateToSection = (sectionId: string) => {
-    if (sectionId === 'projects') {
-      navigateToProjects();
-      return;
-    }
-    
     if (currentPage !== 'home') {
       setCurrentPage('home');
       // Attendre que la page home soit rendue avant de scroller

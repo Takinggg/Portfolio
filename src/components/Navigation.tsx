@@ -85,10 +85,8 @@ const Navigation: React.FC<NavigationProps> = ({
   const navItems = [
     { id: 'hero', label: 'Accueil', icon: Home, type: 'anchor' },
     { id: 'about', label: 'À propos', icon: User, type: 'anchor' },
-    { id: 'projects', label: 'Projet', icon: Briefcase, type: 'anchor' },
-    { id: 'blog', label: 'Blog', icon: BookOpen, type: 'anchor' },
-    { id: 'projects', label: 'Projets', icon: Briefcase, type: 'page' },
-    { id: 'blog', label: 'Blog', icon: BookOpen, type: 'page' },
+    { id: 'projects', label: 'Projets', icon: Briefcase, type: 'section' },
+    { id: 'blog', label: 'Blog', icon: BookOpen, type: 'section' },
     { id: 'contact', label: 'Contact', icon: Mail, type: 'anchor' }
   ];
 
