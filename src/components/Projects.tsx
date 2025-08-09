@@ -47,26 +47,6 @@ const Projects = () => {
     ];
   }, [allProjects]);
 
-  // Transform projects for display
-  const projects = React.useMemo(() => {
-    return allProjects.map((project, index) => ({
-      id: parseInt(project.id),
-      title: project.title,
-      category: project.category,
-      type: getProjectType(project.category),
-      description: project.long_description || project.description,
-      image: project.images[0] || 'https://via.placeholder.com/400x300',
-      tags: project.technologies.slice(0, 4),
-      gradient: getGradientForCategory(project.category, index),
-      likes: Math.floor(Math.random() * 300) + 50, // Mock data
-      views: `${(Math.floor(Math.random() * 15) + 5).toFixed(1)}k`, // Mock data
-      featured: project.featured
-    }));
-  }, [allProjects]);
-  const filteredProjects = selectedCategory === 'all' 
-    ? projects 
-    : projects.filter(project => project.category === selectedCategory);
-
   // Helper functions
   const getProjectType = (category: string) => {
     const types = {
@@ -92,6 +72,26 @@ const Projects = () => {
     ];
     return gradients[index % gradients.length];
   };
+
+  // Transform projects for display
+  const projects = React.useMemo(() => {
+    return allProjects.map((project, index) => ({
+      id: parseInt(project.id),
+      title: project.title,
+      category: project.category,
+      type: getProjectType(project.category),
+      description: project.long_description || project.description,
+      image: project.images[0] || 'https://via.placeholder.com/400x300',
+      tags: project.technologies.slice(0, 4),
+      gradient: getGradientForCategory(project.category, index),
+      likes: Math.floor(Math.random() * 300) + 50, // Mock data
+      views: `${(Math.floor(Math.random() * 15) + 5).toFixed(1)}k`, // Mock data
+      featured: project.featured
+    }));
+  }, [allProjects]);
+  const filteredProjects = selectedCategory === 'all' 
+    ? projects 
+    : projects.filter(project => project.category === selectedCategory);
 
   // Show loading state
   if (loading) {
