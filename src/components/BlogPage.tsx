@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Calendar, Clock, User, Tag, Home } from 'lucide-react';
+import { Search, Filter, Calendar, Clock, User, Tag, Home, BookOpen } from 'lucide-react';
 import { blogPosts, getAllCategories, getAllTags, searchPosts, BlogPost } from '../data/blogPosts';
 import Navigation from './Navigation';
 
