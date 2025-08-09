@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sparkles, Home, User, Briefcase, Mail, ArrowRight } from 'lucide-react';
+import { Menu, X, Sparkles, Home, User, Briefcase, Mail, ArrowRight, BookOpen } from 'lucide-react';
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,6 +51,7 @@ const Navigation = () => {
     { id: 'hero', label: 'Accueil', icon: Home },
     { id: 'about', label: 'À propos', icon: User },
     { id: 'projects', label: 'Projets', icon: Briefcase },
+    { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'contact', label: 'Contact', icon: Mail }
   ];
 
