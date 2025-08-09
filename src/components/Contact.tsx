@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { memo, useCallback } from 'react';
 import { Mail, Phone, MapPin, Send, MessageCircle, Calendar, Sparkles } from 'lucide-react';
+import { contactService } from '../lib/supabase';
 
 const Contact = memo(() => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ const Contact = memo(() => {
   });
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -35,25 +38,59 @@ const Contact = memo(() => {
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    console.log('Form submitted:', formData);
-    setIsSubmitting(false);
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-      budget: '',
-      timeline: ''
-    });
+    try {
+      // Validate required fields
+      if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+        throw new Error('Veuillez remplir tous les champs obligatoires');
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        throw new Error('Veuillez entrer une adresse email valide');
+      }
+
+      // Submit the message
+      const { data, error } = await contactService.submitMessage({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        budget: formData.budget || undefined,
+        timeline: formData.timeline || undefined,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setSubmitStatus('success');
+      
+      // Reset form after successful submission
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        budget: '',
+        timeline: ''
+      });
+
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      setSubmitStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'Une erreur est survenue');
+    } finally {
+      setIsSubmitting(false);
+    }
   }, [formData]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setSubmitStatus('idle');
+    setErrorMessage('');
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -198,6 +235,22 @@ const Contact = memo(() => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Success Message */}
+                {submitStatus === 'success' && (
+                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl">
+                    <p className="font-medium">Message envoyé avec succès !</p>
+                    <p className="text-sm">Je vous répondrai dans les plus brefs délais.</p>
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {submitStatus === 'error' && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+                    <p className="font-medium">Erreur lors de l'envoi</p>
+                    <p className="text-sm">{errorMessage}</p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
                     <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -212,6 +265,7 @@ const Contact = memo(() => {
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
                       placeholder="Votre nom"
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                   
@@ -228,6 +282,7 @@ const Contact = memo(() => {
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
                       placeholder="votre@email.com"
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                 </div>
@@ -243,6 +298,7 @@ const Contact = memo(() => {
                       value={formData.budget}
                       onChange={handleChange}
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
+                      disabled={isSubmitting}
                     >
                       <option value="">Sélectionnez un budget</option>
                       {budgetRanges.map((range) => (
@@ -261,6 +317,7 @@ const Contact = memo(() => {
                       value={formData.timeline}
                       onChange={handleChange}
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
+                      disabled={isSubmitting}
                     >
                       <option value="">Sélectionnez une timeline</option>
                       {timelineOptions.map((option) => (
@@ -283,6 +340,7 @@ const Contact = memo(() => {
                     className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
                     placeholder="Ex: Refonte d'application mobile"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -299,6 +357,7 @@ const Contact = memo(() => {
                     className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
                     placeholder="Parlez-moi de votre vision, vos objectifs, votre audience cible..."
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
 

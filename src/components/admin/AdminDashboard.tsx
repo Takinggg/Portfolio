@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, FileText, Briefcase, Users, Settings, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, TrendingUp } from 'lucide-react';
-import { supabase, blogService, projectService } from '../../lib/supabase';
+import { BarChart3, FileText, Briefcase, Users, Settings, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, TrendingUp, MessageCircle } from 'lucide-react';
+import { supabase, blogService, projectService, contactService } from '../../lib/supabase';
 import BlogManager from './BlogManager';
 import ProjectManager from './ProjectManager';
+import MessagesManager from './MessagesManager';
 import Analytics from './Analytics';
 import FileManager from './FileManager';
 
@@ -16,6 +17,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     totalPosts: 0,
     totalProjects: 0,
     totalViews: 0,
+    totalMessages: 0,
+    unreadMessages: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -28,13 +31,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     setLoading(true);
     try {
       // Fetch real data from Supabase
-      const [postsResult, projectsResult] = await Promise.all([
+      const [postsResult, projectsResult, messagesResult, unreadResult] = await Promise.all([
         blogService.getAllPosts(),
-        projectService.getAllProjects()
+        projectService.getAllProjects(),
+        contactService.getAllMessages(),
+        contactService.getUnreadCount()
       ]);
 
       const totalPosts = postsResult.data?.length || 0;
       const totalProjects = projectsResult.data?.length || 0;
+      const totalMessages = messagesResult.data?.length || 0;
+      const unreadMessages = unreadResult.count || 0;
       
       // Calculate total views (mock for now, you can add a views column later)
       const totalViews = totalPosts * 150 + totalProjects * 200;
@@ -43,6 +50,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         totalPosts,
         totalProjects,
         totalViews,
+        totalMessages,
+        unreadMessages,
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -51,6 +60,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         totalPosts: 0,
         totalProjects: 0,
         totalViews: 0,
+        totalMessages: 0,
+        unreadMessages: 0,
       });
     } finally {
       setLoading(false);
@@ -61,6 +72,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     { id: 'dashboard', label: 'Tableau de bord', icon: BarChart3 },
     { id: 'blogs', label: 'Articles', icon: FileText },
     { id: 'projects', label: 'Projets', icon: Briefcase },
+    { id: 'messages', label: 'Messages', icon: MessageCircle },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'files', label: 'Fichiers', icon: Users },
     { id: 'settings', label: 'Paramètres', icon: Settings }
@@ -72,6 +84,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         return <BlogManager />;
       case 'projects':
         return <ProjectManager />;
+      case 'messages':
+        return <MessagesManager />;
       case 'analytics':
         return <Analytics />;
       case 'files':
@@ -135,6 +149,25 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                   </div>
                   <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                     <Users className="text-orange-600" size={24} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Messages</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {loading ? '...' : stats.totalMessages}
+                    </p>
+                    {stats.unreadMessages > 0 && (
+                      <p className="text-xs text-blue-600 font-medium">
+                        {stats.unreadMessages} non lu(s)
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <MessageCircle className="text-green-600" size={24} />
                   </div>
                 </div>
               </div>

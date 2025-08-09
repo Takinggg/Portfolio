@@ -53,6 +53,19 @@ export interface Project {
   updated_at: string;
 }
 
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  budget?: string;
+  timeline?: string;
+  is_read: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 // Blog Post Operations
 export const blogService = {
   // Get all blog posts with optional filtering
@@ -327,6 +340,131 @@ export const projectService = {
     } catch (error) {
       console.error('Error fetching featured projects:', error);
       return { data: null, error };
+    }
+  }
+};
+
+// Contact Message Operations
+export const contactService = {
+  // Submit a new contact message
+  async submitMessage(messageData: Omit<ContactMessage, 'id' | 'is_read' | 'created_at' | 'updated_at'>) {
+    try {
+      // Insert message into database
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .insert([messageData])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Send email notification
+      try {
+        const emailResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(messageData),
+        });
+
+        if (!emailResponse.ok) {
+          console.warn('Email notification failed, but message was saved');
+        }
+      } catch (emailError) {
+        console.warn('Email notification error:', emailError);
+        // Don't fail the entire operation if email fails
+      }
+
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error submitting contact message:', error);
+      return { data: null, error };
+    }
+  },
+
+  // Get all contact messages (admin only)
+  async getAllMessages(filters?: {
+    is_read?: boolean;
+    limit?: number;
+    offset?: number;
+  }) {
+    try {
+      let query = supabase
+        .from('contact_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (filters?.is_read !== undefined) {
+        query = query.eq('is_read', filters.is_read);
+      }
+
+      if (filters?.limit) {
+        query = query.limit(filters.limit);
+      }
+
+      if (filters?.offset) {
+        query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching contact messages:', error);
+      return { data: null, error };
+    }
+  },
+
+  // Mark message as read/unread
+  async updateMessageStatus(id: string, is_read: boolean) {
+    try {
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .update({ is_read, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error updating message status:', error);
+      return { data: null, error };
+    }
+  },
+
+  // Delete a contact message
+  async deleteMessage(id: string) {
+    try {
+      const { error } = await supabase
+        .from('contact_messages')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      return { error: null };
+    } catch (error) {
+      console.error('Error deleting contact message:', error);
+      return { error };
+    }
+  },
+
+  // Get unread messages count
+  async getUnreadCount() {
+    try {
+      const { count, error } = await supabase
+        .from('contact_messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_read', false);
+
+      if (error) throw error;
+      return { count: count || 0, error: null };
+    } catch (error) {
+      console.error('Error getting unread count:', error);
+      return { count: 0, error };
     }
   }
 };
