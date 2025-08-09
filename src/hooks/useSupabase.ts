@@ -19,33 +19,50 @@ export const useBlogPosts = (filters?: {
   const fetchPosts = async () => {
     setLoading(true);
     setError(null);
+    
+    console.log('=== DEBUG: fetchPosts called ===');
+    console.log('Supabase available:', isSupabaseAvailable());
+    console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL ? 'Set' : 'Not set');
+    console.log('Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Set' : 'Not set');
+    console.log('Filters:', filters);
 
     // Try Supabase first, fallback to mock data if it fails
     try {
       if (isSupabaseAvailable()) {
+        console.log('=== Trying Supabase ===');
         try {
           let query = supabase!
             .from('blog_posts')
             .select('*')
             .order('published_at', { ascending: false });
+          
+          console.log('Base query created');
 
           if (filters?.category) {
             query = query.eq('category', filters.category);
+            console.log('Added category filter:', filters.category);
           }
 
           if (filters?.featured !== undefined) {
             query = query.eq('featured', filters.featured);
+            console.log('Added featured filter:', filters.featured);
           }
 
           if (filters?.limit) {
             query = query.limit(filters.limit);
+            console.log('Added limit:', filters.limit);
           }
 
           if (filters?.offset) {
             query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+            console.log('Added offset range:', filters.offset);
           }
 
+          console.log('Executing query...');
           const { data, error } = await query;
+          
+          console.log('Query result - Data:', data);
+          console.log('Query result - Error:', error);
 
           if (error) {
             console.error('Supabase error:', error);
@@ -53,6 +70,7 @@ export const useBlogPosts = (filters?: {
           }
 
           console.log('Supabase data received:', data);
+          console.log('Number of posts:', data?.length || 0);
           setPosts(data || []);
         } catch (supabaseError) {
           console.warn('Supabase fetch failed, falling back to mock data:', supabaseError);
@@ -64,6 +82,7 @@ export const useBlogPosts = (filters?: {
       }
     } catch (err) {
       console.warn('Primary data source failed, using mock data fallback:', err);
+      console.log('=== Using Mock Data Fallback ===');
       
       // Fallback to mock data
       let filteredData = mockBlogPosts.map(post => ({

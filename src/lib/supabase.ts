@@ -75,38 +75,62 @@ export const blogService = {
     limit?: number;
     offset?: number;
   }) {
+    console.log('=== blogService.getAllPosts called ===');
+    console.log('Filters:', filters);
+    console.log('Supabase available:', isSupabaseAvailable());
+    
     if (!isSupabaseAvailable()) {
+      console.log('Supabase not available, returning error');
       return { data: null, error: new Error('Supabase is not configured.') };
     }
 
     try {
+      console.log('Creating Supabase query...');
       let query = supabase
         .from('blog_posts')
         .select('*')
         .order('published_at', { ascending: false });
+      
+      console.log('Base query created');
 
       if (filters?.category) {
         query = query.eq('category', filters.category);
+        console.log('Added category filter');
       }
 
       if (filters?.featured !== undefined) {
         query = query.eq('featured', filters.featured);
+        console.log('Added featured filter');
       }
 
       if (filters?.limit) {
         query = query.limit(filters.limit);
+        console.log('Added limit');
       }
 
       if (filters?.offset) {
         query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+        console.log('Added offset range');
       }
 
+      console.log('Executing query...');
       const { data, error } = await query;
+      
+      console.log('blogService query result:');
+      console.log('- Data:', data);
+      console.log('- Error:', error);
+      console.log('- Data length:', data?.length || 0);
 
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
       console.error('Error fetching blog posts:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       return { data: null, error };
     }
   },

@@ -19,6 +19,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
 
   // Debug logging
   useEffect(() => {
+    console.log('=== BlogSection Debug ===');
     console.log('BlogSection - Posts:', featuredPosts);
     console.log('BlogSection - Loading:', loading);
     console.log('BlogSection - Error:', error);
@@ -36,6 +37,21 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
       supabaseUrl: import.meta.env.VITE_SUPABASE_URL ? 'Set' : 'Missing',
       supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Set' : 'Missing'
     });
+    
+    // Test direct Supabase connection
+    if (isSupabaseAvailable()) {
+      console.log('=== Testing direct Supabase connection ===');
+      import('../lib/supabase').then(({ supabase }) => {
+        if (supabase) {
+          supabase
+            .from('blog_posts')
+            .select('count(*)')
+            .then(({ data, error }) => {
+              console.log('Direct count query result:', { data, error });
+            });
+        }
+      });
+    }
   }, [featuredPosts, loading, error]);
 
   useEffect(() => {
