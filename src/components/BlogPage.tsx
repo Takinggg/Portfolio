@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Calendar, Clock, User, ArrowLeft, Tag, Home } from 'lucide-react';
+import { Search, Filter, Calendar, Clock, User, Tag, Home } from 'lucide-react';
 import { blogPosts, getAllCategories, getAllTags, searchPosts, BlogPost } from '../data/blogPosts';
+import Navigation from './Navigation';
 
 interface BlogPageProps {
   onNavigateHome: () => void;
@@ -55,8 +56,17 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+      {/* Navigation with Back Button */}
+      <Navigation 
+        onNavigateToSection={() => {}}
+        onNavigateToBlog={() => {}}
+        showBackButton={true}
+        onBack={onNavigateHome}
+        backLabel="Retour au portfolio"
+      />
+
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-20 relative overflow-hidden">
+      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-20 pt-32 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" />

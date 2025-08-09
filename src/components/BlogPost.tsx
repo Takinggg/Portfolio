@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowLeft, Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home } from 'lucide-react';
+import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home } from 'lucide-react';
 import { BlogPost as BlogPostType } from '../data/blogPosts';
+import Navigation from './Navigation';
 
 interface BlogPostProps {
   post: BlogPostType;
@@ -48,8 +49,17 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack, onNavigateHome }) => 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+      {/* Navigation with Back Button */}
+      <Navigation 
+        onNavigateToSection={() => {}}
+        onNavigateToBlog={() => {}}
+        showBackButton={true}
+        onBack={onBack}
+        backLabel="Retour au blog"
+      />
+
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12 relative overflow-hidden">
+      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12 pt-32 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
@@ -76,14 +86,6 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack, onNavigateHome }) => 
             <span>/</span>
             <span className="text-white font-medium truncate">{post.title}</span>
           </nav>
-
-          <button 
-            onClick={onBack}
-            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors duration-200 mb-4"
-          >
-            <ArrowLeft size={20} />
-            Retour au blog
-          </button>
         </div>
       </header>
 

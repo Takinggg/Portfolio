@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sparkles, Home, User, Briefcase, Mail, ArrowRight, BookOpen } from 'lucide-react';
+import { Menu, X, Sparkles, Home, User, Briefcase, Mail, ArrowRight, BookOpen, ArrowLeft } from 'lucide-react';
 
 interface NavigationProps {
   onNavigateToSection: (sectionId: string) => void;
   onNavigateToBlog: () => void;
+  showBackButton?: boolean;
+  onBack?: () => void;
+  backLabel?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ onNavigateToSection, onNavigateToBlog }) => {
+const Navigation: React.FC<NavigationProps> = ({ 
+  onNavigateToSection, 
+  onNavigateToBlog, 
+  showBackButton = false,
+  onBack,
+  backLabel = "Retour"
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -73,9 +82,20 @@ const Navigation: React.FC<NavigationProps> = ({ onNavigateToSection, onNavigate
       }`}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-20">
+            {/* Back Button */}
+            {showBackButton && onBack && (
+              <button
+                onClick={onBack}
+                className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-medium"
+              >
+                <ArrowLeft size={18} />
+                <span className="hidden sm:inline">{backLabel}</span>
+              </button>
+            )}
+
             {/* Logo */}
             <div 
-              className="flex items-center gap-4 cursor-pointer group"
+              className={`flex items-center gap-4 cursor-pointer group ${showBackButton ? 'mx-auto sm:mx-0' : ''}`}
               onClick={() => scrollToSection('hero')}
             >
               <div className="relative">
@@ -95,7 +115,7 @@ const Navigation: React.FC<NavigationProps> = ({ onNavigateToSection, onNavigate
             </div>
             
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center">
+            <div className={`hidden lg:flex items-center ${showBackButton ? 'absolute left-1/2 transform -translate-x-1/2' : ''}`}>
               <div className="flex items-center bg-white/80 backdrop-blur-2xl border border-gray-200/50 rounded-full p-2 shadow-2xl">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
@@ -129,7 +149,7 @@ const Navigation: React.FC<NavigationProps> = ({ onNavigateToSection, onNavigate
             </div>
 
             {/* CTA Button */}
-            <div className="hidden md:flex items-center gap-4">
+            <div className={`hidden md:flex items-center gap-4 ${showBackButton ? 'invisible' : ''}`}>
               <button 
                 onClick={() => scrollToSection('contact')}
                 className="group relative px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold text-sm overflow-hidden shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
