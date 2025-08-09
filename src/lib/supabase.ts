@@ -75,6 +75,10 @@ export const blogService = {
     limit?: number;
     offset?: number;
   }) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       let query = supabase
         .from('blog_posts')
@@ -109,6 +113,10 @@ export const blogService = {
 
   // Get a single blog post by slug
   async getPostBySlug(slug: string) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('blog_posts')
@@ -126,6 +134,10 @@ export const blogService = {
 
   // Create a new blog post
   async createPost(post: Omit<BlogPost, 'id' | 'created_at'>) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('blog_posts')
@@ -143,6 +155,10 @@ export const blogService = {
 
   // Update a blog post
   async updatePost(id: string, updates: Partial<BlogPost>) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('blog_posts')
@@ -161,6 +177,10 @@ export const blogService = {
 
   // Delete a blog post
   async deletePost(id: string) {
+    if (!isSupabaseAvailable()) {
+      return { error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { error } = await supabase
         .from('blog_posts')
@@ -177,6 +197,10 @@ export const blogService = {
 
   // Search blog posts
   async searchPosts(query: string) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('blog_posts')
@@ -194,6 +218,10 @@ export const blogService = {
 
   // Get featured posts
   async getFeaturedPosts(limit: number = 3) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('blog_posts')
@@ -221,6 +249,10 @@ export const projectService = {
     limit?: number;
     offset?: number;
   }) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       let query = supabase
         .from('projects')
@@ -259,6 +291,10 @@ export const projectService = {
 
   // Get a single project by ID
   async getProjectById(id: string) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('projects')
@@ -276,6 +312,10 @@ export const projectService = {
 
   // Create a new project
   async createProject(project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('projects')
@@ -293,6 +333,10 @@ export const projectService = {
 
   // Update a project
   async updateProject(id: string, updates: Partial<Project>) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('projects')
@@ -311,6 +355,10 @@ export const projectService = {
 
   // Delete a project
   async deleteProject(id: string) {
+    if (!isSupabaseAvailable()) {
+      return { error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { error } = await supabase
         .from('projects')
@@ -327,6 +375,10 @@ export const projectService = {
 
   // Get featured projects
   async getFeaturedProjects(limit: number = 6) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('projects')
@@ -348,6 +400,10 @@ export const projectService = {
 export const contactService = {
   // Submit a new contact message
   async submitMessage(messageData: Omit<ContactMessage, 'id' | 'is_read' | 'created_at' | 'updated_at'>) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       // Insert message into database
       const { data, error } = await supabase
@@ -390,6 +446,10 @@ export const contactService = {
     limit?: number;
     offset?: number;
   }) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       let query = supabase
         .from('contact_messages')
@@ -420,6 +480,10 @@ export const contactService = {
 
   // Mark message as read/unread
   async updateMessageStatus(id: string, is_read: boolean) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase
         .from('contact_messages')
@@ -438,6 +502,10 @@ export const contactService = {
 
   // Delete a contact message
   async deleteMessage(id: string) {
+    if (!isSupabaseAvailable()) {
+      return { error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { error } = await supabase
         .from('contact_messages')
@@ -454,6 +522,10 @@ export const contactService = {
 
   // Get unread messages count
   async getUnreadCount() {
+    if (!isSupabaseAvailable()) {
+      return { count: 0, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { count, error } = await supabase
         .from('contact_messages')
@@ -473,6 +545,10 @@ export const contactService = {
 export const authService = {
   // Sign up with email and password
   async signUp(email: string, password: string) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -489,6 +565,10 @@ export const authService = {
 
   // Sign in with email and password
   async signIn(email: string, password: string) {
+    if (!isSupabaseAvailable()) {
+      return { data: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -505,6 +585,10 @@ export const authService = {
 
   // Sign out
   async signOut() {
+    if (!isSupabaseAvailable()) {
+      return { error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -517,6 +601,10 @@ export const authService = {
 
   // Get current user
   async getCurrentUser() {
+    if (!isSupabaseAvailable()) {
+      return { user: null, error: new Error('Supabase is not configured.') };
+    }
+
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) throw error;
