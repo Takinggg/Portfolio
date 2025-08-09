@@ -8,6 +8,7 @@ import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
 import ProjectsPage from './components/ProjectsPage';
 import Footer from './components/Footer';
+import Contact from './components/Contact';
 import { getPostBySlug, BlogPost as BlogPostType } from './data/blogPosts';
 
 type PageType = 'home' | 'blog' | 'post' | 'projects';
