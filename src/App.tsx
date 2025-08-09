@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navigation from './components/Navigation';
+import RightSidebar from './components/RightSidebar';
 import Hero from './components/Hero';
 import About from './components/About';
 import Projects from './components/Projects';
@@ -104,6 +105,10 @@ function App() {
         onNavigateToProjects={navigateToProjects}
         currentPage={currentPage}
       />
+      {/* Right Sidebar - Only on landing page */}
+      {currentPage === 'home' && (
+        <RightSidebar onNavigateToSection={navigateToSection} />
+      )}
       <Hero />
       <About />
       <BlogSection onNavigateToBlog={navigateToBlog} />
