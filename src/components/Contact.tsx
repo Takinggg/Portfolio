@@ -63,7 +63,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      value: "maxence.foulon@email.com",
+      value: "maxencefoulon17@gmail.com",
       description: "Réponse sous 24h",
       gradient: "from-blue-500 to-cyan-500",
       bgGradient: "from-blue-50 to-cyan-50"
@@ -71,7 +71,7 @@ const Contact = () => {
     {
       icon: Phone,
       title: "Téléphone",
-      value: "+33 6 12 34 56 78",
+      value: "06 19 32 62 26",
       description: "Lun-Ven 9h-18h",
       gradient: "from-purple-500 to-pink-500",
       bgGradient: "from-purple-50 to-pink-50"
