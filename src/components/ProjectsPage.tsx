@@ -1,184 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import { ExternalLink, Github, Eye, Calendar, Code, Layers, Zap, Star, Filter, Search, ArrowRight, Home } from 'lucide-react';
+import { useProjects } from '../hooks/useSupabase';
+import { Project as SupabaseProject } from '../lib/supabase';
 import Navigation from './Navigation';
+
+// Convert Supabase project to display format
+const convertSupabaseProject = (project: SupabaseProject, index: number) => {
+  const gradients = [
+    'from-blue-600 via-purple-600 to-pink-600',
+    'from-emerald-500 via-teal-500 to-cyan-600',
+    'from-orange-500 via-red-500 to-pink-600',
+    'from-purple-600 via-indigo-600 to-blue-600',
+    'from-cyan-500 via-blue-500 to-indigo-600',
+    'from-amber-500 via-orange-500 to-red-600',
+    'from-green-500 via-emerald-500 to-teal-600',
+    'from-lime-500 via-green-500 to-emerald-600'
+  ];
+
+  const bgGradients = [
+    'from-blue-50 to-purple-50',
+    'from-emerald-50 to-teal-50',
+    'from-orange-50 to-red-50',
+    'from-purple-50 to-indigo-50',
+    'from-cyan-50 to-blue-50',
+    'from-amber-50 to-orange-50',
+    'from-green-50 to-emerald-50',
+    'from-lime-50 to-green-50'
+  ];
+
+  const typeLabels = {
+    mobile: 'Application Mobile',
+    web: 'Interface Web',
+    branding: 'Identité Visuelle',
+    blockchain: 'Blockchain',
+    iot: 'IoT'
+  };
+
+  return {
+    id: parseInt(project.id),
+    title: project.title,
+    category: project.category,
+    type: typeLabels[project.category as keyof typeof typeLabels] || 'Projet',
+    description: project.long_description || project.description,
+    image: project.images[0] || 'https://via.placeholder.com/400x300',
+    tags: project.technologies.slice(0, 4),
+    gradient: gradients[index % gradients.length],
+    bgGradient: bgGradients[index % bgGradients.length],
+    likes: Math.floor(Math.random() * 300) + 50, // Mock data
+    views: `${(Math.floor(Math.random() * 15) + 5).toFixed(1)}k`, // Mock data
+    featured: project.featured,
+    status: project.status,
+    year: new Date(project.start_date).getFullYear().toString(),
+    client: project.client,
+    githubUrl: project.github_url,
+    liveUrl: project.live_url
+  };
+};
 
 interface ProjectsPageProps {
   onNavigateHome: () => void;
   onNavigateToBlog: () => void;
 }
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  longDescription: string;
-  image: string;
-  technologies: string[];
-  category: string;
-  status: 'completed' | 'in-progress' | 'concept';
-  year: string;
-  featured: boolean;
-  githubUrl?: string;
-  liveUrl?: string;
-  gradient: string;
-  bgGradient: string;
-}
-
 const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateToBlog }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const projects: Project[] = [
-    {
-      id: 1,
-      title: "FinTech Mobile Revolution",
-      description: "Application bancaire mobile révolutionnaire avec IA intégrée",
-      longDescription: "Révolution complète de l'expérience bancaire mobile avec intelligence artificielle intégrée, interface ultra-intuitive et sécurité quantique. Cette application redéfinit les standards du secteur financier.",
-      image: "https://images.pexels.com/photos/4348401/pexels-photo-4348401.jpeg",
-      technologies: ["React Native", "TypeScript", "Node.js", "MongoDB", "AI/ML", "Blockchain"],
-      category: "mobile",
-      status: "completed",
-      year: "2024",
-      featured: true,
-      githubUrl: "#",
-      liveUrl: "#",
-      gradient: "from-blue-600 via-purple-600 to-pink-600",
-      bgGradient: "from-blue-50 to-purple-50"
-    },
-    {
-      id: 2,
-      title: "Neural Analytics Dashboard",
-      description: "Dashboard d'analyse prédictive avec visualisations temps réel",
-      longDescription: "Plateforme d'analyse avancée utilisant l'intelligence artificielle pour fournir des insights prédictifs en temps réel. Interface moderne avec visualisations de données interactives et tableaux de bord personnalisables.",
-      image: "https://images.pexels.com/photos/590020/pexels-photo-590020.jpg",
-      technologies: ["React", "D3.js", "Python", "TensorFlow", "PostgreSQL", "Docker"],
-      category: "web",
-      status: "completed",
-      year: "2024",
-      featured: false,
-      githubUrl: "#",
-      liveUrl: "#",
-      gradient: "from-emerald-500 via-teal-500 to-cyan-600",
-      bgGradient: "from-emerald-50 to-teal-50"
-    },
-    {
-      id: 3,
-      title: "Quantum Banking Experience",
-      description: "Néobanque avec cryptographie quantique et biométrie avancée",
-      longDescription: "Refonte complète d'une néobanque intégrant les dernières technologies de cryptographie quantique et de biométrie avancée. Sécurité maximale avec une expérience utilisateur exceptionnelle.",
-      image: "https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg",
-      technologies: ["Vue.js", "Nuxt.js", "Quantum Cryptography", "Biometric API", "Microservices"],
-      category: "mobile",
-      status: "in-progress",
-      year: "2024",
-      featured: true,
-      githubUrl: "#",
-      gradient: "from-orange-500 via-red-500 to-pink-600",
-      bgGradient: "from-orange-50 to-red-50"
-    },
-    {
-      id: 4,
-      title: "Metaverse SaaS Platform",
-      description: "Plateforme SaaS pour création d'expériences métaverse",
-      longDescription: "Plateforme complète permettant aux entreprises de créer facilement leurs propres expériences métaverse. Outils no-code, intégration 3D avancée et support VR/AR natif.",
-      image: "https://images.pexels.com/photos/3184298/pexels-photo-3184298.jpeg",
-      technologies: ["Three.js", "WebXR", "Node.js", "GraphQL", "AWS", "Unity"],
-      category: "web",
-      status: "concept",
-      year: "2024",
-      featured: false,
-      githubUrl: "#",
-      gradient: "from-purple-600 via-indigo-600 to-blue-600",
-      bgGradient: "from-purple-50 to-indigo-50"
-    },
-    {
-      id: 5,
-      title: "AI Health Companion",
-      description: "Assistant santé personnel avec IA prédictive",
-      longDescription: "Application de santé révolutionnaire utilisant l'IA pour fournir des conseils personnalisés, monitoring biométrique continu et prédictions de santé préventives.",
-      image: "https://images.pexels.com/photos/4474052/pexels-photo-4474052.jpeg",
-      technologies: ["Flutter", "Dart", "TensorFlow Lite", "HealthKit", "Firebase", "IoT"],
-      category: "mobile",
-      status: "completed",
-      year: "2023",
-      featured: false,
-      githubUrl: "#",
-      liveUrl: "#",
-      gradient: "from-cyan-500 via-blue-500 to-indigo-600",
-      bgGradient: "from-cyan-50 to-blue-50"
-    },
-    {
-      id: 6,
-      title: "Sustainable E-commerce",
-      description: "Plateforme e-commerce éco-responsable avec tracking carbone",
-      longDescription: "Marketplace révolutionnaire axée sur la durabilité avec tracking carbone en temps réel, compensation automatique et marketplace dédiée aux produits éco-responsables.",
-      image: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg",
-      technologies: ["Next.js", "Stripe", "Prisma", "PostgreSQL", "Vercel", "Carbon API"],
-      category: "web",
-      status: "completed",
-      year: "2023",
-      featured: true,
-      githubUrl: "#",
-      liveUrl: "#",
-      gradient: "from-green-500 via-emerald-500 to-teal-600",
-      bgGradient: "from-green-50 to-emerald-50"
-    },
-    {
-      id: 7,
-      title: "Blockchain Identity System",
-      description: "Système d'identité décentralisé sur blockchain",
-      longDescription: "Solution d'identité numérique décentralisée utilisant la blockchain pour garantir la sécurité et la confidentialité des données personnelles. Révolution de la gestion d'identité en ligne.",
-      image: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg",
-      technologies: ["Solidity", "Web3.js", "Ethereum", "IPFS", "React", "MetaMask"],
-      category: "blockchain",
-      status: "in-progress",
-      year: "2024",
-      featured: false,
-      githubUrl: "#",
-      gradient: "from-indigo-500 via-purple-500 to-pink-600",
-      bgGradient: "from-indigo-50 to-purple-50"
-    },
-    {
-      id: 8,
-      title: "Smart City IoT Platform",
-      description: "Plateforme IoT pour villes intelligentes",
-      longDescription: "Infrastructure complète pour villes intelligentes intégrant capteurs IoT, analyse de données en temps réel et tableau de bord pour optimiser la gestion urbaine.",
-      image: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg",
-      technologies: ["Python", "Django", "InfluxDB", "Grafana", "MQTT", "Raspberry Pi"],
-      category: "iot",
-      status: "concept",
-      year: "2024",
-      featured: false,
-      gradient: "from-amber-500 via-orange-500 to-red-600",
-      bgGradient: "from-amber-50 to-orange-50"
-    }
-  ];
+  // Fetch projects from Supabase
+  const { projects: supabaseProjects, loading, error } = useProjects();
+  
+  // Convert Supabase projects to display format
+  const projects = React.useMemo(() => {
+    return supabaseProjects.map(convertSupabaseProject);
+  }, [supabaseProjects]);
 
+  // Generate categories dynamically from projects
   const categories = [
     { id: 'all', label: 'Tous les projets', count: projects.length },
-    { id: 'mobile', label: 'Mobile', count: projects.filter(p => p.category === 'mobile').length },
-    { id: 'web', label: 'Web', count: projects.filter(p => p.category === 'web').length },
-    { id: 'blockchain', label: 'Blockchain', count: projects.filter(p => p.category === 'blockchain').length },
-    { id: 'iot', label: 'IoT', count: projects.filter(p => p.category === 'iot').length }
+    ...Array.from(new Set(projects.map(p => p.category))).map(category => ({
+      id: category,
+      label: category.charAt(0).toUpperCase() + category.slice(1),
+      count: projects.filter(p => p.category === category).length
+    }))
   ];
 
   const statusLabels = {
     completed: { label: 'Terminé', color: 'bg-green-100 text-green-800' },
     'in-progress': { label: 'En cours', color: 'bg-blue-100 text-blue-800' },
-    concept: { label: 'Concept', color: 'bg-purple-100 text-purple-800' }
+    archived: { label: 'Archivé', color: 'bg-gray-100 text-gray-800' }
   };
 
-  useEffect(() => {
-    let filtered = projects;
+  // Filter projects based on search and category
+  const filteredProjects = React.useMemo(() => {
+    if (loading || !projects.length) return [];
+    
+    let filtered = [...projects];
 
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter(project =>
         project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.technologies.some(tech => tech.toLowerCase().includes(searchQuery.toLowerCase()))
+        project.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
@@ -187,8 +111,59 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
       filtered = filtered.filter(project => project.category === selectedCategory);
     }
 
-    setFilteredProjects(filtered);
-  }, [searchQuery, selectedCategory]);
+    return filtered;
+  }, [projects, searchQuery, selectedCategory, loading]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+        <Navigation 
+          onNavigateToSection={onNavigateHome}
+          onNavigateToBlog={onNavigateToBlog}
+          onNavigateToProjects={() => {}}
+          showBackButton={true}
+          onBack={onNavigateHome}
+          backLabel="Retour au portfolio"
+          currentPage="projects"
+        />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement des projets...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+        <Navigation 
+          onNavigateToSection={onNavigateHome}
+          onNavigateToBlog={onNavigateToBlog}
+          onNavigateToProjects={() => {}}
+          showBackButton={true}
+          onBack={onNavigateHome}
+          backLabel="Retour au portfolio"
+          currentPage="projects"
+        />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Erreur lors du chargement des projets</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
@@ -244,7 +219,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
             {/* Stats */}
             <div className="flex flex-wrap items-center justify-center gap-6">
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold text-white mb-1">{projects.length}</div>
+                <div className="text-2xl font-bold text-white mb-1">{supabaseProjects.length}</div>
                 <div className="text-sm text-white/80">Projets</div>
               </div>
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
@@ -252,7 +227,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
                 <div className="text-sm text-white/80">Catégories</div>
               </div>
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold text-white mb-1">{projects.filter(p => p.featured).length}</div>
+                <div className="text-2xl font-bold text-white mb-1">{supabaseProjects.filter(p => p.featured).length}</div>
                 <div className="text-sm text-white/80">Featured</div>
               </div>
             </div>
@@ -394,12 +369,12 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
 
                     {/* Description */}
                     <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                      {project.longDescription}
+                      {project.description}
                     </p>
 
                     {/* Technologies */}
                     <div className="flex flex-wrap gap-2 mb-6">
-                      {project.technologies.slice(0, 4).map((tech, techIndex) => (
+                      {project.tags.slice(0, 4).map((tech, techIndex) => (
                         <span 
                           key={techIndex}
                           className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium hover:bg-gray-200 transition-colors duration-200"
@@ -407,8 +382,8 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
                           {tech}
                         </span>
                       ))}
-                      {project.technologies.length > 4 && (
-                        <span className="text-xs text-gray-400">+{project.technologies.length - 4}</span>
+                      {project.tags.length > 4 && (
+                        <span className="text-xs text-gray-400">+{project.tags.length - 4}</span>
                       )}
                     </div>
 
@@ -419,9 +394,15 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
                         <ArrowRight size={16} />
                       </button>
                       
-                      {project.githubUrl && (
+                      {project.githubUrl && project.githubUrl !== '#' && (
                         <button className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200">
                           <Github size={18} />
+                        </button>
+                      )}
+                      
+                      {project.liveUrl && project.liveUrl !== '#' && (
+                        <button className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200">
+                          <ExternalLink size={18} />
                         </button>
                       )}
                     </div>
