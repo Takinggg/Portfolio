@@ -181,8 +181,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-lg border-r border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Administration</h2>
-          <p className="text-sm text-gray-600">FOULON Maxence</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Administration</h2>
+              <p className="text-sm text-gray-600">FOULON Maxence</p>
+            </div>
+            <button
+              onClick={onLogout}
+              className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200"
+              title="Déconnexion"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </div>
         </div>
         
         <nav className="p-4">
@@ -206,15 +219,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             })}
           </div>
         </nav>
-
-        <div className="absolute bottom-4 left-4 right-4">
-          <button
-            onClick={onLogout}
-            className="w-full bg-red-100 text-red-700 px-4 py-3 rounded-xl font-medium hover:bg-red-200 transition-colors duration-200"
-          >
-            Déconnexion
-          </button>
-        </div>
       </div>
 
       {/* Main Content */}
