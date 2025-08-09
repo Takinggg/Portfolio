@@ -164,17 +164,6 @@ const Navigation: React.FC<NavigationProps> = ({
             {/* CTA Button */}
             <div className="hidden lg:flex items-center gap-3">
               <button 
-                onClick={() => window.location.href = '/admin'}
-                className="group relative px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-105 border border-gray-200 hover:border-gray-300"
-                title="Administration"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  Admin
-                  <div className="w-1.5 h-1.5 bg-gray-500 rounded-full group-hover:animate-pulse" />
-                </span>
-              </button>
-              
-              <button 
                 onClick={() => handleNavigation('contact')}
                 className="group relative px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold text-sm overflow-hidden shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
               >
