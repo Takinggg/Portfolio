@@ -45,9 +45,9 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
         if (supabase) {
           supabase
             .from('blog_posts')
-            .select('count(*)')
-            .then(({ data, error }) => {
-              console.log('Direct count query result:', { data, error });
+            .select('*', { count: 'exact', head: true })
+            .then(({ count, error }) => {
+              console.log('Direct count query result:', { count, error });
             });
         }
       });
