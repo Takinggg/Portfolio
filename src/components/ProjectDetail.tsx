@@ -236,6 +236,30 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
             {project.description}
           </p>
 
+          {/* Project Images */}
+          {project.images && project.images.length > 0 && (
+            <div className="mb-12">
+              <div className="flex items-center gap-2 mb-8">
+                <Layers className="text-purple-600" size={24} />
+                <h2 className="text-2xl font-bold text-gray-900">Aperçu du projet</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {project.images.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <img 
+                      src={image}
+                      alt={`${project.title} - Image ${index + 1}`}
+                      className="w-full h-64 md:h-80 object-cover rounded-2xl shadow-xl group-hover:shadow-2xl transition-shadow duration-300"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Meta Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 shadow-lg">
@@ -363,30 +387,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
             </div>
           </div>
         </header>
-
-        {/* Project Images */}
-        {project.images && project.images.length > 0 && (
-          <section className="mb-16">
-            <div className="flex items-center gap-2 mb-8">
-              <Layers className="text-purple-600" size={24} />
-              <h2 className="text-2xl font-bold text-gray-900">Aperçu du projet</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {project.images.map((image, index) => (
-                <div key={index} className="relative group">
-                  <img 
-                    src={image}
-                    alt={`${project.title} - Image ${index + 1}`}
-                    className="w-full h-64 md:h-80 object-cover rounded-2xl shadow-xl group-hover:shadow-2xl transition-shadow duration-300"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Project Description */}
         {project.longDescription && (
