@@ -55,6 +55,13 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
     console.log('BlogPage - Error:', error);
     console.log('BlogPage - Supabase available:', isSupabaseAvailable());
     console.log('BlogPage - Total posts from Supabase:', supabasePosts.length);
+    if (supabasePosts.length > 0) {
+      console.log('BlogPage - First few posts:', supabasePosts.slice(0, 3).map(p => ({
+        title: p.title,
+        slug: p.slug,
+        featured: p.featured
+      })));
+    }
   }, [supabasePosts, loading, error]);
 
   // Convert Supabase posts to display format

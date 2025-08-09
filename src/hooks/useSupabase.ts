@@ -20,12 +20,12 @@ export const useBlogPosts = (filters?: {
     setLoading(true);
     setError(null);
 
-    // Try Supabase first, fallback to mock data if needed
-    if (isSupabaseAvailable()) {
-      try {
+    // Always use Supabase if available, otherwise use mock data
+    try {
+      if (isSupabaseAvailable()) {
         console.log('Fetching posts from Supabase with filters:', filters);
         
-        let query = supabase
+        let query = supabase!
           .from('blog_posts')
           .select('*')
           .order('published_at', { ascending: false });
@@ -51,53 +51,43 @@ export const useBlogPosts = (filters?: {
 
         console.log('Supabase data received:', data);
         setPosts(data || []);
-        setError(null);
-        setLoading(false);
-        return;
-      } catch (err) {
-        console.error('Error fetching from Supabase, falling back to mock data:', err);
+      } else {
+        // Fallback to mock data if Supabase is not available
+        console.log('Supabase not available, using mock data');
+        
+        let filteredData = mockBlogPosts.map(post => ({
+          id: post.id,
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+          content: post.content,
+          author: post.author,
+          published_at: post.publishedAt,
+          updated_at: post.updatedAt,
+          featured_image: post.featuredImage,
+          tags: post.tags,
+          category: post.category,
+          read_time: post.readTime,
+          featured: post.featured,
+          created_at: post.publishedAt
+        }));
+
+        if (filters?.category) {
+          filteredData = filteredData.filter(post => post.category === filters.category);
+        }
+
+        if (filters?.featured !== undefined) {
+          filteredData = filteredData.filter(post => post.featured === filters.featured);
+        }
+
+        if (filters?.limit) {
+          filteredData = filteredData.slice(0, filters.limit);
+        }
+
+        setPosts(filteredData);
       }
-    }
-
-    // Fallback to mock data
-    try {
-      console.log('Loading blog posts from mock data...');
-      console.log('Filters applied:', filters);
-      
-      let filteredData = mockBlogPosts.map(post => ({
-        id: post.id,
-        title: post.title,
-        slug: post.slug,
-        excerpt: post.excerpt,
-        content: post.content,
-        author: post.author,
-        published_at: post.publishedAt,
-        updated_at: post.updatedAt,
-        featured_image: post.featuredImage,
-        tags: post.tags,
-        category: post.category,
-        read_time: post.readTime,
-        featured: post.featured,
-        created_at: post.publishedAt
-      }));
-
-      if (filters?.category) {
-        filteredData = filteredData.filter(post => post.category === filters.category);
-      }
-
-      if (filters?.featured !== undefined) {
-        filteredData = filteredData.filter(post => post.featured === filters.featured);
-      }
-
-      if (filters?.limit) {
-        filteredData = filteredData.slice(0, filters.limit);
-      }
-
-      console.log('Loaded posts:', filteredData);
-      setPosts(filteredData);
-      setError(null);
     } catch (err) {
-      console.error('Error loading mock data:', err);
+      console.error('Error loading posts:', err);
       setError('Erreur lors du chargement des articles');
     } finally {
       setLoading(false);
@@ -190,12 +180,11 @@ export const useBlogPost = (slug: string) => {
     setLoading(true);
     setError(null);
 
-    // Try Supabase first, fallback to mock data
-    if (isSupabaseAvailable()) {
-      try {
+    try {
+      if (isSupabaseAvailable()) {
         console.log('Fetching post from Supabase:', slug);
         
-        const { data, error } = await supabase
+        const { data, error } = await supabase!
           .from('blog_posts')
           .select('*')
           .eq('slug', slug)
@@ -209,38 +198,34 @@ export const useBlogPost = (slug: string) => {
         if (data) {
           console.log('Post loaded from Supabase:', data.title);
           setPost(data);
-          setLoading(false);
-          return;
+        } else {
+          setError('Article non trouvé');
         }
-      } catch (err) {
-        console.error('Error fetching from Supabase, falling back to mock data:', err);
-      }
-    }
-
-    // Fallback to mock data
-    try {
-      console.log('Loading blog post:', slug);
-      const mockPost = mockBlogPosts.find(p => p.slug === slug);
-      if (mockPost) {
-        setPost({
-          id: mockPost.id,
-          title: mockPost.title,
-          slug: mockPost.slug,
-          excerpt: mockPost.excerpt,
-          content: mockPost.content,
-          author: mockPost.author,
-          published_at: mockPost.publishedAt,
-          updated_at: mockPost.updatedAt,
-          featured_image: mockPost.featuredImage,
-          tags: mockPost.tags,
-          category: mockPost.category,
-          read_time: mockPost.readTime,
-          featured: mockPost.featured,
-          created_at: mockPost.publishedAt
-        });
-        console.log('Post loaded:', mockPost.title);
       } else {
-        setError('Article non trouvé');
+        // Fallback to mock data
+        console.log('Loading blog post from mock data:', slug);
+        const mockPost = mockBlogPosts.find(p => p.slug === slug);
+        if (mockPost) {
+          setPost({
+            id: mockPost.id,
+            title: mockPost.title,
+            slug: mockPost.slug,
+            excerpt: mockPost.excerpt,
+            content: mockPost.content,
+            author: mockPost.author,
+            published_at: mockPost.publishedAt,
+            updated_at: mockPost.updatedAt,
+            featured_image: mockPost.featuredImage,
+            tags: mockPost.tags,
+            category: mockPost.category,
+            read_time: mockPost.readTime,
+            featured: mockPost.featured,
+            created_at: mockPost.publishedAt
+          });
+          console.log('Post loaded:', mockPost.title);
+        } else {
+          setError('Article non trouvé');
+        }
       }
     } catch (err) {
       console.error('Error loading post:', err);
