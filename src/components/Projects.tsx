@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ExternalLink, Eye, Heart, Star, ArrowRight } from 'lucide-react';
+import { useProjects } from '../hooks/useSupabase';
 
 const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  
+  // Use the custom hook to fetch projects
+  const { projects: allProjects, loading, error } = useProjects();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -24,123 +28,103 @@ const Projects = () => {
     return () => observer.disconnect();
   }, []);
 
-  const categories = [
-    { id: 'all', label: 'Tous les projets', count: 8 },
-    { id: 'mobile', label: 'Mobile', count: 4 },
-    { id: 'web', label: 'Web', count: 3 },
-    { id: 'branding', label: 'Branding', count: 1 }
-  ];
+  // Generate categories dynamically from projects
+  const categories = React.useMemo(() => {
+    if (!allProjects.length) return [{ id: 'all', label: 'Tous les projets', count: 0 }];
+    
+    const categoryCount = allProjects.reduce((acc, project) => {
+      acc[project.category] = (acc[project.category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
 
-  const projects = [
-    {
-      id: 1,
-      title: "FinTech Mobile Revolution",
-      category: "mobile",
-      type: "Application Mobile",
-      description: "Révolution de l'expérience bancaire mobile avec IA intégrée et interface ultra-intuitive",
-      image: "https://images.pexels.com/photos/4348401/pexels-photo-4348401.jpeg",
-      tags: ["FinTech", "AI/ML", "Mobile First", "Security"],
-      gradient: "from-blue-600 via-purple-600 to-pink-600",
-      likes: 247,
-      views: "12.5k",
-      featured: true
-    },
-    {
-      id: 2,
-      title: "Neural Analytics Dashboard",
-      category: "web",
-      type: "Interface Web",
-      description: "Dashboard d'analyse prédictive avec visualisations de données en temps réel et IA",
-      image: "https://images.pexels.com/photos/590020/pexels-photo-590020.jpg",
-      tags: ["Analytics", "Real-time", "Data Viz", "Machine Learning"],
-      gradient: "from-emerald-500 via-teal-500 to-cyan-600",
-      likes: 189,
-      views: "8.7k",
-      featured: false
-    },
-    {
-      id: 3,
-      title: "Quantum Banking Experience",
-      category: "mobile",
-      type: "Application Mobile",
-      description: "Refonte complète d'une néobanque avec cryptographie quantique et biométrie avancée",
-      image: "https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg",
-      tags: ["Quantum", "Biometric", "Crypto", "Security"],
-      gradient: "from-orange-500 via-red-500 to-pink-600",
-      likes: 312,
-      views: "15.2k",
-      featured: true
-    },
-    {
-      id: 4,
-      title: "Metaverse SaaS Platform",
-      category: "web",
-      type: "Plateforme Web",
-      description: "Plateforme SaaS pour la création d'expériences métaverse avec outils no-code",
-      image: "https://images.pexels.com/photos/3184298/pexels-photo-3184298.jpeg",
-      tags: ["Metaverse", "No-Code", "3D", "VR/AR"],
-      gradient: "from-purple-600 via-indigo-600 to-blue-600",
-      likes: 156,
-      views: "6.9k",
-      featured: false
-    },
-    {
-      id: 5,
-      title: "AI Health Companion",
-      category: "mobile",
-      type: "Application Mobile",
-      description: "Assistant santé personnel avec IA prédictive et monitoring biométrique continu",
-      image: "https://images.pexels.com/photos/4474052/pexels-photo-4474052.jpeg",
-      tags: ["HealthTech", "AI Assistant", "IoT", "Predictive"],
-      gradient: "from-cyan-500 via-blue-500 to-indigo-600",
-      likes: 203,
-      views: "9.8k",
-      featured: false
-    },
-    {
-      id: 6,
-      title: "Luxury Brand Identity",
-      category: "branding",
-      type: "Identité Visuelle",
-      description: "Identité de marque complète pour maison de luxe avec expérience digitale immersive",
-      image: "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg",
-      tags: ["Luxury", "Brand Identity", "Premium", "Immersive"],
-      gradient: "from-amber-500 via-orange-500 to-red-600",
-      likes: 278,
-      views: "11.3k",
-      featured: true
-    },
-    {
-      id: 7,
-      title: "Sustainable E-commerce",
-      category: "web",
-      type: "Site E-commerce",
-      description: "Plateforme e-commerce éco-responsable avec tracking carbone et marketplace durable",
-      image: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg",
-      tags: ["Sustainability", "E-commerce", "Carbon Tracking", "Green Tech"],
-      gradient: "from-green-500 via-emerald-500 to-teal-600",
-      likes: 167,
-      views: "7.4k",
-      featured: false
-    },
-    {
-      id: 8,
-      title: "Social Impact Platform",
-      category: "mobile",
-      type: "Application Mobile",
-      description: "Réseau social pour l'impact environnemental avec gamification et récompenses blockchain",
-      image: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg",
-      tags: ["Social Impact", "Blockchain", "Gamification", "Environment"],
-      gradient: "from-lime-500 via-green-500 to-emerald-600",
-      likes: 134,
-      views: "5.6k",
-      featured: false
-    }
-  ];
+    return [
+      { id: 'all', label: 'Tous les projets', count: allProjects.length },
+      ...Object.entries(categoryCount).map(([category, count]) => ({
+        id: category,
+        label: category.charAt(0).toUpperCase() + category.slice(1),
+        count
+      }))
+    ];
+  }, [allProjects]);
 
+  // Transform projects for display
+  const projects = React.useMemo(() => {
+    return allProjects.map((project, index) => ({
+      id: parseInt(project.id),
+      title: project.title,
+      category: project.category,
+      type: getProjectType(project.category),
+      description: project.long_description || project.description,
+      image: project.images[0] || 'https://via.placeholder.com/400x300',
+      tags: project.technologies.slice(0, 4),
+      gradient: getGradientForCategory(project.category, index),
+      likes: Math.floor(Math.random() * 300) + 50, // Mock data
+      views: `${(Math.floor(Math.random() * 15) + 5).toFixed(1)}k`, // Mock data
+      featured: project.featured
+    }));
+  }, [allProjects]);
   const filteredProjects = selectedCategory === 'all' 
     ? projects 
     : projects.filter(project => project.category === selectedCategory);
+
+  // Helper functions
+  const getProjectType = (category: string) => {
+    const types = {
+      mobile: 'Application Mobile',
+      web: 'Interface Web',
+      branding: 'Identité Visuelle',
+      blockchain: 'Blockchain',
+      iot: 'IoT'
+    };
+    return types[category as keyof typeof types] || 'Projet';
+  };
+
+  const getGradientForCategory = (category: string, index: number) => {
+    const gradients = [
+      'from-blue-600 via-purple-600 to-pink-600',
+      'from-emerald-500 via-teal-500 to-cyan-600',
+      'from-orange-500 via-red-500 to-pink-600',
+      'from-purple-600 via-indigo-600 to-blue-600',
+      'from-cyan-500 via-blue-500 to-indigo-600',
+      'from-amber-500 via-orange-500 to-red-600',
+      'from-green-500 via-emerald-500 to-teal-600',
+      'from-lime-500 via-green-500 to-emerald-600'
+    ];
+    return gradients[index % gradients.length];
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 relative overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Chargement des projets...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 relative overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <div className="text-center">
+            <p className="text-red-600">Erreur lors du chargement des projets</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 relative overflow-hidden">

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Calendar, Clock, User, BookOpen, Sparkles } from 'lucide-react';
-import { getFeaturedPosts, BlogPost } from '../data/blogPosts';
+import { useBlogPosts } from '../hooks/useSupabase';
 
 interface BlogSectionProps {
   onNavigateToBlog: () => void;
@@ -10,6 +10,12 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredPost, setHoveredPost] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  
+  // Use the custom hook to fetch featured posts
+  const { posts: featuredPosts, loading, error } = useBlogPosts({ 
+    featured: true, 
+    limit: 3 
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -28,8 +34,6 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
     return () => observer.disconnect();
   }, []);
 
-  const featuredPosts = getFeaturedPosts();
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       year: 'numeric',
@@ -45,6 +49,39 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
   const readPost = (slug: string) => {
     onNavigateToBlog();
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section ref={sectionRef} id="blog" className="py-32 bg-gradient-to-br from-purple-50/30 via-white to-pink-50/30 relative overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Chargement des articles...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <section ref={sectionRef} id="blog" className="py-32 bg-gradient-to-br from-purple-50/30 via-white to-pink-50/30 relative overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <div className="text-center">
+            <p className="text-red-600">Erreur lors du chargement des articles</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section ref={sectionRef} id="blog" className="py-32 bg-gradient-to-br from-purple-50/30 via-white to-pink-50/30 relative overflow-hidden">
@@ -98,7 +135,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
               {/* Image Container */}
               <div className={`relative ${index === 0 ? 'h-80' : 'h-48'} overflow-hidden`}>
                 <img 
-                  src={post.featuredImage}
+                  src={post.featured_image || 'https://via.placeholder.com/400x200'}
                   alt={post.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -109,7 +146,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
                 {/* Read Time Badge */}
                 <div className="absolute top-4 right-4 bg-black/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium">
                   <Clock size={12} className="inline mr-1" />
-                  {post.readTime} min
+                  {post.read_time} min
                 </div>
 
                 {/* Hover Action */}
@@ -133,7 +170,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar size={14} />
-                    <span>{formatDate(post.publishedAt)}</span>
+                    <span>{formatDate(post.published_at)}</span>
                   </div>
                 </div>
 

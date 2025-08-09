@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Edit, Trash2, Eye, Calendar, Tag, Briefcase, Save, X, Upload } from 'lucide-react';
+import { supabase, projectService } from '../../lib/supabase';
 
 interface Project {
   id: string;
   title: string;
   description: string;
-  longDescription: string;
+  long_description: string;
   technologies: string[];
   category: string;
   status: 'in-progress' | 'completed' | 'archived';
-  startDate: string;
-  endDate?: string;
+  start_date: string;
+  end_date?: string;
   client?: string;
   budget?: string;
   images: string[];
   featured: boolean;
-  githubUrl?: string;
-  liveUrl?: string;
+  github_url?: string;
+  live_url?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const ProjectManager: React.FC = () => {
@@ -28,6 +31,8 @@ const ProjectManager: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingProject, setEditingProject] = useState<Partial<Project> | null>(null);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const categories = ['mobile', 'web', 'branding', 'blockchain', 'iot'];
   const statuses = ['in-progress', 'completed', 'archived'];
@@ -41,27 +46,21 @@ const ProjectManager: React.FC = () => {
   }, [projects, searchQuery, selectedCategory, selectedStatus]);
 
   const fetchProjects = async () => {
-    // Mock data - replace with actual API call
-    const mockProjects: Project[] = [
-      {
-        id: '1',
-        title: 'FinTech Mobile Revolution',
-        description: 'Application bancaire mobile révolutionnaire avec IA intégrée',
-        longDescription: 'Révolution complète de l\'expérience bancaire mobile avec intelligence artificielle intégrée, interface ultra-intuitive et sécurité quantique.',
-        technologies: ['React Native', 'TypeScript', 'Node.js', 'MongoDB', 'AI/ML'],
-        category: 'mobile',
-        status: 'completed',
-        startDate: '2023-06-01',
-        endDate: '2024-01-15',
-        client: 'FinTech Corp',
-        budget: '50k-100k €',
-        images: ['https://images.pexels.com/photos/4348401/pexels-photo-4348401.jpeg'],
-        featured: true,
-        githubUrl: '#',
-        liveUrl: '#'
-      }
-    ];
-    setProjects(mockProjects);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await projectService.getAllProjects();
+      
+      if (error) throw error;
+      
+      setProjects(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors du chargement des projets');
+      console.error('Error fetching projects:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filterProjects = () => {
@@ -94,11 +93,11 @@ const ProjectManager: React.FC = () => {
     setEditingProject({
       title: '',
       description: '',
-      longDescription: '',
+      long_description: '',
       technologies: [],
       category: 'web',
       status: 'in-progress',
-      startDate: new Date().toISOString().split('T')[0],
+      start_date: new Date().toISOString().split('T')[0],
       images: [],
       featured: false
     });
@@ -106,18 +105,46 @@ const ProjectManager: React.FC = () => {
   };
 
   const handleSave = async (projectData: Partial<Project>) => {
-    // Mock save - replace with actual API call
-    console.log('Saving project:', projectData);
-    setIsEditing(false);
-    setEditingProject(null);
-    fetchProjects(); // Refresh the list
+    try {
+      setLoading(true);
+
+      let result;
+      if (projectData.id) {
+        // Update existing project
+        result = await projectService.updateProject(projectData.id, projectData);
+      } else {
+        // Create new project
+        result = await projectService.createProject(projectData as Omit<Project, 'id' | 'created_at' | 'updated_at'>);
+      }
+
+      if (result.error) throw result.error;
+
+      setIsEditing(false);
+      setEditingProject(null);
+      await fetchProjects(); // Refresh the list
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      console.error('Error saving project:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (projectId: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
-      // Mock delete - replace with actual API call
-      console.log('Deleting project:', projectId);
-      fetchProjects(); // Refresh the list
+      try {
+        setLoading(true);
+        const { error } = await projectService.deleteProject(projectId);
+        
+        if (error) throw error;
+        
+        await fetchProjects(); // Refresh the list
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+        console.error('Error deleting project:', err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -147,6 +174,29 @@ const ProjectManager: React.FC = () => {
     }
   };
 
+  if (loading && projects.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+        <p className="font-medium">Erreur</p>
+        <p className="text-sm">{error}</p>
+        <button 
+          onClick={fetchProjects}
+          className="mt-2 text-sm underline hover:no-underline"
+        >
+          Réessayer
+        </button>
+      </div>
+    );
+  }
+
   if (isEditing) {
     return (
       <ProjectEditor
@@ -156,6 +206,7 @@ const ProjectManager: React.FC = () => {
           setIsEditing(false);
           setEditingProject(null);
         }}
+        loading={loading}
       />
     );
   }
@@ -170,7 +221,8 @@ const ProjectManager: React.FC = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2"
+          disabled={loading}
+          className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
         >
           <Plus size={20} />
           Nouveau Projet
@@ -222,79 +274,100 @@ const ProjectManager: React.FC = () => {
       </div>
 
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProjects.map((project) => (
-          <div key={project.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-            <div className="relative h-48">
-              <img
-                src={project.images[0] || 'https://via.placeholder.com/400x200'}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-              {project.featured && (
-                <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">
-                  ⭐ Featured
-                </div>
-              )}
-              <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
-                {getStatusLabel(project.status)}
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{project.title}</h3>
-                <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full font-medium">
-                  {project.category.toUpperCase()}
-                </span>
-              </div>
-
-              <p className="text-gray-600 text-sm line-clamp-2 mb-4">{project.description}</p>
-
-              <div className="flex flex-wrap gap-1 mb-4">
-                {project.technologies.slice(0, 3).map((tech, index) => (
-                  <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
-                    {tech}
-                  </span>
-                ))}
-                {project.technologies.length > 3 && (
-                  <span className="text-xs text-gray-500">+{project.technologies.length - 3}</span>
+      {filteredProjects.length === 0 ? (
+        <div className="bg-white rounded-2xl p-12 text-center shadow-lg border border-gray-100">
+          <Briefcase className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun projet trouvé</h3>
+          <p className="text-gray-600 mb-4">
+            {searchQuery || selectedCategory !== 'all' || selectedStatus !== 'all'
+              ? 'Essayez de modifier vos critères de recherche'
+              : 'Commencez par créer votre premier projet'
+            }
+          </p>
+          {!searchQuery && selectedCategory === 'all' && selectedStatus === 'all' && (
+            <button
+              onClick={handleCreate}
+              className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200"
+            >
+              Créer un projet
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProjects.map((project) => (
+            <div key={project.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className="relative h-48">
+                <img
+                  src={project.images[0] || 'https://via.placeholder.com/400x200'}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+                {project.featured && (
+                  <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">
+                    ⭐ Featured
+                  </div>
                 )}
+                <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
+                  {getStatusLabel(project.status)}
+                </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-500">
-                  {project.client && <div>Client: {project.client}</div>}
-                  <div>Début: {new Date(project.startDate).toLocaleDateString('fr-FR')}</div>
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{project.title}</h3>
+                  <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full font-medium">
+                    {project.category.toUpperCase()}
+                  </span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleEdit(project)}
-                    className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
-                    title="Modifier"
-                  >
-                    <Edit size={16} />
-                  </button>
-                  <button
-                    className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
-                    title="Voir"
-                  >
-                    <Eye size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(project.id)}
-                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                    title="Supprimer"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                <p className="text-gray-600 text-sm line-clamp-2 mb-4">{project.description}</p>
+
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {project.technologies.slice(0, 3).map((tech, index) => (
+                    <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                      {tech}
+                    </span>
+                  ))}
+                  {project.technologies.length > 3 && (
+                    <span className="text-xs text-gray-500">+{project.technologies.length - 3}</span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-gray-500">
+                    {project.client && <div>Client: {project.client}</div>}
+                    <div>Début: {new Date(project.start_date).toLocaleDateString('fr-FR')}</div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleEdit(project)}
+                      className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+                      title="Modifier"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                      title="Voir"
+                    >
+                      <Eye size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project.id)}
+                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                      title="Supprimer"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -304,9 +377,10 @@ interface ProjectEditorProps {
   project: Partial<Project> | null;
   onSave: (project: Partial<Project>) => void;
   onCancel: () => void;
+  loading?: boolean;
 }
 
-const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel }) => {
+const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel, loading = false }) => {
   const [formData, setFormData] = useState<Partial<Project>>(project || {});
   const [technologies, setTechnologies] = useState<string>(project?.technologies?.join(', ') || '');
   const [imageUrls, setImageUrls] = useState<string>(project?.images?.join('\n') || '');
@@ -329,17 +403,23 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
         <div className="flex items-center gap-4">
           <button
             onClick={onCancel}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
+            disabled={loading}
+            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
           >
             <X size={20} />
             Annuler
           </button>
           <button
             onClick={handleSubmit}
-            className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2"
+            disabled={loading}
+            className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
           >
-            <Save size={20} />
-            Enregistrer
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Save size={20} />
+            )}
+            {loading ? 'Sauvegarde...' : 'Enregistrer'}
           </button>
         </div>
       </div>
@@ -383,8 +463,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
                   Description détaillée
                 </label>
                 <textarea
-                  value={formData.longDescription || ''}
-                  onChange={(e) => setFormData({ ...formData, longDescription: e.target.value })}
+                  value={formData.long_description || ''}
+                  onChange={(e) => setFormData({ ...formData, long_description: e.target.value })}
                   rows={5}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                   placeholder="Description détaillée du projet"
@@ -502,8 +582,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
                 </label>
                 <input
                   type="date"
-                  value={formData.startDate || ''}
-                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  value={formData.start_date || ''}
+                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -514,8 +594,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
                 </label>
                 <input
                   type="date"
-                  value={formData.endDate || ''}
-                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  value={formData.end_date || ''}
+                  onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -567,8 +647,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
                 </label>
                 <input
                   type="url"
-                  value={formData.githubUrl || ''}
-                  onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
+                  value={formData.github_url || ''}
+                  onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="https://github.com/..."
                 />
@@ -580,8 +660,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
                 </label>
                 <input
                   type="url"
-                  value={formData.liveUrl || ''}
-                  onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
+                  value={formData.live_url || ''}
+                  onChange={(e) => setFormData({ ...formData, live_url: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="https://example.com"
                 />

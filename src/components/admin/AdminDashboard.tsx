@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart3, FileText, Briefcase, Users, Settings, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, TrendingUp } from 'lucide-react';
+import { supabase, blogService, projectService } from '../../lib/supabase';
 import BlogManager from './BlogManager';
 import ProjectManager from './ProjectManager';
 import Analytics from './Analytics';
@@ -17,6 +18,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     totalViews: 0,
     totalComments: 0
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch dashboard stats
@@ -24,13 +26,38 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   }, []);
 
   const fetchStats = async () => {
-    // Mock data - replace with actual API calls
-    setStats({
-      totalPosts: 12,
-      totalProjects: 8,
-      totalViews: 15420,
-      totalComments: 89
-    });
+    setLoading(true);
+    try {
+      // Fetch real data from Supabase
+      const [postsResult, projectsResult] = await Promise.all([
+        blogService.getAllPosts(),
+        projectService.getAllProjects()
+      ]);
+
+      const totalPosts = postsResult.data?.length || 0;
+      const totalProjects = projectsResult.data?.length || 0;
+      
+      // Calculate total views (mock for now, you can add a views column later)
+      const totalViews = totalPosts * 150 + totalProjects * 200;
+      
+      setStats({
+        totalPosts,
+        totalProjects,
+        totalViews,
+        totalComments: Math.floor(totalViews * 0.05) // Mock comment calculation
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      // Fallback to mock data
+      setStats({
+        totalPosts: 0,
+        totalProjects: 0,
+        totalViews: 0,
+        totalComments: 0
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const sidebarItems = [
@@ -58,12 +85,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         return (
           <div className="space-y-8">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${loading ? 'animate-pulse' : ''}`}>
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Articles</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.totalPosts}</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {loading ? '...' : stats.totalPosts}
+                    </p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                     <FileText className="text-blue-600" size={24} />
@@ -75,7 +104,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Projets</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.totalProjects}</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {loading ? '...' : stats.totalProjects}
+                    </p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                     <Briefcase className="text-purple-600" size={24} />
@@ -87,7 +118,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Vues totales</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.totalViews.toLocaleString()}</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {loading ? '...' : stats.totalViews.toLocaleString()}
+                    </p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                     <Eye className="text-green-600" size={24} />
@@ -99,7 +132,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Commentaires</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.totalComments}</p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {loading ? '...' : stats.totalComments}
+                    </p>
                   </div>
                   <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                     <Users className="text-orange-600" size={24} />

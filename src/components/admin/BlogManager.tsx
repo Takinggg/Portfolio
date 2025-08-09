@@ -1,7 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Edit, Trash2, Eye, Calendar, Tag, FileText, Save, X } from 'lucide-react';
-import { BlogPost } from '../../data/blogPosts';
+import { supabase, blogService, utils } from '../../lib/supabase';
 import RichTextEditor from './RichTextEditor';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  published_at: string;
+  updated_at?: string;
+  featured_image: string;
+  tags: string[];
+  category: string;
+  read_time: number;
+  featured: boolean;
+  created_at: string;
+}
 
 const BlogManager: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -12,9 +29,10 @@ const BlogManager: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingPost, setEditingPost] = useState<Partial<BlogPost> | null>(null);
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const categories = ['Design', 'Méthodologie', 'Research', 'Tendances'];
-  const statuses = ['published', 'draft', 'scheduled'];
 
   useEffect(() => {
     fetchPosts();
@@ -22,27 +40,24 @@ const BlogManager: React.FC = () => {
 
   useEffect(() => {
     filterPosts();
-  }, [posts, searchQuery, selectedCategory, selectedStatus]);
+  }, [posts, searchQuery, selectedCategory]);
 
   const fetchPosts = async () => {
-    // Mock data - replace with actual API call
-    const mockPosts: BlogPost[] = [
-      {
-        id: '1',
-        title: 'L\'avenir du Design UI/UX : Tendances 2024',
-        slug: 'avenir-design-ui-ux-tendances-2024',
-        excerpt: 'Découvrez les tendances qui façonnent l\'avenir du design d\'interface...',
-        content: '<p>Contenu de l\'article...</p>',
-        author: 'FOULON Maxence',
-        publishedAt: '2024-01-15',
-        featuredImage: 'https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg',
-        tags: ['UI/UX', 'Tendances', 'IA', 'Design'],
-        category: 'Design',
-        readTime: 5,
-        featured: true
-      }
-    ];
-    setPosts(mockPosts);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await blogService.getAllPosts();
+      
+      if (error) throw error;
+      
+      setPosts(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors du chargement des articles');
+      console.error('Error fetching posts:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filterPosts = () => {
@@ -74,38 +89,86 @@ const BlogManager: React.FC = () => {
       excerpt: '',
       content: '',
       author: 'FOULON Maxence',
-      publishedAt: new Date().toISOString().split('T')[0],
-      featuredImage: '',
+      published_at: new Date().toISOString().split('T')[0],
+      featured_image: '',
       tags: [],
       category: 'Design',
-      readTime: 5,
+      read_time: 5,
       featured: false
     });
     setIsEditing(true);
   };
 
   const handleSave = async (postData: Partial<BlogPost>) => {
-    // Mock save - replace with actual API call
-    console.log('Saving post:', postData);
-    setIsEditing(false);
-    setEditingPost(null);
-    fetchPosts(); // Refresh the list
+    try {
+      setLoading(true);
+      
+      // Generate slug if not provided
+      if (!postData.slug && postData.title) {
+        postData.slug = utils.generateSlug(postData.title);
+      }
+      
+      // Calculate reading time if content is provided
+      if (postData.content) {
+        postData.read_time = utils.calculateReadingTime(postData.content);
+      }
+
+      let result;
+      if (postData.id) {
+        // Update existing post
+        result = await blogService.updatePost(postData.id, postData);
+      } else {
+        // Create new post
+        result = await blogService.createPost(postData as Omit<BlogPost, 'id' | 'created_at'>);
+      }
+
+      if (result.error) throw result.error;
+
+      setIsEditing(false);
+      setEditingPost(null);
+      await fetchPosts(); // Refresh the list
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      console.error('Error saving post:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (postId: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
-      // Mock delete - replace with actual API call
-      console.log('Deleting post:', postId);
-      fetchPosts(); // Refresh the list
+      try {
+        setLoading(true);
+        const { error } = await blogService.deletePost(postId);
+        
+        if (error) throw error;
+        
+        await fetchPosts(); // Refresh the list
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+        console.error('Error deleting post:', err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleBulkDelete = async () => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedPosts.length} article(s) ?`)) {
-      // Mock bulk delete - replace with actual API call
-      console.log('Bulk deleting posts:', selectedPosts);
-      setSelectedPosts([]);
-      fetchPosts(); // Refresh the list
+      try {
+        setLoading(true);
+        
+        // Delete all selected posts
+        await Promise.all(selectedPosts.map(postId => blogService.deletePost(postId)));
+        
+        setSelectedPosts([]);
+        await fetchPosts(); // Refresh the list
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la suppression en masse');
+        console.error('Error bulk deleting posts:', err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -117,6 +180,29 @@ const BlogManager: React.FC = () => {
     );
   };
 
+  if (loading && posts.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+        <p className="font-medium">Erreur</p>
+        <p className="text-sm">{error}</p>
+        <button 
+          onClick={fetchPosts}
+          className="mt-2 text-sm underline hover:no-underline"
+        >
+          Réessayer
+        </button>
+      </div>
+    );
+  }
+
   if (isEditing) {
     return (
       <BlogEditor
@@ -126,6 +212,7 @@ const BlogManager: React.FC = () => {
           setIsEditing(false);
           setEditingPost(null);
         }}
+        loading={loading}
       />
     );
   }
@@ -140,7 +227,8 @@ const BlogManager: React.FC = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2"
+          disabled={loading}
+          className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
         >
           <Plus size={20} />
           Nouvel Article
@@ -182,7 +270,8 @@ const BlogManager: React.FC = () => {
             </span>
             <button
               onClick={handleBulkDelete}
-              className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium hover:bg-red-200 transition-colors duration-200 flex items-center gap-2"
+              disabled={loading}
+              className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium hover:bg-red-200 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               <Trash2 size={16} />
               Supprimer
@@ -193,105 +282,126 @@ const BlogManager: React.FC = () => {
 
       {/* Posts List */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left">
-                  <input
-                    type="checkbox"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedPosts(filteredPosts.map(p => p.id));
-                      } else {
-                        setSelectedPosts([]);
-                      }
-                    }}
-                    checked={selectedPosts.length === filteredPosts.length && filteredPosts.length > 0}
-                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                  />
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Article</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Catégorie</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Date</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Statut</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredPosts.map((post) => (
-                <tr key={post.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
+        {filteredPosts.length === 0 ? (
+          <div className="text-center py-12">
+            <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun article trouvé</h3>
+            <p className="text-gray-600 mb-4">
+              {searchQuery || selectedCategory !== 'all' 
+                ? 'Essayez de modifier vos critères de recherche'
+                : 'Commencez par créer votre premier article'
+              }
+            </p>
+            {!searchQuery && selectedCategory === 'all' && (
+              <button
+                onClick={handleCreate}
+                className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200"
+              >
+                Créer un article
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left">
                     <input
                       type="checkbox"
-                      checked={selectedPosts.includes(post.id)}
-                      onChange={() => togglePostSelection(post.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedPosts(filteredPosts.map(p => p.id));
+                        } else {
+                          setSelectedPosts([]);
+                        }
+                      }}
+                      checked={selectedPosts.length === filteredPosts.length && filteredPosts.length > 0}
                       className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                     />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={post.featuredImage}
-                        alt={post.title}
-                        className="w-16 h-16 object-cover rounded-lg"
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Article</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Catégorie</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Date</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Statut</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredPosts.map((post) => (
+                  <tr key={post.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedPosts.includes(post.id)}
+                        onChange={() => togglePostSelection(post.id)}
+                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                       />
-                      <div>
-                        <h3 className="font-medium text-gray-900 line-clamp-1">{post.title}</h3>
-                        <p className="text-sm text-gray-600 line-clamp-2">{post.excerpt}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          {post.featured && (
-                            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                              Featured
-                            </span>
-                          )}
-                          <span className="text-xs text-gray-500">{post.readTime} min</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={post.featured_image || 'https://via.placeholder.com/64x64'}
+                          alt={post.title}
+                          className="w-16 h-16 object-cover rounded-lg"
+                        />
+                        <div>
+                          <h3 className="font-medium text-gray-900 line-clamp-1">{post.title}</h3>
+                          <p className="text-sm text-gray-600 line-clamp-2">{post.excerpt}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            {post.featured && (
+                              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                                Featured
+                              </span>
+                            )}
+                            <span className="text-xs text-gray-500">{post.read_time} min</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {post.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {new Date(post.publishedAt).toLocaleDateString('fr-FR')}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                      Publié
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleEdit(post)}
-                        className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
-                        title="Modifier"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
-                        title="Voir"
-                      >
-                        <Eye size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(post.id)}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                        title="Supprimer"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {post.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {utils.formatDate(post.published_at)}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                        Publié
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(post)}
+                          className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+                          title="Modifier"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                          title="Voir"
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(post.id)}
+                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                          title="Supprimer"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -302,9 +412,10 @@ interface BlogEditorProps {
   post: Partial<BlogPost> | null;
   onSave: (post: Partial<BlogPost>) => void;
   onCancel: () => void;
+  loading?: boolean;
 }
 
-const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel }) => {
+const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel, loading = false }) => {
   const [formData, setFormData] = useState<Partial<BlogPost>>(post || {});
   const [tags, setTags] = useState<string>(post?.tags?.join(', ') || '');
 
@@ -325,17 +436,23 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel }) => {
         <div className="flex items-center gap-4">
           <button
             onClick={onCancel}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
+            disabled={loading}
+            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
           >
             <X size={20} />
             Annuler
           </button>
           <button
             onClick={handleSubmit}
-            className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2"
+            disabled={loading}
+            className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
           >
-            <Save size={20} />
-            Enregistrer
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Save size={20} />
+            )}
+            {loading ? 'Sauvegarde...' : 'Enregistrer'}
           </button>
         </div>
       </div>
@@ -410,8 +527,8 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel }) => {
                   </label>
                   <input
                     type="date"
-                    value={formData.publishedAt || ''}
-                    onChange={(e) => setFormData({ ...formData, publishedAt: e.target.value })}
+                    value={formData.published_at || ''}
+                    onChange={(e) => setFormData({ ...formData, published_at: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -470,8 +587,8 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel }) => {
                   </label>
                   <input
                     type="number"
-                    value={formData.readTime || ''}
-                    onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
+                    value={formData.read_time || ''}
+                    onChange={(e) => setFormData({ ...formData, read_time: parseInt(e.target.value) })}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     min="1"
                   />
@@ -484,14 +601,14 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel }) => {
               <div className="space-y-4">
                 <input
                   type="url"
-                  value={formData.featuredImage || ''}
-                  onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
+                  value={formData.featured_image || ''}
+                  onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="URL de l'image"
                 />
-                {formData.featuredImage && (
+                {formData.featured_image && (
                   <img
-                    src={formData.featuredImage}
+                    src={formData.featured_image}
                     alt="Aperçu"
                     className="w-full h-32 object-cover rounded-xl"
                   />
