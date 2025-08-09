@@ -7,7 +7,7 @@ interface NavigationProps {
   showBackButton?: boolean;
   onBack?: () => void;
   backLabel?: string;
-  currentPage?: 'home' | 'blog' | 'post';
+  currentPage?: 'home' | 'blog' | 'post' | 'projects';
 }
 
 const Navigation: React.FC<NavigationProps> = ({ 
@@ -61,6 +61,8 @@ const Navigation: React.FC<NavigationProps> = ({
   useEffect(() => {
     if (currentPage === 'blog' || currentPage === 'post') {
       setActiveSection('blog-page');
+    } else if (currentPage === 'projects') {
+      setActiveSection('projects');
     } else if (currentPage === 'home') {
       setActiveSection('hero');
     }

@@ -6,11 +6,12 @@ import Projects from './components/Projects';
 import BlogSection from './components/BlogSection';
 import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
+import ProjectsPage from './components/ProjectsPage';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { getPostBySlug, BlogPost as BlogPostType } from './data/blogPosts';
 
-type PageType = 'home' | 'blog' | 'post';
+type PageType = 'home' | 'blog' | 'post' | 'projects';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
@@ -26,6 +27,11 @@ function App() {
     setCurrentPost(null);
   };
 
+  const navigateToProjects = () => {
+    setCurrentPage('projects');
+    setCurrentPost(null);
+  };
+
   const navigateToPost = (slug: string) => {
     const post = getPostBySlug(slug);
     if (post) {
@@ -35,6 +41,11 @@ function App() {
   };
 
   const navigateToSection = (sectionId: string) => {
+    if (sectionId === 'projects') {
+      navigateToProjects();
+      return;
+    }
+    
     if (currentPage !== 'home') {
       setCurrentPage('home');
       // Attendre que la page home soit rendue avant de scroller
@@ -57,6 +68,14 @@ function App() {
       <BlogPage 
         onNavigateHome={navigateToHome}
         onNavigateToPost={navigateToPost}
+      />
+    );
+  }
+
+  if (currentPage === 'projects') {
+    return (
+      <ProjectsPage 
+        onNavigateHome={navigateToHome}
       />
     );
   }
