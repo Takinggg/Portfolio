@@ -198,7 +198,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome }) => {
         showBackButton={true}
         onBack={onNavigateHome}
         backLabel="Retour au portfolio"
-        currentPage="home"
+        currentPage="projects"
       />
 
       {/* Header */}

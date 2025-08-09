@@ -63,6 +63,8 @@ const Navigation: React.FC<NavigationProps> = ({
       setActiveSection('blog-page');
     } else if (currentPage === 'projects') {
       setActiveSection('projects');
+    } else if (currentPage === 'projects') {
+      setActiveSection('projects');
     } else if (currentPage === 'home') {
       setActiveSection('hero');
     }
