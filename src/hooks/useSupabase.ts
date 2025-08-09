@@ -23,6 +23,7 @@ export const useBlogPosts = (filters?: {
     // Always use mock data for now to avoid connection issues
     try {
       console.log('Loading blog posts from mock data...');
+      console.log('Filters applied:', filters);
       
       let filteredData = mockBlogPosts.map(post => ({
         id: post.id,

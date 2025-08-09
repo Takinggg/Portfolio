@@ -21,6 +21,13 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
     console.log('BlogSection - Posts:', featuredPosts);
     console.log('BlogSection - Loading:', loading);
     console.log('BlogSection - Error:', error);
+    console.log('BlogSection - Posts count:', featuredPosts.length);
+    console.log('BlogSection - Featured posts details:', featuredPosts.map(p => ({
+      title: p.title,
+      slug: p.slug,
+      featured: p.featured,
+      published_at: p.published_at
+    })));
   }, [featuredPosts, loading, error]);
 
   useEffect(() => {
