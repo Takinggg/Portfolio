@@ -120,11 +120,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
             onInput={handleInput}
             onKeyDown={handleKeyDown}
             className="p-4 min-h-[300px] focus:outline-none"
-            style={{ minHeight: '300px' }}
-            data-placeholder={placeholder}
+            style={{ 
+              minHeight: '300px',
               direction: 'ltr',
               textAlign: 'left',
               unicodeBidi: 'normal'
+            }}
+            data-placeholder={placeholder}
             suppressContentEditableWarning={true}
           />
         )}
