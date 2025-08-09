@@ -397,15 +397,25 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
                       </button>
                       
                       {project.githubUrl && project.githubUrl !== '#' && (
-                        <button className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200">
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200 inline-flex items-center justify-center"
+                        >
                           <Github size={18} />
-                        </button>
+                        </a>
                       )}
                       
                       {project.liveUrl && project.liveUrl !== '#' && (
-                        <button className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200">
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-200 inline-flex items-center justify-center"
+                        >
                           <ExternalLink size={18} />
-                        </button>
+                        </a>
                       )}
                     </div>
                   </div>
