@@ -76,7 +76,7 @@ const Projects = () => {
   // Transform projects for display
   const projects = React.useMemo(() => {
     return allProjects.map((project, index) => ({
-      id: parseInt(project.id),
+      id: project.id,
       title: project.title,
       category: project.category,
       type: getProjectType(project.category),

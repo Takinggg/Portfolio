@@ -37,7 +37,7 @@ const convertSupabaseProject = (project: SupabaseProject, index: number) => {
   };
 
   return {
-    id: parseInt(project.id),
+    id: project.id,
     title: project.title,
     category: project.category,
     type: typeLabels[project.category as keyof typeof typeLabels] || 'Projet',
