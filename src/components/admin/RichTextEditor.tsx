@@ -12,13 +12,17 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
   const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (editorRef.current && !isPreview) {
+    if (editorRef.current && !isPreview && value !== editorRef.current.innerHTML) {
       editorRef.current.innerHTML = value;
     }
   }, [value, isPreview]);
 
   const execCommand = (command: string, value?: string) => {
     document.execCommand(command, false, value);
+    // Force focus back to editor after command
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
     }
@@ -30,6 +34,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Prevent some default behaviors that might cause issues
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      document.execCommand('insertText', false, '    ');
+    }
+  };
   const insertLink = () => {
     const url = prompt('Entrez l\'URL du lien:');
     if (url) {
@@ -107,9 +118,14 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
             ref={editorRef}
             contentEditable
             onInput={handleInput}
+            onKeyDown={handleKeyDown}
             className="p-4 min-h-[300px] focus:outline-none"
             style={{ minHeight: '300px' }}
             data-placeholder={placeholder}
+              direction: 'ltr',
+              textAlign: 'left',
+              unicodeBidi: 'normal'
+            suppressContentEditableWarning={true}
           />
         )}
       </div>
@@ -119,29 +135,39 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
           content: attr(data-placeholder);
           color: #9CA3AF;
           pointer-events: none;
+          direction: ltr;
+        }
+        
+          direction: ltr !important;
+          text-align: left !important;
+          unicode-bidi: normal !important;
         }
         
         [contenteditable] h1 {
           font-size: 2rem;
           font-weight: bold;
           margin: 1rem 0;
+          direction: ltr;
         }
         
         [contenteditable] h2 {
           font-size: 1.5rem;
           font-weight: bold;
           margin: 1rem 0;
+          direction: ltr;
         }
         
         [contenteditable] h3 {
           font-size: 1.25rem;
           font-weight: bold;
           margin: 1rem 0;
+          direction: ltr;
         }
         
         [contenteditable] p {
           margin: 0.5rem 0;
           line-height: 1.6;
+          direction: ltr;
         }
         
         [contenteditable] blockquote {
@@ -150,6 +176,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
           margin: 1rem 0;
           font-style: italic;
           color: #6B7280;
+          direction: ltr;
         }
         
         [contenteditable] pre {
@@ -158,15 +185,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
           border-radius: 0.5rem;
           overflow-x: auto;
           font-family: 'Courier New', monospace;
+          direction: ltr;
         }
         
         [contenteditable] ul, [contenteditable] ol {
           margin: 1rem 0;
           padding-left: 2rem;
+          direction: ltr;
         }
         
         [contenteditable] li {
           margin: 0.25rem 0;
+          direction: ltr;
         }
         
         [contenteditable] a {
