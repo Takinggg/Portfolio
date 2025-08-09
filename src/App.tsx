@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import AdminLogin from './components/admin/AdminLogin';
+import AdminDashboard from './components/admin/AdminDashboard';
 import Navigation from './components/Navigation';
 import RightSidebar from './components/RightSidebar';
 import Hero from './components/Hero';
@@ -17,6 +19,22 @@ type PageType = 'home' | 'blog' | 'post' | 'projects';
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [currentPost, setCurrentPost] = useState<BlogPostType | null>(null);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check if we're on admin route
+  React.useEffect(() => {
+    const checkAdminRoute = () => {
+      if (window.location.pathname === '/admin') {
+        setIsAdminMode(true);
+      }
+    };
+    
+    checkAdminRoute();
+    window.addEventListener('popstate', checkAdminRoute);
+    
+    return () => window.removeEventListener('popstate', checkAdminRoute);
+  }, []);
 
   const navigateToHome = () => {
     setCurrentPage('home');
@@ -61,6 +79,28 @@ function App() {
       }
     }
   };
+
+  const handleAdminLogin = (credentials: { username: string; password: string }) => {
+    // Mock authentication - replace with real authentication
+    if (credentials.username === 'admin' && credentials.password === 'password') {
+      setIsLoggedIn(true);
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setIsLoggedIn(false);
+    setIsAdminMode(false);
+    window.history.pushState({}, '', '/');
+    setCurrentPage('home');
+  };
+
+  // Admin routes
+  if (isAdminMode) {
+    if (!isLoggedIn) {
+      return <AdminLogin onLogin={handleAdminLogin} />;
+    }
+    return <AdminDashboard onLogout={handleAdminLogout} />;
+  }
 
   if (currentPage === 'blog') {
     return (
