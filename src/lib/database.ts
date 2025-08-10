@@ -1,18 +1,5 @@
-
-import Database from 'better-sqlite3';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import path from 'path';
-
-// Database connection
-const dbPath = path.join(process.cwd(), 'portfolio.db');
-export const db = new Database(dbPath);
-
-// Enable foreign keys
-db.pragma('foreign_keys = ON');
-
-// JWT secret (in production, use environment variable)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+// Re-export from the new API client
+export * from './api';
 
 // Database Types
 export interface BlogPost {

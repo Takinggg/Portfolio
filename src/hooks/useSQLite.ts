@@ -1,5 +1,55 @@
 import { useState, useEffect, useMemo } from 'react';
-import { blogService, projectService, contactService, BlogPost, Project, ContactMessage } from '../lib/database';
+import { blogService, projectService, contactService } from '../lib/api';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  published_at: string;
+  updated_at?: string;
+  featured_image: string;
+  tags: string[];
+  category: string;
+  read_time: number;
+  featured: boolean;
+  created_at: string;
+}
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  long_description: string;
+  technologies: string[];
+  category: string;
+  status: 'in-progress' | 'completed' | 'archived';
+  start_date: string;
+  end_date?: string;
+  client?: string;
+  budget?: string;
+  images: string[];
+  featured: boolean;
+  github_url?: string;
+  live_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  budget?: string;
+  timeline?: string;
+  is_read: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 // Custom hook for blog posts
 export const useBlogPosts = (filters?: {

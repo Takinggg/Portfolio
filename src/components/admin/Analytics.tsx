@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Eye, Users, Calendar, BarChart3, PieChart, Activity } from 'lucide-react';
-import { blogService, projectService } from '../../lib/database';
+import { blogService, projectService } from '../../lib/api';
 import { blogPosts as mockBlogPosts } from '../../data/blogPosts';
 
 const Analytics: React.FC = () => {
