@@ -52,12 +52,20 @@ const ProjectManager: React.FC = () => {
     try {
       const { data, error } = await projectService.getAllProjects();
       
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
       
       setProjects(data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement des projets');
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des projets';
+      setError(errorMessage);
       console.error('Error fetching projects:', err);
+      
+      // Show a more user-friendly error message for network issues
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        setError('Impossible de se connecter au serveur. Vérifiez votre connexion internet et réessayez.');
+      }
     } finally {
       setLoading(false);
     }
@@ -387,11 +395,28 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
+    
+    // Ensure all required fields have proper defaults
+    const processedData = {
       ...formData,
-      technologies: technologies.split(',').map(tech => tech.trim()).filter(Boolean),
-      images: imageUrls.split('\n').map(url => url.trim()).filter(Boolean)
-    });
+      technologies: technologies ? technologies.split(',').map(tech => tech.trim()).filter(Boolean) : [],
+      images: imageUrls ? imageUrls.split('\n').map(url => url.trim()).filter(Boolean) : [],
+      // Ensure all fields have proper defaults
+      title: formData.title || '',
+      description: formData.description || '',
+      long_description: formData.long_description || '',
+      category: formData.category || 'web',
+      status: formData.status || 'in-progress',
+      start_date: formData.start_date || new Date().toISOString().split('T')[0],
+      end_date: formData.end_date || null,
+      client: formData.client || null,
+      budget: formData.budget || null,
+      featured: formData.featured || false,
+      github_url: formData.github_url || null,
+      live_url: formData.live_url || null
+    };
+    
+    onSave(processedData);
   };
 
   return (
