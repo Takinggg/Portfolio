@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, User, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { authService } from '../../lib/api';
 
 interface AdminLoginProps {
   onLogin: (credentials: { username: string; password: string }) => void;
@@ -21,13 +22,16 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
 
     // Simple authentication - in production, use proper API
     try {
-      if (credentials.username === 'admin' && credentials.password === 'password') {
-        onLogin(credentials);
-      } else {
-        setError('Identifiants incorrects');
+      const { data, error } = await authService.signIn(credentials.username, credentials.password);
+
+      if (error) {
+        throw error;
       }
+
+      localStorage.setItem('auth_token', data.token);
+      onLogin(data.user);
     } catch (err) {
-      setError('Erreur de connexion');
+      setError(err instanceof Error ? err.message : 'Erreur de connexion');
     } finally {
       setIsLoading(false);
     }
