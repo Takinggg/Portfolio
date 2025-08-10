@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { memo, useCallback } from 'react';
-import { Mail, Phone, MapPin, Send, MessageCircle, Calendar, Sparkles } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles } from 'lucide-react';
 import { contactService } from '../lib/api';
+import { CONTACT_INFO } from '../config';
+import { validateContactForm, contactFormRateLimiter, type ContactFormData } from '../lib/validation';
 
 const Contact = memo(() => {
   const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ const Contact = memo(() => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -40,28 +43,32 @@ const Contact = memo(() => {
     setIsSubmitting(true);
     setSubmitStatus('idle');
     setErrorMessage('');
+    setValidationErrors({});
     
     try {
-      // Validate required fields
-      if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-        throw new Error('Veuillez remplir tous les champs obligatoires');
+      // Rate limiting check
+      const clientId = 'contact_form'; // In production, use IP or user ID
+      if (!contactFormRateLimiter.isAllowed(clientId)) {
+        const remaining = contactFormRateLimiter.getRemainingAttempts(clientId);
+        throw new Error(`Trop de tentatives. Veuillez attendre avant de réessayer. Tentatives restantes: ${remaining}`);
       }
 
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        throw new Error('Veuillez entrer une adresse email valide');
+      // Validate and sanitize form data
+      const validation = validateContactForm(formData);
+      
+      if (!validation.isValid) {
+        setValidationErrors(validation.errors);
+        setSubmitStatus('error');
+        setErrorMessage('Veuillez corriger les erreurs dans le formulaire');
+        return;
       }
 
-      // Submit the message
-      const { data, error } = await contactService.submitMessage({
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        budget: formData.budget || undefined,
-        timeline: formData.timeline || undefined,
-      });
+      if (!validation.sanitizedData) {
+        throw new Error('Erreur de validation des données');
+      }
+
+      // Submit the sanitized message
+      const { data, error } = await contactService.submitMessage(validation.sanitizedData);
 
       if (error) {
         throw error;
@@ -91,6 +98,7 @@ const Contact = memo(() => {
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setSubmitStatus('idle');
     setErrorMessage('');
+    setValidationErrors({});
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -101,7 +109,7 @@ const Contact = memo(() => {
     {
       icon: Mail,
       title: "Email",
-      value: "maxencefoulon17@gmail.com",
+      value: CONTACT_INFO.email,
       description: "Réponse sous 24h",
       gradient: "from-blue-500 to-cyan-500",
       bgGradient: "from-blue-50 to-cyan-50"
@@ -109,7 +117,7 @@ const Contact = memo(() => {
     {
       icon: Phone,
       title: "Téléphone",
-      value: "06 19 32 62 26",
+      value: CONTACT_INFO.phone,
       description: "Lun-Ven 9h-18h",
       gradient: "from-purple-500 to-pink-500",
       bgGradient: "from-purple-50 to-pink-50"
@@ -117,7 +125,7 @@ const Contact = memo(() => {
     {
       icon: MapPin,
       title: "Localisation",
-      value: "France",
+      value: CONTACT_INFO.location,
       description: "Missions à distance",
       gradient: "from-green-500 to-emerald-500",
       bgGradient: "from-green-50 to-emerald-50"
@@ -262,11 +270,16 @@ const Contact = memo(() => {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
+                      className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300 ${
+                        validationErrors.name ? 'border-red-300' : 'border-gray-200'
+                      }`}
                       placeholder="Votre nom"
                       required
                       disabled={isSubmitting}
                     />
+                    {validationErrors.name && (
+                      <p className="mt-1 text-sm text-red-600">{validationErrors.name}</p>
+                    )}
                   </div>
                   
                   <div className="group">
@@ -279,11 +292,16 @@ const Contact = memo(() => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
+                      className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300 ${
+                        validationErrors.email ? 'border-red-300' : 'border-gray-200'
+                      }`}
                       placeholder="votre@email.com"
                       required
                       disabled={isSubmitting}
                     />
+                    {validationErrors.email && (
+                      <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+                    )}
                   </div>
                 </div>
 
@@ -337,11 +355,16 @@ const Contact = memo(() => {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
+                    className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300 ${
+                      validationErrors.subject ? 'border-red-300' : 'border-gray-200'
+                    }`}
                     placeholder="Ex: Refonte d'application mobile"
                     required
                     disabled={isSubmitting}
                   />
+                  {validationErrors.subject && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.subject}</p>
+                  )}
                 </div>
 
                 <div className="group">
@@ -354,11 +377,16 @@ const Contact = memo(() => {
                     rows={6}
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
+                    className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none bg-white/50 backdrop-blur-sm group-hover:border-gray-300 ${
+                      validationErrors.message ? 'border-red-300' : 'border-gray-200'
+                    }`}
                     placeholder="Parlez-moi de votre vision, vos objectifs, votre audience cible..."
                     required
                     disabled={isSubmitting}
                   />
+                  {validationErrors.message && (
+                    <p className="mt-1 text-sm text-red-600">{validationErrors.message}</p>
+                  )}
                 </div>
 
                 <button

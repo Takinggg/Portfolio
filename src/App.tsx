@@ -13,6 +13,7 @@ import ProjectsPage from './components/ProjectsPage';
 import Projects from './components/Projects';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
+import { ADMIN_CONFIG } from './config';
 
 type PageType = 'home' | 'blog' | 'post' | 'projects' | 'project';
 
@@ -98,11 +99,15 @@ function App() {
   };
 
   const handleAdminLogin = (credentials: { username: string; password: string }) => {
-    // Simple authentication check - in production, use proper API
-    if (credentials.username === 'admin' && credentials.password === 'password') {
+    // Use environment variables for admin authentication
+    // TODO: Replace with secure JWT-based authentication
+    if (credentials.username === ADMIN_CONFIG.username && 
+        credentials.password === ADMIN_CONFIG.password) {
       setIsLoggedIn(true);
       localStorage.setItem('admin_logged_in', 'true');
+      return true;
     }
+    return false;
   };
 
   const handleAdminLogout = () => {
