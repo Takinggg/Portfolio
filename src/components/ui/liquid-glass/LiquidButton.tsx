@@ -18,9 +18,9 @@ interface ButtonSizes {
 }
 
 const buttonVariants: ButtonVariants = {
-  primary: 'liquid-button bg-gradient-to-r from-liquid-blue to-liquid-purple text-white',
-  secondary: 'glass-base bg-gradient-to-r from-liquid-cyan/80 to-liquid-pink/80 text-white',
-  outline: 'glass-base border-iridescent bg-transparent text-text-strong hover:bg-surface-glass',
+  primary: 'glass-base bg-gradient-to-r from-white to-surface-alt text-text-strong border border-glass-border-strong hover:bg-gradient-to-r hover:from-surface-alt hover:to-surface-muted',
+  secondary: 'glass-medium bg-gradient-to-r from-surface-glass-light to-surface-glass text-text-strong border border-glass-border',
+  outline: 'glass-base border-2 border-liquid-blue/30 bg-transparent text-text-strong hover:bg-surface-glass hover:border-liquid-blue/50',
   ghost: 'bg-transparent text-text-strong hover:bg-surface-glass hover:text-liquid-purple'
 };
 
@@ -82,7 +82,7 @@ const LiquidButton: React.FC<LiquidButtonProps> = ({
         height: ${size}px;
         left: ${x}px;
         top: ${y}px;
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.4);
         border-radius: 50%;
         transform: scale(0);
         animation: ripple 0.6s ease-out;

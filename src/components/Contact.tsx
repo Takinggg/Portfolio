@@ -210,34 +210,36 @@ const Contact = memo(() => {
     <section 
       ref={sectionRef} 
       id="contact" 
-      className="py-32 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 relative overflow-hidden"
+      className="py-32 bg-white relative overflow-hidden"
       aria-labelledby="contact-title"
     >
-      {/* Background Elements */}
+      {/* WHITE Liquid Glass Background Elements */}
       <div className="absolute inset-0" aria-hidden="true">
-        <div className="absolute top-20 right-20 w-80 h-80 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-20 w-80 h-80 liquid-shape opacity-5 blur-3xl"
+             style={{background: 'linear-gradient(135deg, rgba(118, 75, 162, 0.15), rgba(240, 147, 251, 0.15))'}} />
+        <div className="absolute bottom-20 left-20 w-96 h-96 liquid-shape-alt opacity-5 blur-3xl"
+             style={{background: 'linear-gradient(45deg, rgba(103, 126, 234, 0.12), rgba(79, 172, 254, 0.12))'}} />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
         <header className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-sm font-medium mb-6">
-            <MessageCircle className="text-purple-600" size={16} aria-hidden="true" />
-            <span className="text-gray-700">Parlons de votre projet</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 glass-base rounded-full text-sm font-medium mb-6">
+            <MessageCircle className="text-liquid-purple" size={16} aria-hidden="true" />
+            <span className="text-text-strong">Parlons de votre projet</span>
           </div>
           
           <h2 id="contact-title" className="text-5xl md:text-7xl font-black mb-8">
-            <span className="bg-gradient-to-r from-gray-900 via-purple-900 to-pink-900 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-text-strong via-liquid-purple to-liquid-pink bg-clip-text text-transparent">
               Contactez
             </span>
             <br />
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-liquid-purple to-liquid-pink bg-clip-text text-transparent">
               moi
             </span>
           </h2>
           
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed">
             Vous avez un projet ambitieux ? Discutons ensemble de la façon 
             dont nous pouvons créer quelque chose d'extraordinaire
           </p>
@@ -250,8 +252,8 @@ const Contact = memo(() => {
             aria-labelledby="contact-methods-title"
           >
             <div className="mb-8">
-              <h3 id="contact-methods-title" className="text-2xl font-bold text-gray-900 mb-4">Restons connectés</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 id="contact-methods-title" className="text-2xl font-bold text-text-strong mb-4">Restons connectés</h3>
+              <p className="text-text-soft leading-relaxed">
                 Choisissez le moyen de communication qui vous convient le mieux. 
                 Je suis toujours ravi d'échanger sur de nouveaux défis créatifs.
               </p>
@@ -262,7 +264,7 @@ const Contact = memo(() => {
               return (
                 <div 
                   key={index}
-                  className={`group relative bg-gradient-to-br ${method.bgGradient} p-6 rounded-3xl border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2`}
+                  className={`group relative glass-base p-6 rounded-3xl shadow-glass hover:shadow-glass-lg transition-all duration-500 transform hover:-translate-y-2 cursor-pointer focus-within:ring-2 focus-within:ring-liquid-purple focus-within:ring-offset-2 magnetic`}
                   role="button"
                   tabIndex={0}
                   aria-label={`Contacter par ${method.title.toLowerCase()}: ${method.value}`}
@@ -278,17 +280,17 @@ const Contact = memo(() => {
                     }
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 glass-shine opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
                   
                   <div className="relative flex items-start gap-4">
-                    <div className={`w-14 h-14 bg-gradient-to-br ${method.gradient} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                    <div className={`w-14 h-14 bg-gradient-to-br ${method.gradient} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-liquid`}>
                       <Icon className="text-white" size={24} aria-hidden="true" />
                     </div>
                     
                     <div className="flex-1">
-                      <h4 className="text-lg font-bold text-gray-900 mb-1">{method.title}</h4>
-                      <p className="text-gray-800 font-medium mb-1">{method.value}</p>
-                      <p className="text-sm text-gray-600">{method.description}</p>
+                      <h4 className="text-lg font-bold text-text-strong mb-1">{method.title}</h4>
+                      <p className="text-text-strong font-medium mb-1">{method.value}</p>
+                      <p className="text-sm text-text-soft">{method.description}</p>
                     </div>
                   </div>
                 </div>
