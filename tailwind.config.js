@@ -7,28 +7,30 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // WCAG 2.1 AA Compliant Color Palette with Liquid Glass enhancements
+        // WCAG 2.1 AA Compliant WHITE Theme Color Palette
         text: {
           strong: '#0F172A',      // High contrast for headings (21:1 ratio)
           DEFAULT: '#1E293B',     // Standard text (16.7:1 ratio)
           soft: '#334155',        // Secondary text (9.8:1 ratio)
           muted: '#64748B',       // Muted text (4.6:1 ratio - minimum for normal text)
-          glass: '#FFFFFF',       // White text for glass overlays
+          glass: '#1E293B',       // Dark text for white glass overlays
         },
         surface: {
           base: '#FFFFFF',        // Pure white for main surfaces
-          alt: '#F1F5F9',         // Very light gray for subtle backgrounds  
-          muted: '#E2E8F0',       // Light gray for separators
-          glass: 'rgba(255, 255, 255, 0.25)',     // Glass surface
-          'glass-dark': 'rgba(255, 255, 255, 0.10)', // Darker glass
+          alt: '#F8F9FA',         // Very light gray for subtle backgrounds  
+          muted: '#F1F3F4',       // Light gray for sections
+          glass: 'rgba(255, 255, 255, 0.85)',     // WHITE Glass surface
+          'glass-light': 'rgba(255, 255, 255, 0.95)', // Lighter glass
+          'glass-dark': 'rgba(255, 255, 255, 0.75)', // Slightly darker glass
         },
         border: {
           DEFAULT: '#E2E8F0',     // Standard border color
           strong: '#CBD5E1',      // Stronger borders when needed
-          glass: 'rgba(255, 255, 255, 0.2)',      // Glass borders
-          iridescent: 'rgba(139, 92, 246, 0.3)',  // Iridescent borders
+          glass: 'rgba(255, 255, 255, 0.3)',      // Glass borders
+          'glass-strong': 'rgba(255, 255, 255, 0.5)', // Stronger glass borders
+          iridescent: 'rgba(103, 126, 234, 0.3)',  // Soft iridescent borders
         },
-        // Liquid Glass color palette
+        // Soft Liquid Glass color palette
         liquid: {
           blue: '#667eea',
           purple: '#764ba2',
@@ -37,33 +39,33 @@ export default {
           violet: '#8b5cf6',
           indigo: '#6366f1',
         },
-        // Updated primary palette for better accessibility
+        // Updated primary palette for WHITE theme
         primary: {
-          50: '#EEF2FF',          // Very light for badge backgrounds
-          100: '#E0E7FF',
-          200: '#C7D2FE',
-          300: '#A5B4FC',
-          400: '#818CF8',
-          500: '#6366F1',         // Main interactive color (4.5:1 on white)
-          600: '#4F46E5',         // Stronger for hovers/accents (5.9:1 on white)
-          700: '#4338CA',         // Dark variant
-          800: '#3730A3',
-          900: '#312E81',
-          950: '#1E1B4B',
+          50: '#F8FAFC',          // Very light for badge backgrounds
+          100: '#F1F5F9',
+          200: '#E2E8F0',
+          300: '#CBD5E1',
+          400: '#94A3B8',
+          500: '#64748B',         // Main interactive color
+          600: '#475569',         // Stronger for hovers/accents
+          700: '#334155',         // Dark variant
+          800: '#1E293B',
+          900: '#0F172A',
+          950: '#020617',
         },
         // Keep secondary for compatibility  
         secondary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
         },
         accent: {
           green: '#10b981',       // Keep for status indicators

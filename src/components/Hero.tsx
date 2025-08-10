@@ -87,7 +87,7 @@ const Hero = () => {
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
-            <span className="text-sm font-medium text-text-glass">
+            <span className="text-sm font-medium text-text-strong">
               Available for new projects
             </span>
             <CheckCircle className="ml-2 text-accent-green" size={16} />

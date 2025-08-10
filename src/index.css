@@ -5,6 +5,14 @@
 /* Import Liquid Glass Design System */
 @import './styles/liquid-glass.css';
 
+/* WHITE Theme Base Styles */
+@layer base {
+  html, body {
+    background-color: #ffffff;
+    color: #1E293B;
+  }
+}
+
 /* Line clamp utility */
 @layer utilities {
   .line-clamp-3 {

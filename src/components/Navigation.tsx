@@ -123,7 +123,7 @@ const Navigation: React.FC<NavigationProps> = ({
               >
                 <div className="relative">
                   <motion.div 
-                    className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center shadow-card"
+                    className="w-10 h-10 bg-gradient-to-br from-liquid-blue to-liquid-purple rounded-xl flex items-center justify-center shadow-liquid"
                     whileHover={{ rotate: 10 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
@@ -131,7 +131,7 @@ const Navigation: React.FC<NavigationProps> = ({
                   </motion.div>
                 </div>
                 <div className="hidden sm:block">
-                  <div className="text-lg font-bold text-primary-600">
+                  <div className="text-lg font-bold text-liquid-blue">
                     FOULON
                   </div>
                   <div className="text-xs text-text-muted font-medium -mt-1">
@@ -151,7 +151,7 @@ const Navigation: React.FC<NavigationProps> = ({
                     <motion.button
                       key={item.id}
                       onClick={() => handleNavigation(item.id)}
-                      className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 ${
+                      className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-liquid-blue focus-visible:ring-offset-2 ${
                         isActive
                           ? 'text-white'
                           : 'text-text-soft hover:text-text-strong'
@@ -161,7 +161,7 @@ const Navigation: React.FC<NavigationProps> = ({
                     >
                       {isActive && (
                         <motion.div
-                          className="absolute inset-0 bg-primary-600 rounded-xl shadow-card"
+                          className="absolute inset-0 bg-gradient-to-r from-liquid-blue to-liquid-purple rounded-xl shadow-liquid"
                           layoutId="activeTab"
                           transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         />
@@ -204,7 +204,7 @@ const Navigation: React.FC<NavigationProps> = ({
               {/* CTA Button */}
               <motion.button
                 onClick={() => handleNavigation('contact')}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl font-medium text-sm shadow-card hover:shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-600"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-liquid-blue to-liquid-purple text-white rounded-xl font-medium text-sm shadow-liquid hover:shadow-magnetic transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-liquid-purple"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 data-track="nav-cta-collaborate"
@@ -216,7 +216,7 @@ const Navigation: React.FC<NavigationProps> = ({
               {/* Mobile Menu Button */}
               <motion.button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 rounded-xl text-text-soft hover:text-text-strong transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2"
+                className="lg:hidden p-2 rounded-xl text-text-soft hover:text-text-strong transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-liquid-blue focus-visible:ring-offset-2"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >

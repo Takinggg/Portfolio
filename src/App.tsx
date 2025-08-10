@@ -203,7 +203,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative bg-white">
       {/* Premium UI Components */}
       <CustomCursor />
       <ScrollProgress />
@@ -225,13 +225,7 @@ function App() {
         />
       </header>
 
-      {/* Right Sidebar - Hidden for desktop, will be replaced with mobile FAB */}
-      {false && currentPage === 'home' && (
-        <aside aria-label="Navigation rapide" className="hidden">
-          <RightSidebar onNavigateToSection={navigateToSection} />
-        </aside>
-      )}
-
+      {/* Right Sidebar - Disabled for WHITE theme */}
       {/* Mobile FAB Menu - Only on landing page */}
       {currentPage === 'home' && (
         <MobileFabMenu
