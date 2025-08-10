@@ -48,7 +48,8 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
       }
 
       localStorage.setItem('auth_token', resultData.token);
-      onLogin(resultData.user);
+      // IMPORTANT: on passe les credentials (username + password) pour correspondre à App.tsx
+      onLogin({ username: credentials.username.trim(), password: credentials.password });
     } catch (err: any) {
       setFormError(err?.message || 'Erreur de connexion');
     } finally {
