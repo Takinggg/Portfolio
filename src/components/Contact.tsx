@@ -4,6 +4,7 @@ import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles } from 'lucide-react
 import { contactService } from '../lib/api';
 import { CONTACT_INFO } from '../config';
 import { validateContactForm, contactFormRateLimiter, type ContactFormData } from '../lib/validation';
+import { generateId, formAccessibility, screenReader } from '../lib/accessibility';
 
 const Contact = memo(() => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,15 @@ const Contact = memo(() => {
   const [errorMessage, setErrorMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const sectionRef = useRef<HTMLElement>(null);
+  
+  // Generate unique IDs for accessibility
+  const formId = useRef(generateId('contact-form'));
+  const nameId = useRef(generateId('name'));
+  const emailId = useRef(generateId('email'));
+  const subjectId = useRef(generateId('subject'));
+  const messageId = useRef(generateId('message'));
+  const budgetId = useRef(generateId('budget'));
+  const timelineId = useRef(generateId('timeline'));
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -75,6 +85,9 @@ const Contact = memo(() => {
       }
 
       setSubmitStatus('success');
+      
+      // Announce success to screen readers
+      screenReader.announce('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.', 'polite');
       
       // Reset form after successful submission
       setFormData({
@@ -148,22 +161,27 @@ const Contact = memo(() => {
   ];
 
   return (
-    <section ref={sectionRef} id="contact" className="py-32 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 relative overflow-hidden">
+    <section 
+      ref={sectionRef} 
+      id="contact" 
+      className="py-32 bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 relative overflow-hidden"
+      aria-labelledby="contact-title"
+    >
       {/* Background Elements */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0" aria-hidden="true">
         <div className="absolute top-20 right-20 w-80 h-80 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-3xl" />
         <div className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <header className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-sm font-medium mb-6">
-            <MessageCircle className="text-purple-600" size={16} />
+            <MessageCircle className="text-purple-600" size={16} aria-hidden="true" />
             <span className="text-gray-700">Parlons de votre projet</span>
           </div>
           
-          <h2 className="text-5xl md:text-7xl font-black mb-8">
+          <h2 id="contact-title" className="text-5xl md:text-7xl font-black mb-8">
             <span className="bg-gradient-to-r from-gray-900 via-purple-900 to-pink-900 bg-clip-text text-transparent">
               Contactez
             </span>
@@ -177,13 +195,16 @@ const Contact = memo(() => {
             Vous avez un projet ambitieux ? Discutons ensemble de la façon 
             dont nous pouvons créer quelque chose d'extraordinaire
           </p>
-        </div>
+        </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Contact Methods */}
-          <div className={`lg:col-span-2 space-y-6 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+          <aside 
+            className={`lg:col-span-2 space-y-6 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
+            aria-labelledby="contact-methods-title"
+          >
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Restons connectés</h3>
+              <h3 id="contact-methods-title" className="text-2xl font-bold text-gray-900 mb-4">Restons connectés</h3>
               <p className="text-gray-600 leading-relaxed">
                 Choisissez le moyen de communication qui vous convient le mieux. 
                 Je suis toujours ravi d'échanger sur de nouveaux défis créatifs.
@@ -195,13 +216,27 @@ const Contact = memo(() => {
               return (
                 <div 
                   key={index}
-                  className={`group relative bg-gradient-to-br ${method.bgGradient} p-6 rounded-3xl border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer`}
+                  className={`group relative bg-gradient-to-br ${method.bgGradient} p-6 rounded-3xl border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2`}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Contacter par ${method.title.toLowerCase()}: ${method.value}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      // Handle contact method selection
+                      if (method.title === 'Email') {
+                        window.open(`mailto:${method.value}`, '_blank');
+                      } else if (method.title === 'Téléphone') {
+                        window.open(`tel:${method.value}`, '_blank');
+                      }
+                    }
+                  }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
                   <div className="relative flex items-start gap-4">
                     <div className={`w-14 h-14 bg-gradient-to-br ${method.gradient} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                      <Icon className="text-white" size={24} />
+                      <Icon className="text-white" size={24} aria-hidden="true" />
                     </div>
                     
                     <div className="flex-1">
@@ -215,24 +250,24 @@ const Contact = memo(() => {
             })}
 
             {/* Quick Stats */}
-            <div className="bg-gradient-to-br from-gray-900 to-purple-900 rounded-3xl p-8 text-white mt-8">
+            <div className="bg-gradient-to-br from-gray-900 to-purple-900 rounded-3xl p-8 text-white mt-8" role="complementary" aria-labelledby="stats-title">
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="text-yellow-400" size={20} />
-                <span className="font-semibold">Statistiques</span>
+                <Sparkles className="text-yellow-400" size={20} aria-hidden="true" />
+                <span id="stats-title" className="font-semibold">Statistiques</span>
               </div>
               
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-yellow-400 mb-1">98%</div>
+                  <div className="text-3xl font-bold text-yellow-400 mb-1" aria-label="98 pourcent">98%</div>
                   <div className="text-sm text-gray-300">Satisfaction client</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-400 mb-1">24h</div>
+                  <div className="text-3xl font-bold text-blue-400 mb-1" aria-label="24 heures">24h</div>
                   <div className="text-sm text-gray-300">Temps de réponse</div>
                 </div>
               </div>
             </div>
-          </div>
+          </aside>
 
           {/* Contact Form */}
           <div className={`lg:col-span-3 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
@@ -242,10 +277,20 @@ const Contact = memo(() => {
                 <p className="text-gray-600">Remplissez ce formulaire et je vous recontacte dans les plus brefs délais</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form 
+                id={formId.current}
+                onSubmit={handleSubmit} 
+                className="space-y-6"
+                noValidate
+                aria-labelledby="contact-title"
+              >
                 {/* Success Message */}
                 {submitStatus === 'success' && (
-                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl">
+                  <div 
+                    className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl"
+                    role="alert"
+                    aria-live="polite"
+                  >
                     <p className="font-medium">Message envoyé avec succès !</p>
                     <p className="text-sm">Je vous répondrai dans les plus brefs délais.</p>
                   </div>
@@ -253,7 +298,11 @@ const Contact = memo(() => {
 
                 {/* Error Message */}
                 {submitStatus === 'error' && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+                  <div 
+                    className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl"
+                    role="alert"
+                    aria-live="assertive"
+                  >
                     <p className="font-medium">Erreur lors de l'envoi</p>
                     <p className="text-sm">{errorMessage}</p>
                   </div>
@@ -261,12 +310,12 @@ const Contact = memo(() => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
-                    <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor={nameId.current} className="block text-sm font-semibold text-gray-700 mb-2">
                       Nom complet *
                     </label>
                     <input
                       type="text"
-                      id="name"
+                      id={nameId.current}
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
@@ -276,19 +325,28 @@ const Contact = memo(() => {
                       placeholder="Votre nom"
                       required
                       disabled={isSubmitting}
+                      aria-invalid={!!validationErrors.name}
+                      aria-describedby={validationErrors.name ? `${nameId.current}-error` : undefined}
                     />
                     {validationErrors.name && (
-                      <p className="mt-1 text-sm text-red-600">{validationErrors.name}</p>
+                      <p 
+                        id={`${nameId.current}-error`}
+                        className="mt-1 text-sm text-red-600"
+                        role="alert"
+                        aria-live="polite"
+                      >
+                        {validationErrors.name}
+                      </p>
                     )}
                   </div>
                   
                   <div className="group">
-                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor={emailId.current} className="block text-sm font-semibold text-gray-700 mb-2">
                       Email *
                     </label>
                     <input
                       type="email"
-                      id="email"
+                      id={emailId.current}
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
@@ -298,9 +356,18 @@ const Contact = memo(() => {
                       placeholder="votre@email.com"
                       required
                       disabled={isSubmitting}
+                      aria-invalid={!!validationErrors.email}
+                      aria-describedby={validationErrors.email ? `${emailId.current}-error` : undefined}
                     />
                     {validationErrors.email && (
-                      <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+                      <p 
+                        id={`${emailId.current}-error`}
+                        className="mt-1 text-sm text-red-600"
+                        role="alert"
+                        aria-live="polite"
+                      >
+                        {validationErrors.email}
+                      </p>
                     )}
                   </div>
                 </div>
