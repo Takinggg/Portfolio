@@ -13,9 +13,28 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
+// Auto-configure CORS based on environment
+const getAllowedOrigins = () => {
+  const localOrigins = [
+    'http://localhost:5173', 
+    'http://localhost:3000', 
+    'http://127.0.0.1:5173', 
+    'http://127.0.0.1:3000'
+  ];
+  
+  const productionOrigins = [
+    'https://takinggg-portfolio.netlify.app',
+    process.env.FRONTEND_URL
+  ].filter(Boolean);
+  
+  return process.env.NODE_ENV === 'production' 
+    ? [...localOrigins, ...productionOrigins] 
+    : localOrigins;
+};
+
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'],
+  origin: getAllowedOrigins(),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

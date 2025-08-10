@@ -1,5 +1,5 @@
 // Unified API client (legacy replacement) with offline fallback for posts & projects
-// Aligns base URL with lib/api.ts to avoid port/path mismatch.
+// Auto-detects environment and configures API URL accordingly
 
 // NOTE: This file coexiste avec src/lib/api.ts. Idéalement fusionner plus tard.
 
@@ -20,12 +20,30 @@ export type Post = BaseEntity & {
   excerpt?: string;
 };
 
-const BASE_URL: string =
-  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) ||
-  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ||
-  (typeof process !== 'undefined' && (process as any).env?.REACT_APP_API_BASE_URL) ||
-  (typeof process !== 'undefined' && (process as any).env?.REACT_APP_API_URL) ||
-  'http://localhost:3001/api';
+const getApiBaseUrl = (): string => {
+  // Check if we're in development (localhost)
+  const isDevelopment = typeof window !== 'undefined' && 
+                       (window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' ||
+                        window.location.hostname.startsWith('192.168.'));
+  
+  // Environment variable takes priority
+  const envApiUrl = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) ||
+                   (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ||
+                   (typeof process !== 'undefined' && (process as any).env?.REACT_APP_API_BASE_URL) ||
+                   (typeof process !== 'undefined' && (process as any).env?.REACT_APP_API_URL);
+  
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+  
+  // Auto-detect based on environment
+  return isDevelopment 
+    ? 'http://localhost:3001/api'
+    : 'https://portfolio-backend-latest.onrender.com/api';
+};
+
+const BASE_URL: string = getApiBaseUrl();
 
 const LS_PROJECTS = 'offline_projects';
 const LS_POSTS = 'offline_posts';

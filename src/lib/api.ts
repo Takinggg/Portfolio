@@ -1,9 +1,25 @@
 // API client for communicating with the backend server
-// Added offline fallback for authentication and now for contact messages (submit/list/update/delete).
+// Auto-detects environment and configures API URL accordingly
 
-const API_BASE_URL: string =
-  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) ||
-  'http://localhost:3001/api';
+const getApiBaseUrl = (): string => {
+  // Check if we're in development (localhost)
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' ||
+                       window.location.hostname.startsWith('192.168.');
+  
+  // Environment variable takes priority
+  const envApiUrl = (import.meta as any).env?.VITE_API_BASE_URL;
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+  
+  // Auto-detect based on environment
+  return isDevelopment 
+    ? 'http://localhost:3001/api'
+    : 'https://portfolio-backend-latest.onrender.com/api';
+};
+
+const API_BASE_URL: string = getApiBaseUrl();
 
 interface ApiResult<T> { data: T | null; error: Error | null }
 
