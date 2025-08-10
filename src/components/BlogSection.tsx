@@ -50,7 +50,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
     onNavigateToBlog();
   };
 
-  const readPost = (slug: string) => {
+  const readPost = () => {
     onNavigateToBlog();
   };
 

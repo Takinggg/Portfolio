@@ -3,10 +3,20 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0 <19.0.0"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "npm run type-check && npm run build-only",
+    "build-only": "vite build",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx --max-warnings 20",
+    "lint-fix": "eslint src --ext .ts,.tsx --fix",
+    "preview": "vite preview",
+    "prebuild": "npm run type-check",
+    "postbuild": "npm run validate-build",
+    "validate-build": "test -d dist && test -f dist/index.html || (echo 'Build validation failed' && exit 1)"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.54.0",

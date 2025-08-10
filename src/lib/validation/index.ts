@@ -21,7 +21,7 @@ const SUBJECT_REGEX = /^[a-zA-Z0-9À-ÿ\s\-.,!?()]{3,100}$/;
 export const sanitizeString = (input: string): string => {
   return input
     .trim()
-    .replace(/[<>\"'&]/g, '') // Remove HTML/script injection characters
+    .replace(/[<>"'&]/g, '') // Remove HTML/script injection characters
     .replace(/\s+/g, ' ') // Normalize whitespace
     .substring(0, 1000); // Limit length
 };
