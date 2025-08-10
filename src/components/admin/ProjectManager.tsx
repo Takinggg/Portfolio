@@ -312,7 +312,7 @@ const ProjectManager: React.FC = () => {
             <div key={project.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48">
                 <img
-                  src={(project?.images ?? [])[0] || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImFkbWluIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNmI3MjgwIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzljYTNhZiIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2FkbWluKSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFETUlOIFBSRVZJRVc8L3RleHQ+PC9zdmc+'}
+                  src={(project?.images && Array.isArray(project.images) ? project.images : [])[0] || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImFkbWluIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNmI3MjgwIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzljYTNhZiIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2FkbWluKSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFETUlOIFBSRVZJRVc8L3RleHQ+PC9zdmc+'}
                   alt={project.title}
                   className="w-full h-full object-cover"
                 />
@@ -337,13 +337,13 @@ const ProjectManager: React.FC = () => {
                 <p className="text-gray-600 text-sm line-clamp-2 mb-4">{project.description}</p>
 
                 <div className="flex flex-wrap gap-1 mb-4">
-                  {(project?.technologies ?? []).slice(0, 3).map((tech, index) => (
+                  {(project?.technologies && Array.isArray(project.technologies) ? project.technologies : []).slice(0, 3).map((tech, index) => (
                     <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
                       {tech}
                     </span>
                   ))}
-                  {(project?.technologies ?? []).length > 3 && (
-                    <span className="text-xs text-gray-500">+{(project?.technologies ?? []).length - 3}</span>
+                  {(project?.technologies && Array.isArray(project.technologies) ? project.technologies : []).length > 3 && (
+                    <span className="text-xs text-gray-500">+{(project?.technologies && Array.isArray(project.technologies) ? project.technologies : []).length - 3}</span>
                   )}
                 </div>
 
@@ -395,13 +395,13 @@ interface ProjectEditorProps {
 
 const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel, loading = false }) => {
   const [formData, setFormData] = useState<Partial<Project>>(project || {});
-  const [technologies, setTechnologies] = useState<string>(project?.technologies?.join(', ') || '');
-  const [imageUrls, setImageUrls] = useState<string>(project?.images?.join('\n') || '');
+  const [technologies, setTechnologies] = useState<string>((project?.technologies && Array.isArray(project.technologies)) ? project.technologies.join(', ') : '');
+  const [imageUrls, setImageUrls] = useState<string>((project?.images && Array.isArray(project.images)) ? project.images.join('\n') : '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Ensure all required fields have proper defaults
+    // Ensure all required fields have proper defaults with null/undefined checks
     const processedData = {
       ...formData,
       technologies: technologies ? technologies.split(',').map(tech => tech.trim()).filter(Boolean) : [],

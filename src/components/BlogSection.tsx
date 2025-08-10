@@ -9,9 +9,10 @@ const getBlogPlaceholderImage = () => {
 
 interface BlogSectionProps {
   onNavigateToBlog: () => void;
+  onNavigateToPost?: (slug: string) => void;
 }
 
-const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
+const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateToPost }) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   
@@ -57,8 +58,12 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
     onNavigateToBlog();
   };
 
-  const readPost = () => {
-    onNavigateToBlog();
+  const readPost = (slug: string) => {
+    if (onNavigateToPost) {
+      onNavigateToPost(slug);
+    } else {
+      onNavigateToBlog();
+    }
   };
 
   // Show loading state
