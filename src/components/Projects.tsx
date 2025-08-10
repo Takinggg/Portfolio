@@ -4,6 +4,8 @@ import { ExternalLink, Eye, Heart, Star, ArrowRight, Filter, Code, Smartphone, P
 import { useProjects } from '../hooks/useSQLite';
 import { GlassCard } from './ui/GlassCard';
 import { TiltCard } from './ui/TiltCard';
+import { ProjectCard } from './projects/ProjectCard';
+import { ProjectFilter } from './projects/ProjectFilter';
 
 // Placeholder images as data URLs
 const getPlaceholderImage = (category: string) => {
@@ -97,6 +99,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
     return allProjects.map((project, index) => ({
       id: project.id,
       title: project.title,
+      subtitle: project.impact || project.short_description || '', // Add subtitle/impact field
       category: project.category,
       type: getProjectType(project.category),
       description: project.long_description || project.description || '',
@@ -227,58 +230,16 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
 
         {/* Category Filter */}
         <motion.div 
-          className="flex flex-wrap justify-center gap-4 mb-16"
+          className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.6 }}
         >
-          <AnimatePresence>
-            {categories.map((category, index) => (
-              <motion.button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`relative px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? 'text-white'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-primary-500'
-                }`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {selectedCategory === category.id ? (
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full shadow-neon"
-                    layoutId="categoryBackground"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                ) : (
-                  <GlassCard className="absolute inset-0" />
-                )}
-                <span className="relative z-10 flex items-center gap-2">
-                  {/* Category Icons */}
-                  {category.id === 'web' && <Code size={16} />}
-                  {category.id === 'mobile' && <Smartphone size={16} />}
-                  {category.id === 'branding' && <Palette size={16} />}
-                  {category.id === 'all' && <Filter size={16} />}
-                  
-                  {category.label}
-                  <motion.span 
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      selectedCategory === category.id 
-                        ? 'bg-white/20 text-white' 
-                        : 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
-                    }`}
-                    whileHover={{ scale: 1.1 }}
-                  >
-                    {category.count}
-                  </motion.span>
-                </span>
-              </motion.button>
-            ))}
-          </AnimatePresence>
+          <ProjectFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
         </motion.div>
 
         {/* Projects Grid */}
@@ -298,129 +259,21 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className={`${project.featured ? 'md:col-span-2 lg:col-span-1' : ''}`}
               >
-                <TiltCard
-                  className="h-full cursor-pointer"
-                  tiltMaxAngleX={15}
-                  tiltMaxAngleY={15}
-                  scale={1.02}
-                >
-                  <GlassCard 
-                    className="h-full overflow-hidden group hover:shadow-glass-lg transition-all duration-500"
-                    variant="hover"
-                    onClick={() => onNavigateToProject && onNavigateToProject(project.id)}
-                  >
-                    {/* Featured Badge */}
-                    {project.featured && (
-                      <motion.div 
-                        className="absolute top-4 left-4 z-20 bg-gradient-to-r from-accent-orange to-accent-green text-white px-3 py-1 rounded-full text-xs font-bold shadow-neon"
-                        initial={{ scale: 0, rotate: -10 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ delay: 0.3, type: "spring", stiffness: 500 }}
-                      >
-                        ⭐ Featured
-                      </motion.div>
-                    )}
-
-                    {/* Image Container */}
-                    <div className="relative h-64 overflow-hidden rounded-t-xl">
-                      <motion.img 
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
-                      />
-                      
-                      {/* Gradient Overlay */}
-                      <motion.div 
-                        className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-0`}
-                        whileHover={{ opacity: 0.8 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                      
-                      {/* Hover Actions */}
-                      <motion.div 
-                        className="absolute inset-0 flex items-center justify-center opacity-0 z-10"
-                        whileHover={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="flex gap-4">
-                          <motion.button 
-                            className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-all duration-200"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onNavigateToProject && onNavigateToProject(project.id);
-                            }}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Eye size={20} />
-                          </motion.button>
-                          <motion.button 
-                            className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-all duration-200"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <ExternalLink size={20} />
-                          </motion.button>
-                        </div>
-                      </motion.div>
-
-                      {/* Stats Overlay */}
-                      <motion.div 
-                        className="absolute bottom-4 left-4 right-4 flex justify-between items-center opacity-0 z-10"
-                        whileHover={{ opacity: 1 }}
-                        transition={{ duration: 0.3, delay: 0.1 }}
-                      >
-                        <div className="flex items-center gap-4 text-white text-sm">
-                          <div className="flex items-center gap-1">
-                            <Heart size={16} />
-                            <span>{project.likes}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Eye size={16} />
-                            <span>{project.views}</span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-3 py-1 rounded-full">
-                          {project.type}
-                        </span>
-                        <motion.div
-                          whileHover={{ x: 5 }}
-                          transition={{ type: "spring", stiffness: 400 }}
-                        >
-                          <ArrowRight size={20} className="text-gray-400 group-hover:text-primary-500 transition-colors duration-300" />
-                        </motion.div>
-                      </div>
-                      
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">
-                        {project.title}
-                      </h3>
-                      
-                      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6">
-                        {project.description}
-                      </p>
-                      
-                      <div className="flex flex-wrap gap-2">
-                        {project.tags.map((tag, tagIndex) => (
-                          <motion.span 
-                            key={tagIndex}
-                            className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
-                            whileHover={{ scale: 1.05 }}
-                          >
-                            {tag}
-                          </motion.span>
-                        ))}
-                      </div>
-                    </div>
-                  </GlassCard>
-                </TiltCard>
+                <ProjectCard
+                  id={project.id}
+                  title={project.title}
+                  subtitle={project.subtitle}
+                  category={project.category}
+                  type={project.type}
+                  description={project.description}
+                  image={project.image}
+                  tags={project.tags}
+                  gradient={project.gradient}
+                  likes={project.likes}
+                  views={project.views}
+                  featured={project.featured}
+                  onClick={onNavigateToProject}
+                />
               </motion.div>
             ))}
           </AnimatePresence>

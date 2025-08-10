@@ -17,6 +17,7 @@ import { SEOHead } from './components/seo';
 import { CustomCursor } from './components/ui/CustomCursor';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { ParticleSystem } from './components/ui/ParticleSystem';
+import { MobileFabMenu } from './components/navigation/MobileFabMenu';
 import { ADMIN_CONFIG } from './config';
 
 type PageType = 'home' | 'blog' | 'post' | 'projects' | 'project';
@@ -229,6 +230,23 @@ function App() {
         <aside aria-label="Navigation rapide" className="hidden">
           <RightSidebar onNavigateToSection={navigateToSection} />
         </aside>
+      )}
+
+      {/* Mobile FAB Menu - Only on landing page */}
+      {currentPage === 'home' && (
+        <MobileFabMenu
+          onNavigateToSection={navigateToSection}
+          onNavigateToBlog={navigateToBlog}
+          onNavigateToProjects={navigateToProjects}
+          activeSection={
+            // Determine active section based on scroll position or current context
+            (() => {
+              if (currentProjectId) return 'projects';
+              if (currentPostSlug) return 'blog';
+              return 'hero'; // Default to hero for home page
+            })()
+          }
+        />
       )}
 
       {/* Main content area */}
