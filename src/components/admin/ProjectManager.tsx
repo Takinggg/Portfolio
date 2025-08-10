@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Edit, Trash2, Eye, Calendar, Tag, Briefcase, Save, X, Upload } from 'lucide-react';
-import { projectService } from '../../lib/database';
+import { projectService } from '../../lib/api';
 
 interface Project {
   id: string;

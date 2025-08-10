@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart3, FileText, Briefcase, Users, Settings, Plus, Search, Filter, Eye, Edit, Trash2, Calendar, TrendingUp, MessageCircle } from 'lucide-react';
-import { blogService, projectService, contactService } from '../../lib/database';
+import { blogService, projectService, contactService } from '../../lib/api';
 import BlogManager from './BlogManager';
 import ProjectManager from './ProjectManager';
 import MessagesManager from './MessagesManager';
