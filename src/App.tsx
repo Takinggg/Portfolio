@@ -14,6 +14,9 @@ import Projects from './components/Projects';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
 import { SEOHead } from './components/seo';
+import { CustomCursor } from './components/ui/CustomCursor';
+import { ScrollProgress } from './components/ui/ScrollProgress';
+import { ParticleSystem } from './components/ui/ParticleSystem';
 import { ADMIN_CONFIG } from './config';
 
 type PageType = 'home' | 'blog' | 'post' | 'projects' | 'project';
@@ -199,7 +202,12 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Premium UI Components */}
+      <CustomCursor />
+      <ScrollProgress />
+      <ParticleSystem />
+      
       <SEOHead 
         title="Accueil"
         description="Portfolio professionnel - Développeur web fullstack et designer"
