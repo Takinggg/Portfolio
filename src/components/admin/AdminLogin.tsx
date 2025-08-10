@@ -3,7 +3,7 @@ import { Lock, User, Eye, EyeOff, Sparkles, Loader2 } from 'lucide-react';
 import { authService } from '../../lib/api';
 
 interface AdminLoginProps {
-  onLogin: (credentials: { username: string; password: string }) => void;
+  onLogin: (credentials: { username: string; password: string }) => boolean;
 }
 
 const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
@@ -49,7 +49,12 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
 
       localStorage.setItem('auth_token', resultData.token);
       // IMPORTANT: on passe les credentials (username + password) pour correspondre à App.tsx
-      onLogin({ username: credentials.username.trim(), password: credentials.password });
+      const loginSuccess = onLogin({ username: credentials.username.trim(), password: credentials.password });
+      
+      if (!loginSuccess) {
+        setFormError('Identifiants incorrects');
+        return;
+      }
     } catch (err: any) {
       setFormError(err?.message || 'Erreur de connexion');
     } finally {

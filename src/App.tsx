@@ -13,6 +13,8 @@ import ProjectsPage from './components/ProjectsPage';
 import Projects from './components/Projects';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
+import { SEOHead } from './components/seo';
+import { ADMIN_CONFIG } from './config';
 
 type PageType = 'home' | 'blog' | 'post' | 'projects' | 'project';
 
@@ -98,11 +100,15 @@ function App() {
   };
 
   const handleAdminLogin = (credentials: { username: string; password: string }) => {
-    // Simple authentication check - in production, use proper API
-    if (credentials.username === 'admin' && credentials.password === 'password') {
+    // Use environment variables for admin authentication
+    // TODO: Replace with secure JWT-based authentication
+    if (credentials.username === ADMIN_CONFIG.username && 
+        credentials.password === ADMIN_CONFIG.password) {
       setIsLoggedIn(true);
       localStorage.setItem('admin_logged_in', 'true');
+      return true;
     }
+    return false;
   };
 
   const handleAdminLogout = () => {
@@ -123,64 +129,112 @@ function App() {
 
   if (currentPage === 'blog') {
     return (
-      <BlogPage 
-        onNavigateHome={navigateToHome}
-        onNavigateToPost={navigateToPost}
-        onNavigateToProjects={navigateToProjects}
-      />
+      <>
+        <SEOHead 
+          title="Blog" 
+          description="Articles sur le développement web, design et technologies"
+          url="/blog"
+        />
+        <BlogPage 
+          onNavigateHome={navigateToHome}
+          onNavigateToPost={navigateToPost}
+          onNavigateToProjects={navigateToProjects}
+        />
+      </>
     );
   }
 
   if (currentPage === 'projects') {
     return (
-      <ProjectsPage 
-        onNavigateHome={navigateToHome}
-        onNavigateToBlog={navigateToBlog}
-        onNavigateToProject={navigateToProject}
-      />
+      <>
+        <SEOHead 
+          title="Projets" 
+          description="Portfolio de projets web et applications développées"
+          url="/projects"
+        />
+        <ProjectsPage 
+          onNavigateHome={navigateToHome}
+          onNavigateToBlog={navigateToBlog}
+          onNavigateToProject={navigateToProject}
+        />
+      </>
     );
   }
 
   if (currentPage === 'project' && currentProjectId) {
     return (
-      <ProjectDetail 
-        projectId={currentProjectId}
-        onBack={navigateToProjects}
-        onNavigateHome={navigateToHome}
-        onNavigateToBlog={navigateToBlog}
-      />
+      <>
+        <SEOHead 
+          title={`Projet ${currentProjectId}`}
+          description="Détail du projet - technologies, objectifs et réalisations"
+          url={`/project/${currentProjectId}`}
+        />
+        <ProjectDetail 
+          projectId={currentProjectId}
+          onBack={navigateToProjects}
+          onNavigateHome={navigateToHome}
+          onNavigateToBlog={navigateToBlog}
+        />
+      </>
     );
   }
 
   if (currentPage === 'post' && currentPostSlug) {
     return (
-      <BlogPost 
-        slug={currentPostSlug}
-        onBack={navigateToBlog}
-        onNavigateHome={navigateToHome}
-        onNavigateToProjects={navigateToProjects}
-      />
+      <>
+        <SEOHead 
+          title={`Article: ${currentPostSlug}`}
+          description="Article de blog sur le développement web et les technologies"
+          type="article"
+          url={`/blog/${currentPostSlug}`}
+        />
+        <BlogPost 
+          slug={currentPostSlug}
+          onBack={navigateToBlog}
+          onNavigateHome={navigateToHome}
+          onNavigateToProjects={navigateToProjects}
+        />
+      </>
     );
   }
 
   return (
     <div className="min-h-screen">
-      <Navigation 
-        onNavigateToSection={navigateToSection}
-        onNavigateToBlog={navigateToBlog}
-        onNavigateToProjects={navigateToProjects}
-        currentPage={currentPage}
+      <SEOHead 
+        title="Accueil"
+        description="Portfolio professionnel - Développeur web fullstack et designer"
       />
+      
+      {/* Navigation with semantic header */}
+      <header role="banner">
+        <Navigation 
+          onNavigateToSection={navigateToSection}
+          onNavigateToBlog={navigateToBlog}
+          onNavigateToProjects={navigateToProjects}
+          currentPage={currentPage}
+        />
+      </header>
+
       {/* Right Sidebar - Only on landing page */}
       {currentPage === 'home' && (
-        <RightSidebar onNavigateToSection={navigateToSection} />
+        <aside aria-label="Navigation rapide">
+          <RightSidebar onNavigateToSection={navigateToSection} />
+        </aside>
       )}
-      <Hero />
-      <About />
-      <Projects />
-      <BlogSection onNavigateToBlog={navigateToBlog} />
-      <Contact />
-      <Footer />
+
+      {/* Main content area */}
+      <main role="main">
+        <Hero />
+        <About />
+        <Projects />
+        <BlogSection onNavigateToBlog={navigateToBlog} />
+        <Contact />
+      </main>
+
+      {/* Footer */}
+      <footer role="contentinfo">
+        <Footer />
+      </footer>
     </div>
   );
 }
