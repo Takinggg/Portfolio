@@ -1,29 +1,8 @@
 import React from 'react';
 import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home, ExternalLink, Github, ArrowLeft, Star, Code, Layers } from 'lucide-react';
 import { useProject } from '../hooks/useSQLite';
-import { Project as SQLiteProject } from '../lib/database';
+import { NormalizedProject } from '../lib/adapters';
 import Navigation from './Navigation';
-
-// Convert SQLite project to display format
-const convertSQLiteProject = (project: SQLiteProject) => ({
-  id: project.id,
-  title: project.title,
-  description: project.description,
-  longDescription: project.long_description,
-  technologies: project.technologies,
-  category: project.category,
-  status: project.status,
-  startDate: project.start_date,
-  endDate: project.end_date,
-  client: project.client,
-  budget: project.budget,
-  images: project.images,
-  featured: project.featured,
-  githubUrl: project.github_url,
-  liveUrl: project.live_url,
-  createdAt: project.created_at,
-  updatedAt: project.updated_at
-});
 
 interface ProjectDetailProps {
   projectId: string;
@@ -33,11 +12,8 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavigateHome, onNavigateToBlog }) => {
-  // Fetch project from SQLite
-  const { project: sqliteProject, loading, error } = useProject(projectId);
-  
-  // Convert to display format
-  const project = sqliteProject ? convertSQLiteProject(sqliteProject) : null;
+  // Fetch project using our unified hook
+  const { project, loading, error } = useProject(projectId);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -213,9 +189,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
         <header className="mb-12">
           {/* Status and Category */}
           <div className="flex flex-wrap items-center gap-4 mb-6">
-            <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(project.status)}`}>
-              {getStatusLabel(project.status)}
-            </span>
+            {project.status && (
+              <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(project.status)}`}>
+                {getStatusLabel(project.status)}
+              </span>
+            )}
             <span className="px-4 py-2 bg-purple-100 text-purple-600 rounded-full text-sm font-semibold">
               {getCategoryLabel(project.category)}
             </span>
@@ -274,16 +252,16 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
                 <Calendar className="text-purple-600" size={20} />
                 <span className="font-semibold text-gray-900">Début</span>
               </div>
-              <p className="text-gray-600">{formatDate(project.startDate)}</p>
+              <p className="text-gray-600">{project.start_date ? formatDate(project.start_date) : 'Non défini'}</p>
             </div>
 
-            {project.endDate && (
+            {project.end_date && (
               <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 shadow-lg">
                 <div className="flex items-center gap-3 mb-2">
                   <Calendar className="text-green-600" size={20} />
                   <span className="font-semibold text-gray-900">Fin</span>
                 </div>
-                <p className="text-gray-600">{formatDate(project.endDate)}</p>
+                <p className="text-gray-600">{formatDate(project.end_date)}</p>
               </div>
             )}
 
@@ -315,7 +293,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
               <h3 className="text-lg font-semibold text-gray-900">Technologies utilisées</h3>
             </div>
             <div className="flex flex-wrap gap-3">
-              {project.technologies.map((tech, index) => (
+              {(project.technologies || []).map((tech, index) => (
                 <span 
                   key={index}
                   className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-medium border border-purple-200 hover:from-purple-200 hover:to-pink-200 transition-colors duration-200"
@@ -328,9 +306,9 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-4 mb-8">
-            {project.liveUrl && project.liveUrl !== '#' && (
+            {project.live_url && project.live_url !== '#' && (
               <a
-                href={project.liveUrl}
+                href={project.live_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"

@@ -1,41 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Calendar, Clock, User, Tag, Home, BookOpen } from 'lucide-react';
 import { useBlogPosts } from '../hooks/useSQLite';
-import { BlogPost as SQLiteBlogPost } from '../lib/database';
+import { NormalizedBlogPost } from '../lib/adapters';
 import Navigation from './Navigation';
-
-// Convert SQLite blog post to display format
-const convertSQLiteBlogPost = (post: SQLiteBlogPost) => ({
-  id: post.id,
-  title: post.title,
-  slug: post.slug,
-  excerpt: post.excerpt || '',
-  content: post.content,
-  author: post.author,
-  publishedAt: post.published_at,
-  updatedAt: post.updated_at || undefined,
-  featuredImage: post.featured_image || '',
-  tags: post.tags || [],
-  category: post.category,
-  readTime: post.read_time || 5,
-  featured: post.featured || false
-});
-
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  publishedAt: string;
-  updatedAt?: string;
-  featuredImage: string;
-  tags: string[];
-  category: string;
-  readTime: number;
-  featured: boolean;
-}
 
 interface BlogPageProps {
   onNavigateHome: () => void;
@@ -44,28 +11,25 @@ interface BlogPageProps {
 }
 
 const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, onNavigateToProjects }) => {
-  // Fetch posts from Supabase
-  const { posts: sqlitePosts, loading, error } = useBlogPosts();
+  // Fetch posts using our unified hook
+  const { posts, loading, error } = useBlogPosts();
   
   // Debug logging
   useEffect(() => {
-    console.log('BlogPage - Posts:', sqlitePosts);
+    console.log('BlogPage - Posts:', posts);
     console.log('BlogPage - Loading:', loading);
     console.log('BlogPage - Error:', error);
-    console.log('BlogPage - Total posts from SQLite:', sqlitePosts.length);
-    if (sqlitePosts.length > 0) {
-      console.log('BlogPage - First few posts:', sqlitePosts.slice(0, 3).map(p => ({
+    console.log('BlogPage - Total posts:', posts.length);
+    if (posts.length > 0) {
+      console.log('BlogPage - First few posts:', posts.slice(0, 3).map(p => ({
         title: p.title,
         slug: p.slug,
         featured: p.featured
       })));
     }
-  }, [sqlitePosts, loading, error]);
+  }, [posts, loading, error]);
 
-  // Convert SQLite posts to display format
-  const blogPosts = sqlitePosts.map(convertSQLiteBlogPost);
-  
-  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>(blogPosts);
+  const [filteredPosts, setFilteredPosts] = useState<NormalizedBlogPost[]>(posts);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedTag, setSelectedTag] = useState('all');
@@ -76,16 +40,16 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
   
   // Generate categories and tags from fetched posts
   const categories = React.useMemo(() => {
-    return [...new Set(blogPosts.map(post => post.category))];
-  }, [blogPosts]);
+    return [...new Set(posts.map(post => post.category))];
+  }, [posts]);
   
   const tags = React.useMemo(() => {
-    return [...new Set(blogPosts.flatMap(post => post.tags))];
-  }, [blogPosts]);
+    return [...new Set(posts.flatMap(post => post.tags))];
+  }, [posts]);
   
   const searchPosts = (query: string): BlogPost[] => {
     const lowercaseQuery = query.toLowerCase();
-    return blogPosts.filter(post => 
+    return posts.filter(post => 
       post.title.toLowerCase().includes(lowercaseQuery) ||
       post.excerpt.toLowerCase().includes(lowercaseQuery) ||
       post.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery))
@@ -93,13 +57,13 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
   };
 
   useEffect(() => {
-    if (!loading && blogPosts.length > 0) {
+    if (!loading && posts.length > 0) {
       filterPosts();
     }
-  }, [blogPosts, searchQuery, selectedCategory, selectedTag, loading]);
+  }, [posts, searchQuery, selectedCategory, selectedTag, loading]);
 
   const filterPosts = () => {
-    let filtered = blogPosts;
+    let filtered = posts;
 
     // Search filter
     if (searchQuery) {
@@ -314,10 +278,10 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50"
                   >
-                    <option value="all">Toutes les catégories ({blogPosts.length})</option>
+                    <option value="all">Toutes les catégories ({posts.length})</option>
                     {categories.map(category => (
                       <option key={category} value={category}>
-                        {category} ({blogPosts.filter(p => p.category === category).length})
+                        {category} ({posts.filter(p => p.category === category).length})
                       </option>
                     ))}
                   </select>
@@ -375,7 +339,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
                     {/* Image */}
                     <div className="relative h-48 overflow-hidden">
                       <img 
-                        src={post.featuredImage}
+                        src={post.featured_image}
                         alt={post.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         loading="lazy"
@@ -391,7 +355,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
                       {/* Read Time */}
                       <div className="absolute top-4 right-4 bg-black/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium">
                         <Clock size={12} className="inline mr-1" />
-                        {post.readTime} min
+                        {post.read_time} min
                       </div>
 
                       {/* Overlay */}
@@ -408,8 +372,8 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar size={14} />
-                          <time dateTime={post.publishedAt}>
-                            {formatDate(post.publishedAt)}
+                          <time dateTime={post.published_at}>
+                            {formatDate(post.published_at)}
                           </time>
                         </div>
                       </div>
