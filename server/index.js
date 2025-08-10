@@ -14,8 +14,34 @@ const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json({ limit: '10mb' }));
+
+// Logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);
+  });
+  next();
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Global error handler:', err);
+  res.status(err.status || 500).json({
+    error: { 
+      message: err.message || 'Internal server error',
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    }
+  });
+});
 
 // Database setup
 const dbPath = path.join(__dirname, 'portfolio.db');
@@ -349,6 +375,13 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
   try {
     const post = req.body;
     
+    // Validate required fields
+    if (!post.title || !post.content) {
+      return res.status(400).json({ 
+        error: { message: 'Title and content are required' } 
+      });
+    }
+    
     if (!post.slug && post.title) {
       post.slug = generateSlug(post.title);
     }
@@ -358,10 +391,20 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
     }
 
     // Ensure required fields have defaults
-    post.tags = post.tags || [];
-    post.author = post.author || 'FOULON Maxence';
-    post.featured = post.featured || false;
-    post.read_time = post.read_time || 5;
+    const postData = {
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt || '',
+      content: post.content,
+      author: post.author || 'FOULON Maxence',
+      published_at: post.published_at || new Date().toISOString(),
+      updated_at: post.updated_at || new Date().toISOString(),
+      featured_image: post.featured_image || null,
+      tags: Array.isArray(post.tags) ? post.tags : [],
+      category: post.category || 'Design',
+      read_time: post.read_time || 5,
+      featured: Boolean(post.featured)
+    };
 
     const result = db.prepare(`
       INSERT INTO blog_posts (
@@ -369,9 +412,9 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
         featured_image, tags, category, read_time, featured
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      post.title, post.slug, post.excerpt, post.content, post.author,
-      post.published_at, post.updated_at, post.featured_image,
-      JSON.stringify(post.tags), post.category, post.read_time, post.featured ? 1 : 0
+      postData.title, postData.slug, postData.excerpt, postData.content, postData.author,
+      postData.published_at, postData.updated_at, postData.featured_image,
+      JSON.stringify(postData.tags), postData.category, postData.read_time, postData.featured ? 1 : 0
     );
 
     const newPost = db.prepare('SELECT * FROM blog_posts WHERE id = ?').get(result.lastInsertRowid);
@@ -384,6 +427,7 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Error creating post:', error);
     res.status(500).json({ error: { message: error.message } });
   }
 });
@@ -520,17 +564,42 @@ app.post('/api/projects', authenticateToken, (req, res) => {
   try {
     const project = req.body;
 
+    // Validate required fields
+    if (!project.title || !project.description) {
+      return res.status(400).json({ 
+        error: { message: 'Title and description are required' } 
+      });
+    }
+
+    // Ensure all fields have proper defaults
+    const projectData = {
+      title: project.title,
+      description: project.description,
+      long_description: project.long_description || '',
+      technologies: Array.isArray(project.technologies) ? project.technologies : [],
+      category: project.category || 'web',
+      status: project.status || 'in-progress',
+      start_date: project.start_date || new Date().toISOString().split('T')[0],
+      end_date: project.end_date || null,
+      client: project.client || null,
+      budget: project.budget || null,
+      images: Array.isArray(project.images) ? project.images : [],
+      featured: Boolean(project.featured),
+      github_url: project.github_url || null,
+      live_url: project.live_url || null
+    };
+
     const result = db.prepare(`
       INSERT INTO projects (
         title, description, long_description, technologies, category, status,
         start_date, end_date, client, budget, images, featured, github_url, live_url
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      project.title, project.description, project.long_description,
-      JSON.stringify(project.technologies), project.category, project.status,
-      project.start_date, project.end_date, project.client, project.budget,
-      JSON.stringify(project.images), project.featured ? 1 : 0,
-      project.github_url, project.live_url
+      projectData.title, projectData.description, projectData.long_description,
+      JSON.stringify(projectData.technologies), projectData.category, projectData.status,
+      projectData.start_date, projectData.end_date, projectData.client, projectData.budget,
+      JSON.stringify(projectData.images), projectData.featured ? 1 : 0,
+      projectData.github_url, projectData.live_url
     );
 
     const newProject = db.prepare('SELECT * FROM projects WHERE id = ?').get(result.lastInsertRowid);
@@ -544,6 +613,7 @@ app.post('/api/projects', authenticateToken, (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Error creating project:', error);
     res.status(500).json({ error: { message: error.message } });
   }
 });
@@ -560,7 +630,9 @@ app.put('/api/projects/:id', authenticateToken, (req, res) => {
       if (key !== 'id' && key !== 'created_at' && value !== undefined) {
         setClause.push(`${key} = ?`);
         if (key === 'technologies' || key === 'images') {
-          params.push(JSON.stringify(value));
+          // Ensure arrays are properly handled
+          const arrayValue = Array.isArray(value) ? value : [];
+          params.push(JSON.stringify(arrayValue));
         } else if (key === 'featured') {
           params.push(value ? 1 : 0);
         } else {
@@ -569,11 +641,19 @@ app.put('/api/projects/:id', authenticateToken, (req, res) => {
       }
     });
 
+    if (setClause.length === 0) {
+      return res.status(400).json({ error: { message: 'No valid fields to update' } });
+    }
+
     setClause.push('updated_at = CURRENT_TIMESTAMP');
     params.push(id);
 
     const query = `UPDATE projects SET ${setClause.join(', ')} WHERE id = ?`;
-    db.prepare(query).run(...params);
+    const result = db.prepare(query).run(...params);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: { message: 'Project not found' } });
+    }
 
     const updatedProject = db.prepare('SELECT * FROM projects WHERE id = ?').get(id);
     
@@ -586,6 +666,7 @@ app.put('/api/projects/:id', authenticateToken, (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Error updating project:', error);
     res.status(500).json({ error: { message: error.message } });
   }
 });
