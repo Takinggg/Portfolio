@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Calendar, Clock, User, BookOpen, Sparkles } from 'lucide-react';
 import { useBlogPosts } from '../hooks/useSQLite';
 
+// Blog placeholder image
+const getBlogPlaceholderImage = () => {
+  return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJsb2ciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4YjVjZjYiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNhODU1ZjciIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZWM0ODk5IiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYmxvZykiIC8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CTE9HIEFSVElDTEU8L3RleHQ+PC9zdmc+';
+};
+
 interface BlogSectionProps {
   onNavigateToBlog: () => void;
 }
@@ -139,7 +144,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
               {/* Image Container */}
               <div className={`relative ${index === 0 ? 'h-80' : 'h-48'} overflow-hidden`}>
                 <img 
-                  src={post.featured_image || 'https://via.placeholder.com/400x200'}
+                  src={post.featured_image || getBlogPlaceholderImage()}
                   alt={post.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
