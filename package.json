@@ -12,7 +12,9 @@
     "db:init": "node -e \"require('./src/lib/database.ts').initializeDatabase()\"",
     "db:migrate": "npm run migrate",
     "server": "node server/index.js",
-    "dev:full": "concurrently \"npm run server\" \"npm run dev\""
+    "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
+    "start": "node server/index.js",
+    "postinstall": "echo 'Installation complete'"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.54.0",

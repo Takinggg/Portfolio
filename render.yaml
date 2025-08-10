@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: portfolio-backend-latest
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run server
+    healthCheckPath: /api/blog/posts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://takinggg-portfolio.netlify.app
+    autoDeploy: true
+    region: oregon
+    scaling:
+      minInstances: 0
+      maxInstances: 1
