@@ -6,6 +6,8 @@ export default defineConfig({
   plugins: [react()],
   build: {
     target: 'esnext',
+    sourcemap: false, // Disable sourcemaps for production builds
+    minify: 'esbuild', // Use esbuild for faster minification
     rollupOptions: {
       external: ['better-sqlite3', 'sqlite3', 'express', 'cors', 'bcryptjs', 'jsonwebtoken'],
       output: {
@@ -16,7 +18,8 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    reportCompressedSize: false // Disable gzip reporting for faster builds
   },
   optimizeDeps: {
     exclude: ['lucide-react', 'better-sqlite3', 'sqlite3'],

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { memo } from 'react';
-import { Code, Users, Zap, Award, Target, Lightbulb, Heart, Coffee } from 'lucide-react';
+import { Target, Lightbulb, Heart, Coffee } from 'lucide-react';
 
 const About = memo(() => {
   const [isVisible, setIsVisible] = useState(false);

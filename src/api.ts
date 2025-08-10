@@ -6,7 +6,7 @@
 type BaseEntity = {
   id: string;
   createdAt: string;
-  [k: string]: any;
+  [k: string]: unknown;
 };
 
 export type Project = BaseEntity & {
@@ -28,10 +28,10 @@ const getApiBaseUrl = (): string => {
                         window.location.hostname.startsWith('192.168.'));
   
   // Environment variable takes priority
-  const envApiUrl = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) ||
-                   (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ||
-                   (typeof process !== 'undefined' && (process as any).env?.REACT_APP_API_BASE_URL) ||
-                   (typeof process !== 'undefined' && (process as any).env?.REACT_APP_API_URL);
+  const envApiUrl = (typeof import.meta !== 'undefined' && (import.meta as { env?: Record<string, string> }).env?.VITE_API_BASE_URL) ||
+                   (typeof import.meta !== 'undefined' && (import.meta as { env?: Record<string, string> }).env?.VITE_API_URL) ||
+                   (typeof process !== 'undefined' && (process as { env?: Record<string, string> }).env?.REACT_APP_API_BASE_URL) ||
+                   (typeof process !== 'undefined' && (process as { env?: Record<string, string> }).env?.REACT_APP_API_URL);
   
   if (envApiUrl) {
     return envApiUrl;
@@ -98,8 +98,8 @@ export class ApiClient {
       const data = await this.rawFetch<Project[]>('/projects');
       saveLocal(LS_PROJECTS, data);
       return data;
-    } catch (err: any) {
-      if (/Failed to fetch|NetworkError|TypeError/.test(err?.message)) {
+    } catch (err: unknown) {
+      if (err instanceof Error && /Failed to fetch|NetworkError|TypeError/.test(err.message)) {
         return loadLocal<Project>(LS_PROJECTS);
       }
       throw err;
@@ -118,8 +118,8 @@ export class ApiClient {
         saveLocal(LS_PROJECTS, [...list, data]);
       }
       return data;
-    } catch (err: any) {
-      if (/Failed to fetch|NetworkError|TypeError/.test(err?.message)) {
+    } catch (err: unknown) {
+      if (err instanceof Error && /Failed to fetch|NetworkError|TypeError/.test(err.message)) {
         const list = loadLocal<Project>(LS_PROJECTS);
         const offline: Project = {
           id: genId('proj'),
