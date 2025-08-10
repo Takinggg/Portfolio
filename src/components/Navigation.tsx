@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sparkles, Home, User, Briefcase, Mail, ArrowRight, BookOpen, ArrowLeft } from 'lucide-react';
-import ThemeToggle from './ui/ThemeToggle';
 import { GlassCard } from './ui/GlassCard';
 
 interface NavigationProps {
@@ -124,7 +123,7 @@ const Navigation: React.FC<NavigationProps> = ({
               >
                 <div className="relative">
                   <motion.div 
-                    className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-neon"
+                    className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center shadow-card"
                     whileHover={{ rotate: 10 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
@@ -132,10 +131,10 @@ const Navigation: React.FC<NavigationProps> = ({
                   </motion.div>
                 </div>
                 <div className="hidden sm:block">
-                  <div className="text-lg font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                  <div className="text-lg font-bold text-primary-600">
                     FOULON
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium -mt-1">
+                  <div className="text-xs text-text-muted font-medium -mt-1">
                     UI/UX Designer
                   </div>
                 </div>
@@ -155,14 +154,14 @@ const Navigation: React.FC<NavigationProps> = ({
                       className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                         isActive
                           ? 'text-white'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400'
+                          : 'text-text-soft hover:text-primary-500'
                       }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       {isActive && (
                         <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl shadow-neon"
+                          className="absolute inset-0 bg-primary-500 rounded-xl shadow-card"
                           layoutId="activeTab"
                           transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         />
@@ -188,13 +187,11 @@ const Navigation: React.FC<NavigationProps> = ({
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-3">
-              <ThemeToggle />
-              
               {/* Admin Button - Only show if authenticated */}
               {isAuthenticated && (
                 <motion.button
                   onClick={() => window.location.href = '/admin'}
-                  className="hidden md:flex items-center px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-all duration-300"
+                  className="hidden md:flex items-center px-3 py-2 rounded-xl text-sm font-medium text-text-soft hover:text-primary-500 transition-all duration-300"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   title="Administration"
@@ -207,8 +204,8 @@ const Navigation: React.FC<NavigationProps> = ({
               {/* CTA Button */}
               <motion.button
                 onClick={() => handleNavigation('contact')}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-medium text-sm shadow-neon hover:shadow-neon-blue transition-all duration-300"
-                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(99, 102, 241, 0.5)" }}
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl font-medium text-sm shadow-card hover:shadow-lg transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 data-track="nav-cta-collaborate"
               >
@@ -219,7 +216,7 @@ const Navigation: React.FC<NavigationProps> = ({
               {/* Mobile Menu Button */}
               <motion.button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors"
+                className="lg:hidden p-2 rounded-xl text-text-soft hover:text-primary-500 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -261,7 +258,7 @@ const Navigation: React.FC<NavigationProps> = ({
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ type: "spring", duration: 0.3 }}
             >
-              <GlassCard className="p-6 shadow-glass-lg">
+              <GlassCard className="p-6">
                 <div className="space-y-3">
                   {navItems.map((item, index) => {
                     const Icon = item.icon;
@@ -272,8 +269,8 @@ const Navigation: React.FC<NavigationProps> = ({
                         onClick={() => handleNavigation(item.id)}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-all duration-300 ${
                           isActive
-                            ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-neon'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20'
+                            ? 'bg-primary-500 text-white shadow-card'
+                            : 'text-text-DEFAULT hover:bg-surface-subtle'
                         }`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -294,7 +291,7 @@ const Navigation: React.FC<NavigationProps> = ({
                       handleNavigation('contact');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-medium shadow-neon mt-4"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 text-white rounded-xl font-medium shadow-card mt-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
