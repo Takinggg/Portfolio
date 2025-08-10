@@ -10,4 +10,4 @@ export type {
   GlassCardProps,
   LiquidButtonProps,
   TypingTextProps,
-} from '../../types/portfolio';
+} from '../../../types/portfolio';

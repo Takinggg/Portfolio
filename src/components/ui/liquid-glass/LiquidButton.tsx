@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '../../lib/utils';
-import { LiquidButtonProps } from '../../types/portfolio';
+import { cn } from '../../../lib/utils';
+import { LiquidButtonProps } from '../../../types/portfolio';
 
 interface ButtonVariants {
   primary: string;

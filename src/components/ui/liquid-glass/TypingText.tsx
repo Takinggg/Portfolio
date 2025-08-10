@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '../../lib/utils';
-import { TypingTextProps } from '../../types/portfolio';
+import { cn } from '../../../lib/utils';
+import { TypingTextProps } from '../../../types/portfolio';
 
 const TypingText: React.FC<TypingTextProps> = ({
   texts,
