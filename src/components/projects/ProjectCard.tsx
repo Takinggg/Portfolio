@@ -60,11 +60,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       }}
       aria-label={`Voir le projet ${title}`}
     >
-      <TiltCard className="relative h-full overflow-hidden bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+      <TiltCard className="relative h-full overflow-hidden bg-surface-DEFAULT border border-surface-border rounded-2xl shadow-card hover:shadow-lg transition-all duration-300">
         {/* Featured ribbon */}
         {featured && (
           <div className="absolute top-4 right-4 z-20">
-            <div className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+            <div className="bg-accent-orange text-white text-xs font-semibold px-3 py-1 rounded-full shadow-card">
               Mis en avant
             </div>
           </div>
@@ -80,12 +80,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           />
           
           {/* Gradient overlay */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-300`} />
+          <div className="absolute inset-0 bg-primary-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
           {/* Hover overlay with action button */}
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <motion.div
-              className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg text-white font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-DEFAULT/90 rounded-lg text-text-DEFAULT font-medium"
               initial={{ scale: 0.8, opacity: 0 }}
               whileHover={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.2 }}
@@ -97,7 +97,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
           {/* Category badge */}
           <div className="absolute top-4 left-4 z-10">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-700 backdrop-blur-sm">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-600 border border-primary-100">
               {type}
             </span>
           </div>
@@ -107,7 +107,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         <div className="p-6">
           {/* Title and subtitle */}
           <div className="mb-3">
-            <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">
+            <h3 className="text-xl font-bold text-text-DEFAULT mb-1 group-hover:text-primary-600 transition-colors">
               {title}
             </h3>
             {subtitle && (
@@ -118,7 +118,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
 
           {/* Description */}
-          <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+          <p className="text-text-soft text-sm leading-relaxed mb-4 line-clamp-3">
             {description}
           </p>
 
@@ -128,7 +128,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700"
+                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-surface-subtle text-text-soft border border-surface-border"
                 >
                   {tag}
                 </span>
@@ -137,8 +137,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           )}
 
           {/* Stats */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+          <div className="flex items-center justify-between pt-4 border-t border-surface-border">
+            <div className="flex items-center gap-4 text-sm text-text-muted">
               <div className="flex items-center gap-1">
                 <Eye size={14} />
                 <span>{views}</span>
