@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Sparkles, Home, User, Briefcase, Mail, ArrowRight, BookOpen, ArrowLeft } from 'lucide-react';
+import ThemeToggle from './ui/ThemeToggle';
 
 interface NavigationProps {
   onNavigateToSection: (sectionId: string) => void;
@@ -166,12 +167,15 @@ const Navigation: React.FC<NavigationProps> = ({
 
             {/* CTA Button */}
             <div className="hidden lg:flex items-center gap-3">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+              
               <button 
                 onClick={() => {
                   window.history.pushState({}, '', '/admin');
                   window.location.href = '/admin';
                 }}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors duration-200"
+                className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
               >
                 Admin
               </button>
