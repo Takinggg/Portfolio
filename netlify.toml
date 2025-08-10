@@ -3,7 +3,7 @@
   command = "npm run build"
 
 [build.environment]
-  VITE_API_BASE_URL = "https://takinggg-portfolio-backend.onrender.com/api"
+  VITE_API_BASE_URL = "https://portfolio-backend-latest-yytb.onrender.com/api"
   NODE_VERSION = "20"
 
 [[redirects]]
