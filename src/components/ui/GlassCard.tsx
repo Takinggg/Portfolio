@@ -15,9 +15,9 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   as: Component = 'div',
 }) => {
   const variants = {
-    default: 'bg-surface-DEFAULT border border-surface-border shadow-card rounded-xl',
-    hover: 'bg-surface-DEFAULT border border-surface-border shadow-card rounded-xl hover:shadow-lg transition-shadow duration-300',
-    subtle: 'bg-surface-subtle border border-surface-border rounded-xl',
+    default: 'bg-surface-base border border-border-DEFAULT shadow-card rounded-xl',
+    hover: 'bg-surface-base border border-border-DEFAULT shadow-card rounded-xl hover:shadow-lg transition-shadow duration-300',
+    subtle: 'bg-surface-alt border border-border-DEFAULT rounded-xl',
   };
 
   return (

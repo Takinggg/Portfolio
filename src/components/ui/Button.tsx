@@ -10,17 +10,17 @@ import { cn } from '../../lib/utils';
 
 // Button variants using class-variance-authority for better maintainability
 const buttonVariants = cva(
-  // Base styles
-  'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  // Base styles with improved accessibility
+  'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-300 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        primary: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 focus-visible:ring-purple-500 shadow-lg hover:shadow-xl',
-        secondary: 'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 focus-visible:ring-gray-500 shadow-sm hover:shadow-md',
-        outline: 'border border-purple-300 text-purple-700 hover:bg-purple-50 focus-visible:ring-purple-500',
-        ghost: 'text-gray-700 hover:bg-gray-100 focus-visible:ring-gray-500',
-        destructive: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 shadow-lg hover:shadow-xl',
-        link: 'text-purple-600 underline-offset-4 hover:underline focus-visible:ring-purple-500'
+        primary: 'bg-primary-600 text-white hover:bg-primary-700 shadow-card hover:shadow-lg',
+        secondary: 'bg-surface-base text-text-strong border border-border-DEFAULT hover:bg-surface-alt focus-visible:ring-primary-300 shadow-card hover:shadow-lg',
+        outline: 'border border-primary-600 text-primary-600 hover:bg-primary-50 focus-visible:ring-primary-300',
+        ghost: 'text-text-DEFAULT hover:bg-surface-alt focus-visible:ring-primary-300',
+        destructive: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-300 shadow-card hover:shadow-lg',
+        link: 'text-primary-600 underline-offset-4 hover:underline focus-visible:ring-primary-300'
       },
       size: {
         sm: 'h-9 px-3 text-sm',

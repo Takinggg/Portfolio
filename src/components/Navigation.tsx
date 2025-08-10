@@ -151,17 +151,17 @@ const Navigation: React.FC<NavigationProps> = ({
                     <motion.button
                       key={item.id}
                       onClick={() => handleNavigation(item.id)}
-                      className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 ${
                         isActive
                           ? 'text-white'
-                          : 'text-text-soft hover:text-primary-500'
+                          : 'text-text-soft hover:text-text-strong'
                       }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       {isActive && (
                         <motion.div
-                          className="absolute inset-0 bg-primary-500 rounded-xl shadow-card"
+                          className="absolute inset-0 bg-primary-600 rounded-xl shadow-card"
                           layoutId="activeTab"
                           transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         />
@@ -191,7 +191,7 @@ const Navigation: React.FC<NavigationProps> = ({
               {isAuthenticated && (
                 <motion.button
                   onClick={() => window.location.href = '/admin'}
-                  className="hidden md:flex items-center px-3 py-2 rounded-xl text-sm font-medium text-text-soft hover:text-primary-500 transition-all duration-300"
+                  className="hidden md:flex items-center px-3 py-2 rounded-xl text-sm font-medium text-text-soft hover:text-text-strong transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   title="Administration"
@@ -204,7 +204,7 @@ const Navigation: React.FC<NavigationProps> = ({
               {/* CTA Button */}
               <motion.button
                 onClick={() => handleNavigation('contact')}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl font-medium text-sm shadow-card hover:shadow-lg transition-all duration-300"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl font-medium text-sm shadow-card hover:shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-600"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 data-track="nav-cta-collaborate"
@@ -216,7 +216,7 @@ const Navigation: React.FC<NavigationProps> = ({
               {/* Mobile Menu Button */}
               <motion.button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 rounded-xl text-text-soft hover:text-primary-500 transition-colors"
+                className="lg:hidden p-2 rounded-xl text-text-soft hover:text-text-strong transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -267,10 +267,10 @@ const Navigation: React.FC<NavigationProps> = ({
                       <motion.button
                         key={item.id}
                         onClick={() => handleNavigation(item.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-all duration-300 ${
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 ${
                           isActive
-                            ? 'bg-primary-500 text-white shadow-card'
-                            : 'text-text-DEFAULT hover:bg-surface-subtle'
+                            ? 'bg-primary-600 text-white shadow-card'
+                            : 'text-text-DEFAULT hover:bg-surface-alt'
                         }`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -291,7 +291,7 @@ const Navigation: React.FC<NavigationProps> = ({
                       handleNavigation('contact');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 text-white rounded-xl font-medium shadow-card mt-4"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary-600 text-white rounded-xl font-medium shadow-card mt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-600"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}

@@ -8,17 +8,17 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
+  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-300',
   {
     variants: {
       variant: {
-        default: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
-        primary: 'bg-purple-100 text-purple-700 hover:bg-purple-200',
-        secondary: 'bg-pink-100 text-pink-700 hover:bg-pink-200',
-        success: 'bg-green-100 text-green-700 hover:bg-green-200',
-        warning: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200',
-        error: 'bg-red-100 text-red-700 hover:bg-red-200',
-        outline: 'border border-gray-200 text-gray-700 hover:bg-gray-50'
+        default: 'bg-surface-alt text-text-DEFAULT border border-border-DEFAULT hover:bg-surface-muted',
+        primary: 'bg-primary-50 text-primary-600 border border-primary-100 hover:bg-primary-100',
+        secondary: 'bg-secondary-50 text-secondary-600 border border-secondary-100 hover:bg-secondary-100',
+        success: 'bg-green-50 text-green-700 border border-green-100 hover:bg-green-100',
+        warning: 'bg-yellow-50 text-yellow-700 border border-yellow-100 hover:bg-yellow-100',
+        error: 'bg-red-50 text-red-700 border border-red-100 hover:bg-red-100',
+        outline: 'bg-surface-base border border-border-DEFAULT text-text-DEFAULT hover:bg-surface-alt'
       }
     },
     defaultVariants: {
