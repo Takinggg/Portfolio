@@ -1,9 +1,13 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const Database = require('better-sqlite3');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import Database from 'better-sqlite3';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -352,6 +356,12 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
     if (post.content) {
       post.read_time = calculateReadingTime(post.content);
     }
+
+    // Ensure required fields have defaults
+    post.tags = post.tags || [];
+    post.author = post.author || 'FOULON Maxence';
+    post.featured = post.featured || false;
+    post.read_time = post.read_time || 5;
 
     const result = db.prepare(`
       INSERT INTO blog_posts (

@@ -67,16 +67,10 @@ class ApiClient {
     }
   }
 
-  // Auth methods with deterministic demo shortcut
+  // Auth methods - now using real backend authentication
   async signIn(username: string, password: string): Promise<ApiResult<{ token: string; user: any }>> {
-    if (username === 'admin' && password === 'password') {
-      const payload = { userId: 'demo-admin', username, exp: Math.floor(Date.now() / 1000) + 60 * 60 };
-      const token = `header.${btoa(JSON.stringify(payload))}.signature`;
-      return { data: { token, user: { id: payload.userId, username } }, error: null };
-    }
-
     if (!API_BASE_URL) {
-      return { data: null, error: new Error('Aucun backend configuré pour ces identifiants') };
+      return { data: null, error: new Error('Aucun backend configuré') };
     }
 
     const networkResult = await this.request('/auth/signin', {
