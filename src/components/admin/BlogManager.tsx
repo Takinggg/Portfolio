@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Edit, Trash2, Eye, Calendar, Tag, FileText, Save, X } from 'lucide-react';
-import { supabase, blogService, utils } from '../../lib/supabase';
+import { blogService, utils } from '../../lib/database';
 import RichTextEditor from './RichTextEditor';
 
 interface BlogPost {

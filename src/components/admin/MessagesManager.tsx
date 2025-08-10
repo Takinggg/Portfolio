@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, MailOpen, Search, Filter, Trash2, Eye, Calendar, User, MessageCircle, AlertCircle } from 'lucide-react';
-import { contactService, ContactMessage } from '../../lib/supabase';
+import { contactService, ContactMessage } from '../../lib/database';
 
 const MessagesManager: React.FC = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);

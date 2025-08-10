@@ -28,6 +28,10 @@ function App() {
     const checkAdminRoute = () => {
       if (window.location.pathname === '/admin') {
         setIsAdminMode(true);
+        // Check if already logged in
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+          setIsLoggedIn(true);
+        }
       }
     };
     
@@ -94,15 +98,17 @@ function App() {
   };
 
   const handleAdminLogin = (credentials: { username: string; password: string }) => {
-    // Mock authentication - replace with real authentication
+    // Simple authentication check - in production, use proper API
     if (credentials.username === 'admin' && credentials.password === 'password') {
       setIsLoggedIn(true);
+      localStorage.setItem('admin_logged_in', 'true');
     }
   };
 
   const handleAdminLogout = () => {
     setIsLoggedIn(false);
     setIsAdminMode(false);
+    localStorage.removeItem('admin_logged_in');
     window.history.pushState({}, '', '/');
     setCurrentPage('home');
   };

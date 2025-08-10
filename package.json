@@ -7,13 +7,23 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "migrate": "node scripts/migrate.js",
+    "db:init": "node -e \"require('./src/lib/database.ts').initializeDatabase()\"",
+    "db:migrate": "npm run migrate"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.54.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/sqlite3": "^3.1.11",
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.2.0",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
