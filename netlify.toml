@@ -3,33 +3,15 @@
   command = "npm run build"
 
 [build.environment]
-  VITE_API_BASE_URL = "https://portfolio-1tzy.onrender.com/api"
-  NODE_ENV = "production"
+  VITE_API_BASE_URL = "https://portfolio-backend-latest.onrender.com/api"
   NODE_VERSION = "20"
-
-[build.processing]
-  skip_processing = false
-
-[build.processing.css]
-  bundle = true
-  minify = true
-
-[build.processing.js]
-  bundle = true
-  minify = true
-
-[[plugins]]
-  package = "netlify-plugin-cache"
-
-  [plugins.inputs]
-    paths = [ "node_modules", ".cache" ]
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Optimize caching for static assets
+# Optional: cache headers for assets
 [[headers]]
   for = "/assets/*"
   [headers.values]
