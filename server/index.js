@@ -306,6 +306,46 @@ const generateSlug = (title) => {
     .trim();
 };
 
+const normalizeSlug = (input) => {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove invalid characters
+    .replace(/\s+/g, '-') // Replace spaces with dashes
+    .replace(/-+/g, '-') // Collapse multiple dashes
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing dashes
+};
+
+const ensureUniqueSlug = (baseSlug) => {
+  // Normalize the base slug first
+  const normalizedBase = normalizeSlug(baseSlug);
+  
+  // Check if the base slug is available
+  const existingPost = db.prepare('SELECT id FROM blog_posts WHERE slug = ?').get(normalizedBase);
+  
+  if (!existingPost) {
+    return normalizedBase;
+  }
+  
+  // If not available, try with suffixes
+  let counter = 2;
+  let candidateSlug;
+  
+  do {
+    candidateSlug = `${normalizedBase}-${counter}`;
+    const existingWithSuffix = db.prepare('SELECT id FROM blog_posts WHERE slug = ?').get(candidateSlug);
+    
+    if (!existingWithSuffix) {
+      return candidateSlug;
+    }
+    
+    counter++;
+  } while (counter < 1000); // Safety limit
+  
+  // Fallback to timestamp if we somehow exceed the limit
+  return `${normalizedBase}-${Date.now()}`;
+};
+
 const calculateReadingTime = (content) => {
   const wordsPerMinute = 200;
   const words = content.trim().split(/\s+/).length;
@@ -457,18 +497,24 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
       });
     }
     
-    if (!post.slug && post.title) {
-      post.slug = generateSlug(post.title);
+    // Generate or normalize slug
+    let baseSlug;
+    if (post.slug) {
+      baseSlug = post.slug;
+    } else {
+      baseSlug = generateSlug(post.title);
     }
     
-    if (post.content) {
-      post.read_time = calculateReadingTime(post.content);
-    }
+    // Ensure slug is unique
+    const finalSlug = ensureUniqueSlug(baseSlug);
+    
+    // Always recalculate read_time server-side (ignore client-sent read_time)
+    const calculatedReadTime = calculateReadingTime(post.content);
 
-    // Ensure required fields have defaults
+    // Prepare data for insertion
     const postData = {
       title: post.title,
-      slug: post.slug,
+      slug: finalSlug,
       excerpt: post.excerpt || '',
       content: post.content,
       author: post.author || 'FOULON Maxence',
@@ -477,10 +523,11 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
       featured_image: post.featured_image || null,
       tags: Array.isArray(post.tags) ? post.tags : [],
       category: post.category || 'Design',
-      read_time: post.read_time || 5,
+      read_time: calculatedReadTime,
       featured: Boolean(post.featured)
     };
 
+    // Insert the new post
     const result = db.prepare(`
       INSERT INTO blog_posts (
         title, slug, excerpt, content, author, published_at, updated_at,
@@ -492,9 +539,15 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
       JSON.stringify(postData.tags), postData.category, postData.read_time, postData.featured ? 1 : 0
     );
 
-    const newPost = db.prepare('SELECT * FROM blog_posts WHERE id = ?').get(result.lastInsertRowid);
+    // Get the newly created post
+    const newPost = db.prepare('SELECT * FROM blog_posts WHERE rowid = ?').get(result.lastInsertRowid);
     
-    res.json({ 
+    if (!newPost) {
+      throw new Error('Failed to retrieve created post');
+    }
+    
+    // Return 201 status code with the created post
+    res.status(201).json({ 
       data: {
         ...newPost,
         tags: JSON.parse(newPost.tags || '[]'),
@@ -503,7 +556,13 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
     });
   } catch (error) {
     console.error('Error creating post:', error);
-    res.status(500).json({ error: { message: error.message } });
+    
+    // Don't expose raw SQLite errors to clients
+    if (error.code && error.code.startsWith('SQLITE')) {
+      res.status(500).json({ error: { message: 'Internal server error' } });
+    } else {
+      res.status(500).json({ error: { message: 'Internal server error' } });
+    }
   }
 });
 
@@ -555,6 +614,38 @@ app.delete('/api/blog/posts/:id', authenticateToken, (req, res) => {
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: { message: error.message } });
+  }
+});
+
+// Slug availability endpoint
+app.get('/api/blog/slug-availability', (req, res) => {
+  try {
+    const { slug } = req.query;
+    
+    if (!slug) {
+      return res.status(400).json({ 
+        error: { message: 'Slug parameter is required' } 
+      });
+    }
+    
+    // Normalize the provided slug
+    const normalizedSlug = normalizeSlug(slug);
+    
+    // Check if the normalized slug is available
+    const existingPost = db.prepare('SELECT id FROM blog_posts WHERE slug = ?').get(normalizedSlug);
+    const isAvailable = !existingPost;
+    
+    // Get the suggested unique slug (what would actually be assigned)
+    const suggestedSlug = ensureUniqueSlug(slug);
+    
+    res.json({
+      base: normalizedSlug,
+      available: isAvailable,
+      suggested: suggestedSlug
+    });
+  } catch (error) {
+    console.error('Error checking slug availability:', error);
+    res.status(500).json({ error: { message: 'Internal server error' } });
   }
 });
 
