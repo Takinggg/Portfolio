@@ -79,13 +79,13 @@ const Projects = () => {
       title: project.title,
       category: project.category,
       type: getProjectType(project.category),
-      description: project.long_description || project.description,
-      image: project.images[0] || 'https://via.placeholder.com/400x300',
-      tags: project.technologies.slice(0, 4),
+      description: project.long_description || project.description || '',
+      image: (project.images && project.images[0]) || 'https://via.placeholder.com/400x300',
+      tags: (project.technologies || []).slice(0, 4),
       gradient: getGradientForCategory(project.category, index),
       likes: Math.floor(Math.random() * 300) + 50, // Mock data
       views: `${(Math.floor(Math.random() * 15) + 5).toFixed(1)}k`, // Mock data
-      featured: project.featured
+      featured: project.featured || false
     }));
   }, [allProjects]);
   const filteredProjects = selectedCategory === 'all' 

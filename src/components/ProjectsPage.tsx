@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ExternalLink, Github, Eye, Calendar, Code, Layers, Zap, Star, Filter, Search, ArrowRight, Home } from 'lucide-react';
 import { useProjects } from '../hooks/useSQLite';
-import { Project as SQLiteProject } from '../lib/database';
+import { NormalizedProject } from '../lib/adapters';
 import Navigation from './Navigation';
 
-// Convert SQLite project to display format
-const convertSQLiteProject = (project: SQLiteProject, index: number) => {
+// Convert normalized project to display format
+const convertProject = (project: NormalizedProject, index: number) => {
   const gradients = [
     'from-blue-600 via-purple-600 to-pink-600',
     'from-emerald-500 via-teal-500 to-cyan-600',
@@ -41,9 +41,9 @@ const convertSQLiteProject = (project: SQLiteProject, index: number) => {
     title: project.title,
     category: project.category,
     type: typeLabels[project.category as keyof typeof typeLabels] || 'Projet',
-    description: project.long_description || project.description,
-    image: project.images[0] || 'https://via.placeholder.com/400x300',
-    tags: project.technologies.slice(0, 4),
+    description: project.long_description || project.description || '',
+    image: (project.images && project.images[0]) || 'https://via.placeholder.com/400x300',
+    tags: (project.technologies || []).slice(0, 4),
     gradient: gradients[index % gradients.length],
     bgGradient: bgGradients[index % bgGradients.length],
     likes: Math.floor(Math.random() * 300) + 50, // Mock data
@@ -68,13 +68,13 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Fetch projects from SQLite
-  const { projects: sqliteProjects, loading, error } = useProjects();
+  // Fetch projects using unified hook
+  const { projects: normalizedProjects, loading, error } = useProjects();
   
-  // Convert SQLite projects to display format
+  // Convert to display format
   const projects = React.useMemo(() => {
-    return sqliteProjects.map(convertSQLiteProject);
-  }, [sqliteProjects]);
+    return normalizedProjects.map(convertProject);
+  }, [normalizedProjects]);
 
   // Generate categories dynamically from projects
   const categories = [
