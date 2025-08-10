@@ -1,4 +1,3 @@
-
 {
   "name": "vite-react-typescript-starter",
   "private": true,
@@ -11,7 +10,9 @@
     "preview": "vite preview",
     "migrate": "node scripts/migrate.js",
     "db:init": "node -e \"require('./src/lib/database.ts').initializeDatabase()\"",
-    "db:migrate": "npm run migrate"
+    "db:migrate": "npm run migrate",
+    "server": "node server/index.js",
+    "dev:full": "concurrently \"npm run server\" \"npm run dev\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.54.0",
@@ -24,7 +25,12 @@
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "concurrently": "^8.2.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
@@ -40,14 +46,5 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.5.3",
     "vite": "^5.4.10"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "better-sqlite3": "^11.3.0",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.7",
-    "@types/express": "^4.17.21",
-    "@types/cors": "^2.8.17"
+  }
+}
