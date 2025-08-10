@@ -220,12 +220,13 @@ function App() {
           onNavigateToBlog={navigateToBlog}
           onNavigateToProjects={navigateToProjects}
           currentPage={currentPage}
+          isAuthenticated={isLoggedIn}
         />
       </header>
 
-      {/* Right Sidebar - Only on landing page */}
-      {currentPage === 'home' && (
-        <aside aria-label="Navigation rapide">
+      {/* Right Sidebar - Hidden for desktop, will be replaced with mobile FAB */}
+      {false && currentPage === 'home' && (
+        <aside aria-label="Navigation rapide" className="hidden">
           <RightSidebar onNavigateToSection={navigateToSection} />
         </aside>
       )}
