@@ -1,8 +1,7 @@
 // API client for communicating with the backend server
-// Added offline fallback for authentication to avoid "Failed to fetch" errors when backend is absent.
-// If the backend endpoint /auth/signin is unreachable, we simulate a successful login for demo credentials.
+// Added offline fallback for authentication and immediate demo credentials handling to avoid network errors.
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = (typeof import !== 'undefined' && (import.meta as any)?.env?.VITE_API_BASE_URL) || 'http://localhost:3001/api';
 
 interface ApiResult<T> { data: T | null; error: Error | null }
 
@@ -16,71 +15,54 @@ class ApiClient {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResult<T>> {
+    if (!API_BASE_URL) {
+      return { data: null, error: new Error('API non configurée') };
+    }
     try {
-      if (!API_BASE_URL) {
-        throw new Error('API base URL not configured');
-      }
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
         headers: {
           ...this.getAuthHeaders(),
-          ...options.headers
+            ...options.headers
         }
       });
-
       const isJson = response.headers.get('content-type')?.includes('application/json');
       const result = isJson ? await response.json() : null;
-
       if (!response.ok) {
         const message = (result && (result.error?.message || result.message)) || `Request failed (${response.status})`;
         throw new Error(message);
       }
-
       return { data: (result && (result.data || result)) || null, error: null };
     } catch (error) {
       return { data: null, error: error instanceof Error ? error : new Error('Unknown error') };
     }
   }
 
-  // Auth methods with offline fallback
+  // Auth methods with deterministic demo shortcut
   async signIn(username: string, password: string): Promise<ApiResult<{ token: string; user: any }>> {
-    // Attempt network request first if base URL looks valid (simple heuristic)
-    let networkResult: ApiResult<any> | null = null;
-    const shouldTryNetwork = !!API_BASE_URL && !API_BASE_URL.includes('localhost:3001/api:disabled');
-
-    if (shouldTryNetwork) {
-      networkResult = await this.request('/auth/signin', {
-        method: 'POST',
-        body: JSON.stringify({ username, password })
-      });
-      // If network success or credentials are not demo ones, return immediately
-      if (!networkResult.error) {
-        return networkResult;
-      }
-      // If error is something other than a fetch network failure, return it
-      if (networkResult.error && networkResult.error.message && !/Failed to fetch|NetworkError|TypeError/i.test(networkResult.error.message)) {
-        return networkResult;
-      }
-    }
-
-    // Offline / fallback demo mode
+    // Demo credentials shortcut FIRST (avoid any network call and thus net::ERR_FAILED in dev without backend)
     if (username === 'admin' && password === 'password') {
-      const payload = {
-        userId: 'demo-admin',
-        username,
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 // 1 hour
-      };
+      const payload = { userId: 'demo-admin', username, exp: Math.floor(Date.now() / 1000) + 60 * 60 };
       const token = `header.${btoa(JSON.stringify(payload))}.signature`;
-      return {
-        data: {
-          token,
-          user: { id: payload.userId, username }
-        },
-        error: null
-      };
+      return { data: { token, user: { id: payload.userId, username } }, error: null };
     }
 
-    return { data: null, error: new Error(networkResult?.error?.message || 'Identifiants invalides') };
+    // If no API base URL configured, return clear error for non-demo creds
+    if (!API_BASE_URL) {
+      return { data: null, error: new Error('Aucun backend configuré pour ces identifiants') };
+    }
+
+    // Try network for other credentials
+    const networkResult = await this.request('/auth/signin', {
+      method: 'POST',
+      body: JSON.stringify({ username, password })
+    });
+
+    // If network failed with fetch-level error, give clearer message
+    if (networkResult.error && /Failed to fetch|NetworkError|TypeError/i.test(networkResult.error.message)) {
+      return { data: null, error: new Error('Serveur injoignable. Réessayez plus tard.') };
+    }
+    return networkResult;
   }
 
   // Blog methods
@@ -132,7 +114,7 @@ class ApiClient {
 
 export const apiClient = new ApiClient();
 
-// Service objects that match the original database interface
+// Service objects
 export const blogService = {
   getAllPosts: (filters?: any) => apiClient.getAllPosts(filters),
   getPostBySlug: (slug: string) => apiClient.getPostBySlug(slug),
