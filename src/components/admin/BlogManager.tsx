@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Edit, Trash2, Eye, Calendar, Tag, FileText, Save, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Calendar, FileText, Save, X, AlertTriangle } from 'lucide-react';
 import { blogService, utils } from '../../lib/api';
 import RichTextEditor from './RichTextEditor';
 
@@ -18,19 +18,44 @@ interface BlogPost {
   read_time: number;
   featured: boolean;
   created_at: string;
+  // Offline only marker
+  __offline?: boolean;
 }
+
+const DEMO_POSTS: BlogPost[] = [
+  {
+    id: 'demo-1',
+    title: 'Article démo hors ligne',
+    slug: 'article-demo-hors-ligne',
+    excerpt: 'Exemple local affiché en absence de backend.',
+    content: 'Contenu de démonstration (non persistant).',
+    author: 'Démo',
+    published_at: new Date().toISOString().split('T')[0],
+    featured_image: '',
+    tags: ['demo'],
+    category: 'Design',
+    read_time: 1,
+    featured: false,
+    created_at: new Date().toISOString(),
+    __offline: true
+  }
+];
+
+const isNetworkError = (err: unknown): err is Error =>
+  err instanceof Error && /Failed to fetch|NetworkError|TypeError/i.test(err.message);
 
 const BlogManager: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
   const [isEditing, setIsEditing] = useState(false);
   const [editingPost, setEditingPost] = useState<Partial<BlogPost> | null>(null);
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [networkWarning, setNetworkWarning] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const categories = ['Design', 'Méthodologie', 'Research', 'Tendances'];
 
@@ -45,15 +70,29 @@ const BlogManager: React.FC = () => {
   const fetchPosts = async () => {
     setLoading(true);
     setError(null);
-    
+    setNetworkWarning(null);
+
     try {
       const { data, error } = await blogService.getAllPosts();
-      
-      if (error) throw error;
-      
-      setPosts(data || []);
+
+      if (error) {
+        if (isNetworkError(error)) {
+          setNetworkWarning('Backend injoignable. Mode hors ligne (données non persistées).');
+          setPosts(DEMO_POSTS);
+        } else {
+          setError(error.message);
+        }
+        return;
+      }
+
+      setPosts((data || []).map(p => ({ ...p, __offline: false })));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement des articles');
+      if (isNetworkError(err)) {
+        setNetworkWarning('Backend injoignable. Mode hors ligne (données de démonstration).');
+        setPosts(DEMO_POSTS);
+      } else {
+        setError(err instanceof Error ? err.message : 'Erreur lors du chargement des articles');
+      }
       console.error('Error fetching posts:', err);
     } finally {
       setLoading(false);
@@ -101,74 +140,137 @@ const BlogManager: React.FC = () => {
 
   const handleSave = async (postData: Partial<BlogPost>) => {
     try {
-      setLoading(true);
-      
-      // Generate slug if not provided
+      setSaving(true);
+      setError(null);
+      setNetworkWarning(null);
+
       if (!postData.slug && postData.title) {
         postData.slug = utils.generateSlug(postData.title);
       }
-      
-      // Calculate reading time if content is provided
       if (postData.content) {
         postData.read_time = utils.calculateReadingTime(postData.content);
       }
 
       let result;
-      if (postData.id) {
-        // Update existing post
+      if (postData.id && !postData.__offline) {
         result = await blogService.updatePost(postData.id, postData);
+      } else if (postData.id && postData.__offline) {
+        // Offline update of existing local fallback post
+        setPosts(prev => prev.map(p => p.id === postData.id ? { ...p, ...postData, updated_at: new Date().toISOString() } as BlogPost : p));
+        setIsEditing(false);
+        setEditingPost(null);
+        return;
       } else {
-        // Create new post
         result = await blogService.createPost(postData as Omit<BlogPost, 'id' | 'created_at'>);
       }
 
-      if (result.error) throw result.error;
+      if (result && result.error) {
+        if (isNetworkError(result.error)) {
+          // Offline optimistic creation/update
+            if (!postData.id) {
+              const offlinePost: BlogPost = {
+                id: `offline-${Math.random().toString(36).slice(2, 10)}`,
+                title: postData.title || 'Sans titre',
+                slug: postData.slug || utils.generateSlug(postData.title || 'sans-titre'),
+                excerpt: postData.excerpt || '',
+                content: postData.content || '',
+                author: postData.author || 'Auteur',
+                published_at: postData.published_at || new Date().toISOString().split('T')[0],
+                featured_image: postData.featured_image || '',
+                tags: postData.tags || [],
+                category: postData.category || 'Design',
+                read_time: postData.read_time || 1,
+                featured: postData.featured || false,
+                created_at: new Date().toISOString(),
+                __offline: true
+              };
+              setPosts(prev => [offlinePost, ...prev]);
+            } else {
+              setPosts(prev => prev.map(p => p.id === postData.id ? { ...(p as BlogPost), ...postData, __offline: true } as BlogPost : p));
+            }
+          setNetworkWarning('Opération réalisée hors ligne. Les changements ne sont pas persistés.');
+        } else {
+          throw result.error;
+        }
+      } else if (result && result.data) {
+        await fetchPosts();
+      }
 
       setIsEditing(false);
       setEditingPost(null);
-      await fetchPosts(); // Refresh the list
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      if (isNetworkError(err)) {
+        setNetworkWarning('Sauvegarde hors ligne. Changements non persistés.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      }
       console.error('Error saving post:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (postId: string) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
+    try {
+      setLoading(true);
+      setError(null);
+      setNetworkWarning(null);
+      const { error } = await blogService.deletePost(postId);
+      if (error) {
+        if (isNetworkError(error)) {
+          // Delete locally (optimistic offline)
+          setPosts(prev => prev.filter(p => p.id !== postId));
+          setNetworkWarning('Suppression hors ligne (non persistée sur le serveur).');
+        } else {
+          throw error;
+        }
+      } else {
+        await fetchPosts();
+      }
+    } catch (err) {
+      if (isNetworkError(err)) {
+        setNetworkWarning('Suppression impossible hors ligne.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      }
+      console.error('Error deleting post:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (postId: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
-      try {
-        setLoading(true);
-        const { error } = await blogService.deletePost(postId);
-        
-        if (error) throw error;
-        
-        await fetchPosts(); // Refresh the list
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
-        console.error('Error deleting post:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   const handleBulkDelete = async () => {
-    if (window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedPosts.length} article(s) ?`)) {
-      try {
-        setLoading(true);
-        
-        // Delete all selected posts
-        await Promise.all(selectedPosts.map(postId => blogService.deletePost(postId)));
-        
-        setSelectedPosts([]);
-        await fetchPosts(); // Refresh the list
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erreur lors de la suppression en masse');
-        console.error('Error bulk deleting posts:', err);
-      } finally {
-        setLoading(false);
+    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedPosts.length} article(s) ?`)) return;
+    try {
+      setLoading(true);
+      setError(null);
+      setNetworkWarning(null);
+      const results = await Promise.all(selectedPosts.map(postId => blogService.deletePost(postId)));
+      const networkFailures = results.filter(r => r.error && isNetworkError(r.error));
+      const hardErrors = results.filter(r => r.error && !isNetworkError(r.error));
+
+      if (hardErrors.length > 0) {
+        throw hardErrors[0].error; // show first hard error
       }
+
+      if (networkFailures.length > 0) {
+        // Optimistic local removal
+        setPosts(prev => prev.filter(p => !selectedPosts.includes(p.id)));
+        setNetworkWarning('Suppressions réalisées hors ligne (non persistées).');
+      } else {
+        await fetchPosts();
+      }
+      setSelectedPosts([]);
+    } catch (err) {
+      if (isNetworkError(err)) {
+        setNetworkWarning('Suppression en masse hors ligne non confirmée.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la suppression en masse');
+      }
+      console.error('Error bulk deleting posts:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -188,21 +290,6 @@ const BlogManager: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-        <p className="font-medium">Erreur</p>
-        <p className="text-sm">{error}</p>
-        <button 
-          onClick={fetchPosts}
-          className="mt-2 text-sm underline hover:no-underline"
-        >
-          Réessayer
-        </button>
-      </div>
-    );
-  }
-
   if (isEditing) {
     return (
       <BlogEditor
@@ -212,13 +299,35 @@ const BlogManager: React.FC = () => {
           setIsEditing(false);
           setEditingPost(null);
         }}
-        loading={loading}
+        loading={saving}
+        networkWarning={networkWarning}
+        error={error}
       />
     );
   }
 
   return (
     <div className="space-y-6">
+      {(error || networkWarning) && (
+        <div className={`rounded-xl border px-4 py-3 text-sm flex items-start gap-3 ${
+          error
+            ? 'bg-red-50 border-red-200 text-red-700'
+            : 'bg-amber-50 border-amber-200 text-amber-800'
+        }`}> 
+          <AlertTriangle className="mt-0.5" size={18} />
+          <div className="flex-1">
+            <p className="font-medium">{error ? 'Erreur de chargement' : 'Mode hors ligne'}</p>
+            <p className="mt-0.5">{error || networkWarning}</p>
+            <button
+              onClick={fetchPosts}
+              className="mt-2 text-xs font-medium underline hover:no-underline"
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -227,7 +336,7 @@ const BlogManager: React.FC = () => {
         </div>
         <button
           onClick={handleCreate}
-          disabled={loading}
+          disabled={loading || saving}
           className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
         >
           <Plus size={20} />
@@ -250,7 +359,6 @@ const BlogManager: React.FC = () => {
               />
             </div>
           </div>
-          
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -270,7 +378,7 @@ const BlogManager: React.FC = () => {
             </span>
             <button
               onClick={handleBulkDelete}
-              disabled={loading}
+              disabled={loading || saving}
               className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium hover:bg-red-200 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               <Trash2 size={16} />
@@ -287,10 +395,9 @@ const BlogManager: React.FC = () => {
             <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun article trouvé</h3>
             <p className="text-gray-600 mb-4">
-              {searchQuery || selectedCategory !== 'all' 
+              {searchQuery || selectedCategory !== 'all'
                 ? 'Essayez de modifier vos critères de recherche'
-                : 'Commencez par créer votre premier article'
-              }
+                : 'Commencez par créer votre premier article'}
             </p>
             {!searchQuery && selectedCategory === 'all' && (
               <button
@@ -346,7 +453,12 @@ const BlogManager: React.FC = () => {
                           className="w-16 h-16 object-cover rounded-lg"
                         />
                         <div>
-                          <h3 className="font-medium text-gray-900 line-clamp-1">{post.title}</h3>
+                          <h3 className="font-medium text-gray-900 line-clamp-1 flex items-center gap-2">
+                            {post.title}
+                            {post.__offline && (
+                              <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide">Offline</span>
+                            )}
+                          </h3>
                           <p className="text-sm text-gray-600 line-clamp-2">{post.excerpt}</p>
                           <div className="flex items-center gap-2 mt-1">
                             {post.featured && (
@@ -368,8 +480,8 @@ const BlogManager: React.FC = () => {
                       {utils.formatDate(post.published_at)}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                        Publié
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${post.__offline ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'}`}> 
+                        {post.__offline ? 'Local' : 'Publié'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -413,9 +525,11 @@ interface BlogEditorProps {
   onSave: (post: Partial<BlogPost>) => void;
   onCancel: () => void;
   loading?: boolean;
+  networkWarning?: string | null;
+  error?: string | null;
 }
 
-const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel, loading = false }) => {
+const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel, loading = false, networkWarning, error }) => {
   const [formData, setFormData] = useState<Partial<BlogPost>>(post || {});
   const [tags, setTags] = useState<string>(post?.tags?.join(', ') || '');
 
@@ -429,9 +543,23 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ post, onSave, onCancel, loading
 
   return (
     <div className="space-y-6">
+      {(error || networkWarning) && (
+        <div className={`rounded-xl border px-4 py-3 text-sm flex items-start gap-3 ${
+          error
+            ? 'bg-red-50 border-red-200 text-red-700'
+            : 'bg-amber-50 border-amber-200 text-amber-800'
+        }`}> 
+          <AlertTriangle className="mt-0.5" size={18} />
+          <div className="flex-1">
+            <p className="font-medium">{error ? 'Erreur' : 'Mode hors ligne'}</p>
+            <p className="mt-0.5">{error || networkWarning}</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">
-          {post?.id ? 'Modifier l\'article' : 'Nouvel article'}
+          {post?.id ? 'Modifier l'article' : 'Nouvel article'}
         </h2>
         <div className="flex items-center gap-4">
           <button
