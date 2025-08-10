@@ -1,7 +1,10 @@
 // API client for communicating with the backend server
 // Added offline fallback for authentication and immediate demo credentials handling to avoid network errors.
 
-const API_BASE_URL = (typeof import !== 'undefined' && (import.meta as any)?.env?.VITE_API_BASE_URL) || 'http://localhost:3001/api';
+// Resolve API base URL from Vite env if available; fall back to localhost.
+// NOTE: Previous version incorrectly used `typeof import !== 'undefined'` which is a syntax error because
+// `import` is a reserved keyword (dynamic import expects parentheses). Correct usage is `typeof import.meta !== 'undefined'`.
+const API_BASE_URL: string = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) || 'http://localhost:3001/api';
 
 interface ApiResult<T> { data: T | null; error: Error | null }
 
@@ -23,7 +26,7 @@ class ApiClient {
         ...options,
         headers: {
           ...this.getAuthHeaders(),
-            ...options.headers
+          ...options.headers
         }
       });
       const isJson = response.headers.get('content-type')?.includes('application/json');
