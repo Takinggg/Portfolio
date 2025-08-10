@@ -1,0 +1,1 @@
+Enhance the liquid glass effects with more transparency, blur, and glassmorphism as shown in the reference images. The current implementation needs stronger glass effects with more pronounced transparency, backdrop-filter blur, and liquid animations to match the reference aesthetic.
