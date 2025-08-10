@@ -226,8 +226,8 @@ function App() {
       <main role="main">
         <Hero />
         <About />
-        <Projects />
-        <BlogSection onNavigateToBlog={navigateToBlog} />
+        <Projects onNavigateToProject={navigateToProject} />
+        <BlogSection onNavigateToBlog={navigateToBlog} onNavigateToPost={navigateToPost} />
         <Contact />
       </main>
 

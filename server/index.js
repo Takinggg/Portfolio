@@ -737,19 +737,19 @@ app.post('/api/projects', authenticateToken, (req, res) => {
       });
     }
 
-    // Ensure all fields have proper defaults
+    // Ensure all fields have proper defaults with proper null/undefined checks
     const projectData = {
       title: project.title,
       description: project.description,
       long_description: project.long_description || '',
-      technologies: Array.isArray(project.technologies) ? project.technologies : [],
+      technologies: (project.technologies && Array.isArray(project.technologies)) ? project.technologies : [],
       category: project.category || 'web',
       status: project.status || 'in-progress',
       start_date: project.start_date || new Date().toISOString().split('T')[0],
       end_date: project.end_date || null,
       client: project.client || null,
       budget: project.budget || null,
-      images: Array.isArray(project.images) ? project.images : [],
+      images: (project.images && Array.isArray(project.images)) ? project.images : [],
       featured: Boolean(project.featured),
       github_url: project.github_url || null,
       live_url: project.live_url || null
@@ -796,8 +796,8 @@ app.put('/api/projects/:id', authenticateToken, (req, res) => {
       if (key !== 'id' && key !== 'created_at' && value !== undefined) {
         setClause.push(`${key} = ?`);
         if (key === 'technologies' || key === 'images') {
-          // Ensure arrays are properly handled
-          const arrayValue = Array.isArray(value) ? value : [];
+          // Ensure arrays are properly handled with null/undefined checks
+          const arrayValue = (value && Array.isArray(value)) ? value : [];
           params.push(JSON.stringify(arrayValue));
         } else if (key === 'featured') {
           params.push(value ? 1 : 0);

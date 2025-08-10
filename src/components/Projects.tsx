@@ -15,7 +15,11 @@ const getPlaceholderImage = (category: string) => {
   return placeholders[category as keyof typeof placeholders] || placeholders.default;
 };
 
-const Projects = () => {
+interface ProjectsProps {
+  onNavigateToProject?: (id: string) => void;
+}
+
+const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -94,7 +98,7 @@ const Projects = () => {
       type: getProjectType(project.category),
       description: project.long_description || project.description || '',
       image: (project.images && project.images[0]) || getPlaceholderImage(project.category),
-      tags: (project.technologies || []).slice(0, 4),
+      tags: (project.technologies && Array.isArray(project.technologies) ? project.technologies : []).slice(0, 4),
       gradient: getGradientForCategory(project.category, index),
       likes: Math.floor(Math.random() * 300) + 50, // Mock data
       views: `${(Math.floor(Math.random() * 15) + 5).toFixed(1)}k`, // Mock data
@@ -204,10 +208,11 @@ const Projects = () => {
           {filteredProjects.map((project, index) => (
             <div 
               key={project.id}
-              className={`group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 ${
+              className={`group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 cursor-pointer ${
                 project.featured ? 'md:col-span-2 lg:col-span-1' : ''
               } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
               style={{ transitionDelay: `${index * 150}ms` }}
+              onClick={() => onNavigateToProject && onNavigateToProject(project.id)}
             >
               {/* Featured Badge */}
               {project.featured && (
@@ -230,7 +235,13 @@ const Projects = () => {
                 {/* Hover Actions */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
                   <div className="flex gap-4">
-                    <button className="p-4 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all duration-200 transform hover:scale-110">
+                    <button 
+                      className="p-4 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all duration-200 transform hover:scale-110"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onNavigateToProject && onNavigateToProject(project.id);
+                      }}
+                    >
                       <Eye size={24} />
                     </button>
                     <button className="p-4 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all duration-200 transform hover:scale-110">
