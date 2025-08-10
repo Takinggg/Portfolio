@@ -164,13 +164,13 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
       <header className="bg-gradient-to-br from-purple-600 to-pink-600 text-white py-20 pt-32 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+            <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           {/* Breadcrumb Navigation */}
-          <nav className="flex items-center gap-2 text-white/80 mb-8">
+            <nav className="flex items-center gap-2 text-white/80 mb-8">
             <button 
               onClick={onNavigateHome}
               className="flex items-center gap-2 hover:text-white transition-colors duration-200"
@@ -203,7 +203,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
             <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                 <div className="text-2xl font-bold text-white mb-1">
-                  {sqlitePosts.length}
+                  {posts.length}
                 </div>
                 <div className="text-sm text-white/80">Articles</div>
               </div>
@@ -249,7 +249,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
                 placeholder="Rechercher un article..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl"
+                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/80 backdrop-blur-sm"
               />
             </div>
 
@@ -265,7 +265,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
           </div>
 
           {/* Filters Panel */}
-          <div className={`mt-6 transition-all duration-500 ${isFilterOpen ? 'opacity-100 max-h-96' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+          <div className={`mt-6 transition-all duration-500 ${isFilterOpen ? 'opacity-100 max-h-96' : 'opacity-0 max-h-0 overflow-hidden'}`}> 
             <div className="p-6 bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200 shadow-xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Category Filter */}
@@ -419,7 +419,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, o
                       {/* Read More */}
                       <button 
                         onClick={() => onNavigateToPost(post.slug)}
-                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                       >
                         Lire l'article
                       </button>
