@@ -1,12 +1,38 @@
 // API client for communicating with the backend server
-// Added offline fallback for authentication and immediate demo credentials handling to avoid network errors.
+// Added offline fallback for authentication and now for contact messages (submit/list/update/delete).
 
-// Resolve API base URL from Vite env if available; fall back to localhost.
-// NOTE: Previous version incorrectly used `typeof import !== 'undefined'` which is a syntax error because
-// `import` is a reserved keyword (dynamic import expects parentheses). Correct usage is `typeof import.meta !== 'undefined'`.
-const API_BASE_URL: string = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) || 'http://localhost:3001/api';
+const API_BASE_URL: string =
+  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) ||
+  'http://localhost:3001/api';
 
 interface ApiResult<T> { data: T | null; error: Error | null }
+
+const LS_CONTACT_MESSAGES = 'offline_contact_messages';
+
+function loadLocalMessages(): any[] {
+  try {
+    const raw = localStorage.getItem(LS_CONTACT_MESSAGES);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalMessages(list: any[]) {
+  try {
+    localStorage.setItem(LS_CONTACT_MESSAGES, JSON.stringify(list));
+  } catch {
+    /* ignore */
+  }
+}
+
+function isNetworkError(err: Error | null) {
+  return !!err && /Failed to fetch|NetworkError|TypeError/i.test(err.message);
+}
+
+function genId(prefix: string) {
+  return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
+}
 
 class ApiClient {
   private getAuthHeaders(): HeadersInit {
@@ -43,25 +69,21 @@ class ApiClient {
 
   // Auth methods with deterministic demo shortcut
   async signIn(username: string, password: string): Promise<ApiResult<{ token: string; user: any }>> {
-    // Demo credentials shortcut FIRST (avoid any network call and thus net::ERR_FAILED in dev without backend)
     if (username === 'admin' && password === 'password') {
       const payload = { userId: 'demo-admin', username, exp: Math.floor(Date.now() / 1000) + 60 * 60 };
       const token = `header.${btoa(JSON.stringify(payload))}.signature`;
       return { data: { token, user: { id: payload.userId, username } }, error: null };
     }
 
-    // If no API base URL configured, return clear error for non-demo creds
     if (!API_BASE_URL) {
       return { data: null, error: new Error('Aucun backend configuré pour ces identifiants') };
     }
 
-    // Try network for other credentials
     const networkResult = await this.request('/auth/signin', {
       method: 'POST',
       body: JSON.stringify({ username, password })
     });
 
-    // If network failed with fetch-level error, give clearer message
     if (networkResult.error && /Failed to fetch|NetworkError|TypeError/i.test(networkResult.error.message)) {
       return { data: null, error: new Error('Serveur injoignable. Réessayez plus tard.') };
     }
@@ -100,19 +122,85 @@ class ApiClient {
   async updateProject(id: string, updates: any) { return this.request(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(updates) }); }
   async deleteProject(id: string) { return this.request(`/projects/${id}`, { method: 'DELETE' }); }
 
-  // Contact methods
-  async submitMessage(messageData: any) { return this.request('/contact', { method: 'POST', body: JSON.stringify(messageData) }); }
+  // Contact methods with offline fallback
+  async submitMessage(messageData: any) {
+    const result = await this.request('/contact', { method: 'POST', body: JSON.stringify(messageData) });
+    if (isNetworkError(result.error)) {
+      const now = new Date().toISOString();
+      const offline = {
+        id: genId('msg'),
+        ...messageData,
+        is_read: false,
+        created_at: now,
+        updated_at: now,
+        is_offline: true
+      };
+      const list = loadLocalMessages();
+      list.unshift(offline);
+      saveLocalMessages(list);
+      return { data: offline, error: null };
+    }
+    return result;
+  }
+
   async getAllMessages(filters?: { is_read?: boolean; limit?: number; offset?: number; }) {
     const params = new URLSearchParams();
     if (filters?.is_read !== undefined) params.append('is_read', filters.is_read.toString());
     if (filters?.limit) params.append('limit', filters.limit.toString());
     if (filters?.offset) params.append('offset', filters.offset.toString());
     const queryString = params.toString();
-    return this.request(`/contact/messages${queryString ? `?${queryString}` : ''}`);
+    const result = await this.request(`/contact/messages${queryString ? `?${queryString}` : ''}`);
+    if (isNetworkError(result.error)) {
+      let data = loadLocalMessages();
+      if (filters?.is_read !== undefined) {
+        data = data.filter(m => m.is_read === filters.is_read);
+      }
+      if (filters?.offset !== undefined || filters?.limit !== undefined) {
+        const start = filters.offset || 0;
+        const end = start + (filters.limit || data.length);
+        data = data.slice(start, end);
+      }
+      return { data, error: null };
+    }
+    return result;
   }
-  async updateMessageStatus(id: string, is_read: boolean) { return this.request(`/contact/messages/${id}`, { method: 'PUT', body: JSON.stringify({ is_read }) }); }
-  async deleteMessage(id: string) { return this.request(`/contact/messages/${id}`, { method: 'DELETE' }); }
-  async getUnreadCount() { return this.request('/contact/unread-count'); }
+
+  async updateMessageStatus(id: string, is_read: boolean) {
+    const result = await this.request(`/contact/messages/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ is_read })
+    });
+    if (isNetworkError(result.error)) {
+      const list = loadLocalMessages();
+      const idx = list.findIndex(m => m.id === id);
+      if (idx !== -1) {
+        list[idx] = { ...list[idx], is_read, updated_at: new Date().toISOString() };
+        saveLocalMessages(list);
+        return { data: list[idx], error: null };
+      }
+    }
+    return result;
+  }
+
+  async deleteMessage(id: string) {
+    const result = await this.request(`/contact/messages/${id}`, { method: 'DELETE' });
+    if (isNetworkError(result.error)) {
+      const list = loadLocalMessages().filter(m => m.id !== id);
+      saveLocalMessages(list);
+      return { data: { id, deleted: true, offline: true }, error: null };
+    }
+    return result;
+  }
+
+  async getUnreadCount() {
+    const result = await this.request('/contact/unread-count');
+    if (isNetworkError(result.error)) {
+      const list = loadLocalMessages();
+      const count = list.filter(m => !m.is_read).length;
+      return { data: { count }, error: null };
+    }
+    return result;
+  }
 }
 
 export const apiClient = new ApiClient();
