@@ -1,44 +1,122 @@
 import { useEffect, useState } from "react";
-import { ApiClient } from "../api";
-
-const api = new ApiClient();
+import { blogService, projectService } from "../lib/database";
 
 // Récupère tous les posts du blog
 export function useBlogPosts() {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    api.getAllPosts().then(setPosts);
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const result = await blogService.getAllPosts();
+        setPosts(result.data || []);
+        setError(null);
+      } catch (err) {
+        setError(err);
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
   }, []);
-  return posts;
+
+  return { posts, loading, error };
 }
 
 // Récupère un post du blog par son id
 export function useBlogPost(id: number | string) {
   const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    if (id) {
-      api.request(`/posts/${id}`).then(setPost);
-    }
+    const fetchPost = async () => {
+      if (!id) {
+        setPost(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const result = await blogService.getPostById(id);
+        setPost(result.data || null);
+        setError(null);
+      } catch (err) {
+        setError(err);
+        setPost(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
   }, [id]);
-  return post;
+
+  return { post, loading, error };
 }
 
 // Récupère tous les projets
 export function useProjects() {
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    api.request("/projects").then(setProjects);
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const result = await projectService.getAllProjects();
+        setProjects(result.data || []);
+        setError(null);
+      } catch (err) {
+        setError(err);
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
-  return projects;
+
+  return { projects, loading, error };
 }
 
 // Récupère un projet par son id
 export function useProject(id: number | string) {
   const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    if (id) {
-      api.request(`/projects/${id}`).then(setProject);
-    }
+    const fetchProject = async () => {
+      if (!id) {
+        setProject(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const result = await projectService.getProjectById(id);
+        setProject(result.data || null);
+        setError(null);
+      } catch (err) {
+        setError(err);
+        setProject(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
   }, [id]);
-  return project;
+
+  return { project, loading, error };
 }
