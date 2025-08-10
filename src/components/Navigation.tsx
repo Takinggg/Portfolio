@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sparkles, Home, User, Briefcase, Mail, ArrowRight, BookOpen, ArrowLeft } from 'lucide-react';
 import ThemeToggle from './ui/ThemeToggle';
+import { GlassCard } from './ui/GlassCard';
 
 interface NavigationProps {
   onNavigateToSection: (sectionId: string) => void;
@@ -88,181 +90,219 @@ const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <>
-      {/* Main Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-3xl border-b border-gray-200/50 shadow-2xl shadow-black/5' 
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-20">
+      {/* Floating Navigation */}
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-700`}
+      >
+        <GlassCard className={`px-6 py-3 ${isScrolled ? 'shadow-glass-lg' : 'shadow-glass'}`}>
+          <div className="flex items-center gap-6">
             {/* Back Button */}
             {showBackButton && onBack && (
-              <button
+              <motion.button
                 onClick={onBack}
-                className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-medium"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-primary-500 transition-all duration-300 font-medium"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <ArrowLeft size={18} />
                 <span className="hidden sm:inline">{backLabel}</span>
-              </button>
+              </motion.button>
             )}
 
-            {/* Logo */}
             {/* Logo - Only show on home page */}
-            {currentPage === 'home' && (
-              <div 
-                className={`flex items-center gap-4 cursor-pointer group ${showBackButton ? 'mx-auto sm:mx-0' : ''}`}
+            {currentPage === 'home' && !showBackButton && (
+              <motion.div 
+                className="flex items-center gap-3 cursor-pointer group"
                 onClick={() => handleNavigation('hero')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <div className="relative">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl">
-                    <Sparkles className="text-white" size={20} />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                  <motion.div 
+                    className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-neon"
+                    whileHover={{ rotate: 10 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  >
+                    <Sparkles className="text-white" size={16} />
+                  </motion.div>
                 </div>
                 <div className="hidden sm:block">
-                  <div className="text-xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  <div className="text-lg font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
                     FOULON
                   </div>
-                  <div className="text-sm text-gray-500 font-medium -mt-1">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 font-medium -mt-1">
                     UI/UX Designer
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
             
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center justify-center flex-1">
-              <div className="flex items-center bg-white/80 backdrop-blur-2xl border border-gray-200/50 rounded-full p-1 shadow-2xl">
+            <div className="hidden lg:flex items-center">
+              <div className="flex items-center gap-1">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
                   return (
-                    <button
+                    <motion.button
                       key={item.id}
                       onClick={() => handleNavigation(item.id)}
-                      className={`relative flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-500 group ${
+                      className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                         isActive
-                          ? 'text-white shadow-lg'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                          ? 'text-white'
+                          : 'text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400'
                       }`}
-                      style={{ transitionDelay: `${index * 50}ms` }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       {isActive && (
-                        <>
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-600 rounded-full animate-pulse" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-700 to-pink-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </>
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl shadow-neon"
+                          layoutId="activeTab"
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        />
                       )}
-                      <Icon size={16} className={`relative z-10 ${isActive ? 'animate-bounce' : 'group-hover:scale-110'} transition-transform duration-300`} />
-                      <span className="relative z-10 whitespace-nowrap">{item.label}</span>
+                      <Icon 
+                        size={16} 
+                        className={`relative z-10 ${isActive ? 'text-white' : ''}`} 
+                      />
+                      <span className="relative z-10 hidden xl:inline">{item.label}</span>
                       {isActive && (
-                        <ArrowRight size={12} className="relative z-10 animate-pulse" />
+                        <motion.div
+                          className="w-1 h-1 bg-white rounded-full ml-1 relative z-10"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.1 }}
+                        />
                       )}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
             </div>
 
-            {/* CTA Button */}
-            <div className="hidden lg:flex items-center gap-3">
-              {/* Theme Toggle */}
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-3">
               <ThemeToggle />
               
-              <button 
-                onClick={() => {
-                  window.history.pushState({}, '', '/admin');
-                  window.location.href = '/admin';
-                }}
-                className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+              {/* Admin Button */}
+              <motion.button
+                onClick={() => window.location.href = '/admin'}
+                className="hidden md:flex items-center px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Admin
-              </button>
-              <button 
+              </motion.button>
+
+              {/* CTA Button */}
+              <motion.button
                 onClick={() => handleNavigation('contact')}
-                className="group relative px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold text-sm overflow-hidden shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-medium text-sm shadow-neon hover:shadow-neon-blue transition-all duration-300"
+                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(99, 102, 241, 0.5)" }}
+                whileTap={{ scale: 0.95 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <span className="relative z-10 flex items-center gap-2">
-                  Collaborer
-                  <div className="w-2 h-2 bg-white rounded-full group-hover:animate-ping" />
-                </span>
-              </button>
-            </div>
+                <span>Collaborer</span>
+                <ArrowRight size={14} />
+              </motion.button>
 
-            {/* Mobile Menu Button */}
-            <button
-              className="lg:hidden relative p-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-gray-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              {/* Mobile Menu Button */}
+              <motion.button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={isMobileMenuOpen ? 'close' : 'menu'}
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                  </motion.div>
+                </AnimatePresence>
+              </motion.button>
+            </div>
+          </div>
+        </GlassCard>
+      </motion.nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            
+            {/* Mobile Menu Content */}
+            <motion.div
+              className="fixed top-20 left-4 right-4 z-50 lg:hidden"
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ type: "spring", duration: 0.3 }}
             >
-              <div className="relative w-6 h-6">
-                <Menu 
-                  size={24} 
-                  className={`absolute inset-0 transition-all duration-300 ${
-                    isMobileMenuOpen ? 'opacity-0 rotate-180' : 'opacity-100 rotate-0'
-                  }`} 
-                />
-                <X 
-                  size={24} 
-                  className={`absolute inset-0 transition-all duration-300 ${
-                    isMobileMenuOpen ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-180'
-                  }`} 
-                />
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <div className={`lg:hidden absolute top-full left-0 right-0 transition-all duration-500 ${
-          isMobileMenuOpen 
-            ? 'opacity-100 translate-y-0 pointer-events-auto' 
-            : 'opacity-0 -translate-y-4 pointer-events-none'
-        }`}>
-          <div className="mx-6 mt-4 bg-white/95 backdrop-blur-3xl border border-gray-200/50 rounded-3xl shadow-2xl overflow-hidden">
-            <div className="p-6">
-              <div className="grid grid-cols-1 gap-2">
-                {navItems.map((item, index) => {
-                  const Icon = item.icon;
-                  const isActive = activeSection === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleNavigation(item.id)}
-                      className={`group relative flex items-center gap-4 p-4 rounded-2xl text-left font-semibold transition-all duration-300 ${
-                        isActive
-                          ? 'text-white shadow-lg'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                      style={{ transitionDelay: `${index * 100}ms` }}
-                    >
-                      {isActive && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-600 rounded-2xl" />
-                      )}
-                      <Icon size={20} className={`relative z-10 ${isActive ? 'animate-pulse' : 'group-hover:scale-110'} transition-transform duration-300`} />
-                      <span className="relative z-10">{item.label}</span>
-                      {isActive && (
-                        <ArrowRight size={16} className="relative z-10 ml-auto animate-bounce" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-              
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <button 
-                  onClick={() => handleNavigation('contact')}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
-                >
-                  Démarrer un projet
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+              <GlassCard className="p-6 shadow-glass-lg">
+                <div className="space-y-3">
+                  {navItems.map((item, index) => {
+                    const Icon = item.icon;
+                    const isActive = activeSection === item.id;
+                    return (
+                      <motion.button
+                        key={item.id}
+                        onClick={() => handleNavigation(item.id)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-all duration-300 ${
+                          isActive
+                            ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-neon'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20'
+                        }`}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Icon size={20} />
+                        <span>{item.label}</span>
+                        {isActive && <ArrowRight size={16} className="ml-auto" />}
+                      </motion.button>
+                    );
+                  })}
+                  
+                  {/* Mobile CTA */}
+                  <motion.button
+                    onClick={() => {
+                      handleNavigation('contact');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-medium shadow-neon mt-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span>Collaborer</span>
+                    <ArrowRight size={16} />
+                  </motion.button>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };
