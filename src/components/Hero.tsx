@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, Palette, Smartphone, Sparkles, Star, Zap } from 'lucide-react';
+import { ArrowDown, Palette, Smartphone, Sparkles, Star, Zap, Download } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
+import { PrimaryCTA } from './ui/buttons/PrimaryCTA';
+import { useProjects } from '../hooks/useSQLite';
 
 const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { projects } = useProjects(); // Get projects to count them
 
   useEffect(() => {
     setIsVisible(true);
@@ -16,6 +19,9 @@ const Hero = () => {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  // Count projects dynamically
+  const projectCount = projects.length;
 
   const floatingElements = [
     { icon: Palette, color: 'from-pink-400 to-rose-600', delay: '0s', position: 'top-20 left-20' },
@@ -133,30 +139,34 @@ const Hero = () => {
               Maxence
             </motion.span>
           </h1>
-          
-          <motion.p
-            className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1 }}
-          >
-            22 ans
-          </motion.p>
         </motion.div>
 
-        {/* Description */}
+        {/* Value Proposition */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2 }}
-          className="mb-12 max-w-3xl mx-auto"
+          className="mb-8 max-w-4xl mx-auto"
         >
-          <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-            Designer UI/UX passionné par la création d'expériences
-          </p>
-          <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-            digitales exceptionnelles et l'innovation dans le design
-          </p>
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-white mb-6 leading-tight">
+            Je conçois des interfaces SaaS qui augmentent l'engagement & les conversions
+          </h2>
+          
+          {/* Value Props bullets */}
+          <div className="flex flex-wrap justify-center gap-6 text-lg text-gray-600 dark:text-gray-300">
+            <div className="flex items-center gap-2">
+              <Sparkles className="text-accent-green" size={20} />
+              <span>SaaS • e-commerce • dashboards</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Star className="text-accent-orange" size={20} />
+              <span>délais 2–6 sem</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Palette className="text-primary-500" size={20} />
+              <span>remote FR/EN</span>
+            </div>
+          </div>
         </motion.div>
 
         {/* CTA Buttons */}
@@ -166,27 +176,25 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 1.4 }}
           className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
         >
-          <motion.button
+          {/* Primary CTA with dynamic project count */}
+          <PrimaryCTA
             onClick={scrollToProjects}
-            className="group relative px-8 py-4 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-semibold shadow-neon hover:shadow-neon-blue transition-all duration-300"
-            whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(99, 102, 241, 0.6)" }}
-            whileTap={{ scale: 0.95 }}
+            size="lg"
+            icon="arrow-down"
+            data-track="hero-cta-projects"
           >
-            <span className="relative z-10 flex items-center">
-              Découvrir mes créations
-              <ArrowDown className="ml-2 group-hover:translate-y-1 transition-transform" size={20} />
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-secondary-500 to-primary-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </motion.button>
+            Voir les projets ({projectCount})
+          </PrimaryCTA>
 
+          {/* Secondary CTA */}
           <motion.button
-            className="px-8 py-4 rounded-xl font-semibold transition-all duration-300"
+            className="flex items-center gap-2 px-6 py-3 text-primary-600 hover:text-primary-700 font-medium transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            data-track="hero-cta-cv"
           >
-            <GlassCard className="px-6 py-2 border-2 border-primary-500/30 text-primary-500 dark:text-primary-400 hover:border-primary-500 hover:bg-primary-500/10">
-              Télécharger CV
-            </GlassCard>
+            <Download size={20} />
+            Télécharger le CV
           </motion.button>
         </motion.div>
 

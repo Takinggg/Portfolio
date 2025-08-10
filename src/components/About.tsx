@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { memo } from 'react';
-import { Target, Lightbulb, Heart, Coffee } from 'lucide-react';
+import { Target, Lightbulb, Heart, Coffee, Search, Brain, Palette, Code, Users, Briefcase, Award, Calendar } from 'lucide-react';
+import { CompetencyMatrix } from './about/CompetencyMatrix';
+import { Timeline } from './about/Timeline';
+import { ProcessStrip } from './about/ProcessStrip';
 
 const About = memo(() => {
   const [isVisible, setIsVisible] = useState(false);
@@ -26,6 +29,146 @@ const About = memo(() => {
   const skills = [
     { name: 'Figma', level: 95, color: 'from-purple-500 to-pink-500' },
     { name: 'Adobe XD', level: 90, color: 'from-blue-500 to-cyan-500' },
+  ];
+
+  // Competency Matrix Data
+  const competencyCategories = [
+    {
+      title: 'Produit / Recherche',
+      icon: Search,
+      color: 'bg-blue-500',
+      skills: [
+        {
+          name: 'Recherche utilisateur',
+          level: 'Expert' as const,
+          evidence: ['15+ études utilisateur menées', 'Certification Google UX', 'Formation d\'équipes']
+        },
+        {
+          name: 'Analytics & Data',
+          level: 'Avancé' as const,
+          evidence: ['Google Analytics certified', 'A/B tests sur 8 projets', 'Dashboard de KPIs']
+        },
+        {
+          name: 'Product Strategy',
+          level: 'Avancé' as const,
+          evidence: ['3 roadmaps produit', 'OKRs définition', 'Go-to-market strategy']
+        }
+      ]
+    },
+    {
+      title: 'UI / Design',
+      icon: Palette,
+      color: 'bg-purple-500',
+      skills: [
+        {
+          name: 'Interface Design',
+          level: 'Expert' as const,
+          evidence: ['50+ interfaces livrées', 'Design Systems créés', 'Atomic Design maîtrise']
+        },
+        {
+          name: 'Design Systems',
+          level: 'Expert' as const,
+          evidence: ['3 Design Systems de A à Z', 'Tokens & Components', 'Documentation complète']
+        },
+        {
+          name: 'Visual Design',
+          level: 'Avancé' as const,
+          evidence: ['Brand identity projets', 'Illustrations custom', 'Motion design']
+        }
+      ]
+    },
+    {
+      title: 'UX / Méthodes',
+      icon: Brain,
+      color: 'bg-green-500',
+      skills: [
+        {
+          name: 'Prototypage',
+          level: 'Expert' as const,
+          evidence: ['Figma/Framer expert', '20+ prototypes validés', 'Micro-interactions']
+        },
+        {
+          name: 'Tests utilisateur',
+          level: 'Avancé' as const,
+          evidence: ['Tests modérés/non-modérés', 'UserTesting platform', 'A/B testing']
+        },
+        {
+          name: 'Information Architecture',
+          level: 'Avancé' as const,
+          evidence: ['Card sorting études', 'Tree testing', 'Sitemaps optimisés']
+        }
+      ]
+    },
+    {
+      title: 'Frontend / Tech',
+      icon: Code,
+      color: 'bg-orange-500',
+      skills: [
+        {
+          name: 'React / TypeScript',
+          level: 'Avancé' as const,
+          evidence: ['4 apps React livrées', 'TypeScript sur projets', 'Hooks & Context']
+        },
+        {
+          name: 'CSS / Animations',
+          level: 'Avancé' as const,
+          evidence: ['CSS avancé', 'Framer Motion', 'Animations performantes']
+        },
+        {
+          name: 'Design to Code',
+          level: 'Opérationnel' as const,
+          evidence: ['Handoff optimisé', 'Design tokens', 'Collaboration dev']
+        }
+      ]
+    }
+  ];
+
+  // Timeline Data
+  const timelineEvents = [
+    {
+      year: '2019',
+      title: 'Début en Design Graphique',
+      description: 'Formation autodidacte et premiers projets en freelance. Découverte de l\'univers du design numérique.',
+      type: 'education' as const,
+      location: 'Formation en ligne'
+    },
+    {
+      year: '2020',
+      title: 'Spécialisation UX/UI',
+      description: 'Transition vers l\'UX/UI design. Formation intensive sur les méthodologies centrées utilisateur.',
+      type: 'education' as const,
+      location: 'Remote'
+    },
+    {
+      year: '2021',
+      title: 'Premier poste UI Designer',
+      description: 'Intégration dans une startup tech. Conception d\'interfaces SaaS et développement de design systems.',
+      type: 'work' as const,
+      company: 'TechStart Inc.',
+      location: 'Paris'
+    },
+    {
+      year: '2022',
+      title: 'Lead UX Designer',
+      description: 'Promotion avec responsabilité d\'équipe. Gestion de projets complexes et formation de juniors.',
+      type: 'work' as const,
+      company: 'Scale-Up Co.',
+      location: 'Remote'
+    },
+    {
+      year: '2023',
+      title: 'Certifications avancées',
+      description: 'Google UX Design Certificate et spécialisation en Research. Expansion vers le Product Design.',
+      type: 'certification' as const,
+      location: 'En ligne'
+    },
+    {
+      year: '2024',
+      title: 'Designer Freelance Senior',
+      description: 'Lancement en indépendant. Focus sur les projets à fort impact avec des clients premium.',
+      type: 'milestone' as const,
+      location: 'France / Remote'
+    }
   ];
 
   const values = [
@@ -119,6 +262,13 @@ const About = memo(() => {
           {/* Content Section */}
           <div className={`space-y-8 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
             <div className="prose prose-lg text-gray-700 space-y-6">
+              {/* Age moved from Hero */}
+              <div className="mb-6">
+                <span className="inline-flex items-center px-3 py-1 bg-primary-50 text-primary-700 rounded-full text-sm font-medium">
+                  22 ans • Designer UI/UX
+                </span>
+              </div>
+              
               <p className="text-lg leading-relaxed">
                 Diplômé en design graphique et spécialisé en UX/UI design, 
                 je combine créativité artistique et approche scientifique pour 
@@ -153,38 +303,25 @@ const About = memo(() => {
           </div>
         </div>
 
-        {/* Skills Section */}
-        <div className={`transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">Expertise Technique</h3>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Maîtrise des outils de design les plus avancés et des technologies web modernes
-            </p>
-          </div>
+        {/* Competency Matrix - Replaces Skills Section */}
+        <div className={`mb-20 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <CompetencyMatrix 
+            categories={competencyCategories}
+            className="bg-gray-50 rounded-2xl p-8"
+          />
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {skills.map((skill, index) => (
-              <div 
-                key={index}
-                className="group bg-white/80 backdrop-blur-xl p-6 rounded-2xl border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-semibold text-gray-900">{skill.name}</span>
-                  <span className="text-sm text-gray-600">{skill.level}%</span>
-                </div>
-                
-                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                  <div 
-                    className={`h-full bg-gradient-to-r ${skill.color} rounded-full transition-all duration-1000 ease-out shadow-lg`}
-                    style={{ 
-                      width: isVisible ? `${skill.level}%` : '0%',
-                      transitionDelay: `${index * 100}ms`
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Process Strip */}
+        <div className={`mb-20 transition-all duration-1000 delay-900 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <ProcessStrip />
+        </div>
+
+        {/* Timeline */}
+        <div className={`transition-all duration-1000 delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <Timeline 
+            events={timelineEvents}
+            className="bg-white rounded-2xl p-8 shadow-lg"
+          />
         </div>
       </div>
     </section>

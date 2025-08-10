@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { memo, useCallback } from 'react';
-import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles, Calendar, Upload, Link as LinkIcon, Check, X } from 'lucide-react';
 import { contactService } from '../lib/api';
 import { CONTACT_INFO } from '../config';
 import { validateContactForm, contactFormRateLimiter, type ContactFormData } from '../lib/validation';
@@ -13,7 +13,10 @@ const Contact = memo(() => {
     subject: '',
     message: '',
     budget: '',
-    timeline: ''
+    timeline: '',
+    rgpdConsent: false,
+    briefUrl: '',
+    briefFile: null as File | null
   });
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +33,9 @@ const Contact = memo(() => {
   const messageId = useRef(generateId('message'));
   const budgetId = useRef(generateId('budget'));
   const timelineId = useRef(generateId('timeline'));
+  const rgpdId = useRef(generateId('rgpd'));
+  const briefUrlId = useRef(generateId('brief-url'));
+  const briefFileId = useRef(generateId('brief-file'));
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -96,7 +102,10 @@ const Contact = memo(() => {
         subject: '',
         message: '',
         budget: '',
-        timeline: ''
+        timeline: '',
+        rgpdConsent: false,
+        briefUrl: '',
+        briefFile: null
       });
 
     } catch (error) {
@@ -112,11 +121,48 @@ const Contact = memo(() => {
     setSubmitStatus('idle');
     setErrorMessage('');
     setValidationErrors({});
+    
+    if (e.target.type === 'checkbox') {
+      setFormData({
+        ...formData,
+        [e.target.name]: (e.target as HTMLInputElement).checked
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value
+      });
+    }
+  }, [formData]);
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setErrorMessage('Le fichier ne doit pas dépasser 10MB');
+        return;
+      }
+      
+      // Validate file type
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+      if (!allowedTypes.includes(file.type)) {
+        setErrorMessage('Format de fichier non supporté. Utilisez PDF, DOC, DOCX ou TXT');
+        return;
+      }
+    }
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      briefFile: file || null
     });
   }, [formData]);
+
+  // Scheduling link handler
+  const handleScheduleCall = () => {
+    const schedulingUrl = process.env.REACT_APP_SCHEDULING_URL || 'https://calendly.com/maxence-foulon';
+    window.open(schedulingUrl, '_blank', 'noopener,noreferrer');
+  };
 
   const contactMethods = [
     {
@@ -456,10 +502,129 @@ const Contact = memo(() => {
                   )}
                 </div>
 
+                {/* Brief Upload/URL Section */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-semibold text-gray-700">Brief du projet (optionnel)</h4>
+                  
+                  {/* URL Input */}
+                  <div className="group">
+                    <label htmlFor={briefUrlId.current} className="block text-sm font-medium text-gray-600 mb-2">
+                      Lien vers votre brief (Notion, Google Doc, etc.)
+                    </label>
+                    <div className="relative">
+                      <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                      <input
+                        type="url"
+                        id={briefUrlId.current}
+                        name="briefUrl"
+                        value={formData.briefUrl}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm"
+                        placeholder="https://notion.so/mon-brief"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+
+                  {/* File Upload */}
+                  <div className="text-center text-sm text-gray-500 py-2">ou</div>
+                  
+                  <div className="group">
+                    <label htmlFor={briefFileId.current} className="block text-sm font-medium text-gray-600 mb-2">
+                      Télécharger un fichier
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        id={briefFileId.current}
+                        name="briefFile"
+                        onChange={handleFileChange}
+                        accept=".pdf,.doc,.docx,.txt"
+                        className="hidden"
+                        disabled={isSubmitting}
+                      />
+                      <label
+                        htmlFor={briefFileId.current}
+                        className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-400 hover:bg-purple-50 transition-all duration-300 cursor-pointer group-hover:border-purple-400"
+                      >
+                        <Upload size={18} className="text-gray-400" />
+                        <span className="text-gray-600">
+                          {formData.briefFile ? formData.briefFile.name : 'Choisir un fichier (PDF, DOC, TXT - max 10MB)'}
+                        </span>
+                      </label>
+                      {formData.briefFile && (
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, briefFile: null })}
+                          className="absolute top-2 right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors"
+                          aria-label="Supprimer le fichier"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scheduling CTA */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1">Préférez-vous un appel ?</h4>
+                      <p className="text-sm text-gray-600">Planifiez un créneau qui vous convient</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleScheduleCall}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                      data-track="contact-schedule-call"
+                    >
+                      <Calendar size={16} />
+                      Planifier
+                    </button>
+                  </div>
+                </div>
+
+                {/* RGPD Consent */}
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id={rgpdId.current}
+                      name="rgpdConsent"
+                      checked={formData.rgpdConsent}
+                      onChange={handleChange}
+                      className="mt-1 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                      required
+                      disabled={isSubmitting}
+                      aria-invalid={!!validationErrors.rgpdConsent}
+                      aria-describedby={validationErrors.rgpdConsent ? `${rgpdId.current}-error` : undefined}
+                    />
+                    <label htmlFor={rgpdId.current} className="text-sm text-gray-600 leading-relaxed">
+                      J'accepte que mes données personnelles soient utilisées pour me recontacter concernant ma demande. 
+                      <a href="/legal/mentions-legales" className="text-purple-600 hover:underline ml-1" target="_blank">
+                        En savoir plus sur la protection des données
+                      </a>
+                      <span className="text-red-500 ml-1">*</span>
+                    </label>
+                  </div>
+                  {validationErrors.rgpdConsent && (
+                    <p 
+                      id={`${rgpdId.current}-error`}
+                      className="text-sm text-red-600"
+                      role="alert"
+                      aria-live="polite"
+                    >
+                      {validationErrors.rgpdConsent}
+                    </p>
+                  )}
+                </div>
+
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !formData.rgpdConsent}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-5 px-8 rounded-2xl font-bold text-lg hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  data-track="contact-form-submit"
                 >
                   {isSubmitting ? (
                     <>

@@ -12,6 +12,7 @@ interface NavigationProps {
   onBack?: () => void;
   backLabel?: string;
   currentPage?: 'home' | 'blog' | 'post' | 'projects';
+  isAuthenticated?: boolean; // Add authentication state
 }
 
 const Navigation: React.FC<NavigationProps> = ({ 
@@ -21,7 +22,8 @@ const Navigation: React.FC<NavigationProps> = ({
   showBackButton = false,
   onBack,
   backLabel = "Retour",
-  currentPage = 'home'
+  currentPage = 'home',
+  isAuthenticated = false
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -188,15 +190,19 @@ const Navigation: React.FC<NavigationProps> = ({
             <div className="flex items-center gap-3">
               <ThemeToggle />
               
-              {/* Admin Button */}
-              <motion.button
-                onClick={() => window.location.href = '/admin'}
-                className="hidden md:flex items-center px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-all duration-300"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Admin
-              </motion.button>
+              {/* Admin Button - Only show if authenticated */}
+              {isAuthenticated && (
+                <motion.button
+                  onClick={() => window.location.href = '/admin'}
+                  className="hidden md:flex items-center px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Administration"
+                  aria-label="Accéder à l'administration"
+                >
+                  Admin
+                </motion.button>
+              )}
 
               {/* CTA Button */}
               <motion.button
@@ -204,6 +210,7 @@ const Navigation: React.FC<NavigationProps> = ({
                 className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-medium text-sm shadow-neon hover:shadow-neon-blue transition-all duration-300"
                 whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(99, 102, 241, 0.5)" }}
                 whileTap={{ scale: 0.95 }}
+                data-track="nav-cta-collaborate"
               >
                 <span>Collaborer</span>
                 <ArrowRight size={14} />
