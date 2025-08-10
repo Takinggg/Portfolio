@@ -80,7 +80,7 @@ const Projects = () => {
       category: project.category,
       type: getProjectType(project.category),
       description: project.long_description || project.description || '',
-      image: (project.images && project.images[0]) || 'https://via.placeholder.com/400x300',
+      image: (project.images && project.images[0]) || 'https://picsum.photos/400/300?random=2',
       tags: (project.technologies || []).slice(0, 4),
       gradient: getGradientForCategory(project.category, index),
       likes: Math.floor(Math.random() * 300) + 50, // Mock data

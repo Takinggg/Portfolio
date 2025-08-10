@@ -312,7 +312,7 @@ const ProjectManager: React.FC = () => {
             <div key={project.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48">
                 <img
-                  src={(project?.images ?? [])[0] || 'https://via.placeholder.com/400x200'}
+                  src={(project?.images ?? [])[0] || 'https://picsum.photos/400/200?random=30'}
                   alt={project.title}
                   className="w-full h-full object-cover"
                 />

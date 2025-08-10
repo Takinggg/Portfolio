@@ -42,7 +42,7 @@ const convertProject = (project: NormalizedProject, index: number) => {
     category: project.category,
     type: typeLabels[project.category as keyof typeof typeLabels] || 'Projet',
     description: project.long_description || project.description || '',
-    image: (project.images && project.images[0]) || 'https://via.placeholder.com/400x300',
+    image: (project.images && project.images[0]) || 'https://picsum.photos/400/300?random=3',
     tags: (project.technologies || []).slice(0, 4),
     gradient: gradients[index % gradients.length],
     bgGradient: bgGradients[index % bgGradients.length],
@@ -220,7 +220,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
             {/* Stats */}
             <div className="flex flex-wrap items-center justify-center gap-6">
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold text-white mb-1">{sqliteProjects.length}</div>
+                <div className="text-2xl font-bold text-white mb-1">{projects.length}</div>
                 <div className="text-sm text-white/80">Projets</div>
               </div>
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
@@ -228,7 +228,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
                 <div className="text-sm text-white/80">Catégories</div>
               </div>
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold text-white mb-1">{sqliteProjects.filter(p => p.featured).length}</div>
+                <div className="text-2xl font-bold text-white mb-1">{projects.filter(p => p.featured).length}</div>
                 <div className="text-sm text-white/80">Featured</div>
               </div>
             </div>
@@ -314,8 +314,8 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
                   )}
 
                   {/* Status Badge */}
-                  <div className={`absolute top-4 right-4 z-20 px-3 py-1 rounded-full text-xs font-medium ${statusLabels[project.status].color}`}>
-                    {statusLabels[project.status].label}
+                  <div className={`absolute top-4 right-4 z-20 px-3 py-1 rounded-full text-xs font-medium ${statusLabels[project.status as keyof typeof statusLabels]?.color || 'bg-gray-100 text-gray-800'}`}>
+                    {statusLabels[project.status as keyof typeof statusLabels]?.label || 'Projet'}
                   </div>
 
                   {/* Image */}

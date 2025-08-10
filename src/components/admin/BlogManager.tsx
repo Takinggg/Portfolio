@@ -448,7 +448,7 @@ const BlogManager: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         <img
-                          src={post.featured_image || 'https://via.placeholder.com/64x64'}
+                          src={post.featured_image || 'https://picsum.photos/64/64?random=40'}
                           alt={post.title}
                           className="w-16 h-16 object-cover rounded-lg"
                         />

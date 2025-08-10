@@ -139,7 +139,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
               {/* Image Container */}
               <div className={`relative ${index === 0 ? 'h-80' : 'h-48'} overflow-hidden`}>
                 <img 
-                  src={post.featured_image || 'https://via.placeholder.com/400x200'}
+                  src={post.featured_image || 'https://picsum.photos/400/200?random=1'}
                   alt={post.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />

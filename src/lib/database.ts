@@ -23,6 +23,7 @@ export interface Project {
   images: string[];
   technologies: string[];
   featured?: boolean;
+  status?: string;
   createdAt: string;
 }
 
@@ -44,7 +45,7 @@ export function initializeDatabase() {
           slug: "concevoir-experience-utilisateur-memorable",
           excerpt: "Principes clés pour créer une UX qui engage et fidélise.",
           content: "Contenu de démonstration (remplacer par du markdown réel).",
-          featured_image: "https://via.placeholder.com/800x400?text=UX",
+          featured_image: "https://picsum.photos/800/400?random=10",
           read_time: 5,
           tags: ["ux", "design", "research"],
           category: "Design",
@@ -58,7 +59,7 @@ export function initializeDatabase() {
           slug: "tendances-ui-2025",
           excerpt: "Un tour d'horizon des styles et interactions dominants en 2025.",
           content: "Texte de démonstration sur les tendances UI...",
-          featured_image: "https://via.placeholder.com/800x400?text=UI+2025",
+          featured_image: "https://picsum.photos/800/400?random=11",
           read_time: 4,
           tags: ["ui", "tendances", "animation"],
           category: "UI",
@@ -72,7 +73,7 @@ export function initializeDatabase() {
           slug: "accessibilite-quick-wins",
           excerpt: "Améliorations rapides pour rendre une interface plus inclusive.",
           content: "Contenu accessibilité...",
-          featured_image: "https://via.placeholder.com/800x400?text=A11Y",
+          featured_image: "https://picsum.photos/800/400?random=12",
           read_time: 6,
           tags: ["a11y", "frontend"],
           category: "Accessibilité",
@@ -89,11 +90,12 @@ export function initializeDatabase() {
           description: "Un tableau de bord interactif pour visualiser des KPIs.",
           long_description: "Filtres dynamiques, export PDF, mode sombre...",
           images: [
-            "https://via.placeholder.com/600x400?text=Dashboard+1",
-            "https://via.placeholder.com/600x400?text=Dashboard+2"
+            "https://picsum.photos/600/400?random=20",
+            "https://picsum.photos/600/400?random=21"
           ],
           technologies: ["React", "TypeScript", "Tailwind", "D3.js"],
           featured: true,
+          status: "completed",
           createdAt: now
         },
         {
@@ -101,8 +103,9 @@ export function initializeDatabase() {
           title: "App Mobile Fitness",
           category: "mobile",
           description: "Application de suivi d'entraînement et nutrition.",
-          images: ["https://via.placeholder.com/600x400?text=Fitness+App"],
+          images: ["https://picsum.photos/600/400?random=22"],
           technologies: ["React Native", "Expo", "Zustand"],
+          status: "in-progress",
           createdAt: now
         },
         {
@@ -110,8 +113,9 @@ export function initializeDatabase() {
           title: "Identité Visuelle Startup",
           category: "branding",
           description: "Création logo, palette, guidelines.",
-          images: ["https://via.placeholder.com/600x400?text=Branding"],
+          images: ["https://picsum.photos/600/400?random=23"],
           technologies: ["Figma", "Illustrator"],
+          status: "completed",
           createdAt: now
         }
       ]
