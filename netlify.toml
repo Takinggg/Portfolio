@@ -5,7 +5,7 @@
 [build.environment]
   VITE_API_BASE_URL = "https://portfolio-1tzy.onrender.com/api"
   NODE_ENV = "production"
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 [build.processing]
   skip_processing = false
