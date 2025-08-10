@@ -3,18 +3,10 @@
   command = "npm run build"
 
 [build.environment]
-  NODE_VERSION = "18"
-  VITE_API_BASE_URL = "https://portfolio-backend-latest.onrender.com/api"
+  VITE_API_BASE_URL = "https://portfolio-1tzy.onrender.com/api"
+  NODE_ENV = "production"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[context.development]
-[build.environment]
-  VITE_API_BASE_URL = "http://localhost:3001/api"
-
-[context.branch-deploy]
-[build.environment]
-  VITE_API_BASE_URL = "https://portfolio-backend-latest.onrender.com/api"

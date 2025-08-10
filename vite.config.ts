@@ -5,7 +5,9 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   build: {
+    target: 'esnext',
     rollupOptions: {
+      external: ['better-sqlite3', 'sqlite3', 'express', 'cors', 'bcryptjs', 'jsonwebtoken'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
@@ -17,10 +19,11 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000
   },
   optimizeDeps: {
-    exclude: ['lucide-react'],
+    exclude: ['lucide-react', 'better-sqlite3', 'sqlite3'],
     include: ['react', 'react-dom']
   },
   server: {
+    port: 5173,
     hmr: {
       overlay: false
     }
