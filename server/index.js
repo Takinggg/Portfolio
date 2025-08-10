@@ -5,6 +5,7 @@ import Database from 'better-sqlite3';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { fileURLToPath } from 'url';
+import { readFileSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +13,18 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+
+// Helper function to read package.json version
+const getVersion = () => {
+  try {
+    const packagePath = path.join(__dirname, '..', 'package.json');
+    const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
+    return packageJson.version || 'unknown';
+  } catch (error) {
+    console.warn('Could not read package.json version:', error.message);
+    return 'unknown';
+  }
+};
 
 // Auto-configure CORS based on environment
 const getAllowedOrigins = () => {
@@ -23,13 +36,24 @@ const getAllowedOrigins = () => {
   ];
   
   const productionOrigins = [
+    'https://maxence.design',
+    'https://www.maxence.design',
+    'https://back.maxence.design',
     'https://takinggg-portfolio.netlify.app',
     process.env.FRONTEND_URL
   ].filter(Boolean);
   
-  return process.env.NODE_ENV === 'production' 
-    ? [...localOrigins, ...productionOrigins] 
+  // Parse ALLOWED_ORIGINS if present (comma-separated)
+  const envAllowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim()).filter(Boolean)
+    : [];
+  
+  const allOrigins = process.env.NODE_ENV === 'production' 
+    ? [...localOrigins, ...productionOrigins, ...envAllowedOrigins] 
     : localOrigins;
+  
+  // Remove duplicates
+  return [...new Set(allOrigins)];
 };
 
 // Middleware
@@ -305,6 +329,19 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+// Root API endpoint
+app.get('/api', (req, res) => {
+  res.json({
+    name: 'Portfolio API',
+    status: 'running',
+    ts: Date.now(),
+    uptime: process.uptime(),
+    health: '/api/health',
+    version: getVersion(),
+    frontend: 'https://maxence.design'
+  });
+});
 
 // Health endpoint
 app.get('/api/health', (req, res) => {
@@ -830,4 +867,6 @@ initializeDatabase();
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  const allowedOrigins = getAllowedOrigins();
+  console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
 });
