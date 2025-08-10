@@ -2,24 +2,23 @@ export class ApiClient {
   baseUrl: string;
 
   constructor() {
-    // Utilise une variable d’environnement pour la prod, sinon localhost
-    this.baseUrl = process.env.API_BASE_URL || 'http://localhost:3000/api';
+    // Compatible Vite et React (fallback sur localhost si non défini)
+    this.baseUrl =
+      typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
+        ? import.meta.env.VITE_API_URL
+        : (process.env?.REACT_APP_API_URL || "http://localhost:3000");
   }
 
   async request(path: string, options?: RequestInit) {
-    const url = `${this.baseUrl}${path}`;
-    try {
-      const res = await fetch(url, options);
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      return await res.json();
-    } catch (err) {
-      // Log explicite pour debug
-      console.error('Error fetching:', err);
-      throw err;
-    }
+    const res = await fetch(`${this.baseUrl}${path}`, options);
+    return await res.json();
   }
 
   async getAllPosts() {
-    return this.request('/posts');
+    return this.request("/posts");
+  }
+
+  async getAllProjects() {
+    return this.request("/projects");
   }
 }
