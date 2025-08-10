@@ -135,6 +135,7 @@ VITE_API_BASE_URL = "https://back.maxence.design/api"
 - `POST /api/blog/posts` - Create new post (auth required)
 - `PUT /api/blog/posts/:id` - Update post (auth required)
 - `DELETE /api/blog/posts/:id` - Delete post (auth required)
+- `GET /api/blog/slug-availability?slug=xxx` - Check slug availability and get suggestions
 - `GET /api/projects` - Get all projects
 - `GET /api/projects/:id` - Get project by ID
 - `POST /api/projects` - Create project (auth required)
@@ -145,6 +146,19 @@ VITE_API_BASE_URL = "https://back.maxence.design/api"
 - `PUT /api/contact/messages/:id` - Update message status (auth required)
 - `DELETE /api/contact/messages/:id` - Delete message (auth required)
 - `GET /api/contact/unread-count` - Get unread count (auth required)
+
+### Blog Post Slug Management
+The backend automatically handles blog post slug conflicts:
+- **Automatic Normalization**: Slugs are normalized to lowercase, spaces replaced with dashes, special characters removed
+- **Unique Slug Generation**: If a slug already exists, the system automatically appends `-2`, `-3`, etc.
+- **Manual Slug Support**: Users can provide custom slugs which will be normalized and made unique automatically
+- **Server-side Read Time**: Read time is always calculated server-side based on content length (200 words/minute)
+- **Slug Availability API**: Check if a slug is available and get suggestions via `GET /api/blog/slug-availability?slug=xxx`
+
+Example slug conflict resolution:
+- First post: `my-awesome-post` → `my-awesome-post`
+- Second post: `my-awesome-post` → `my-awesome-post-2` 
+- Third post: `my-awesome-post` → `my-awesome-post-3`
 
 ### Database
 - SQLite database with auto-initialization
