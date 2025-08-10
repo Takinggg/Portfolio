@@ -1,3 +1,4 @@
+
 import Database from 'better-sqlite3';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -776,3 +777,4 @@ export const utils = {
 
 // Initialize database on import
 initializeDatabase();
+
