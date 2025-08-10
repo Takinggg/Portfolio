@@ -63,7 +63,21 @@ app.use((err, req, res, next) => {
 });
 
 // Database setup
-const dbPath = path.join(__dirname, 'portfolio.db');
+const getDatabasePath = () => {
+  if (process.env.DATABASE_PATH) {
+    // If it's an absolute path, use it as-is
+    if (path.isAbsolute(process.env.DATABASE_PATH)) {
+      return process.env.DATABASE_PATH;
+    }
+    // If it's a relative path, resolve it from the project root
+    return path.resolve(__dirname, '..', process.env.DATABASE_PATH);
+  }
+  // Default to ./portfolio.db in the server directory
+  return path.join(__dirname, 'portfolio.db');
+};
+
+const dbPath = getDatabasePath();
+console.log(`Using database path: ${dbPath}`);
 const db = new Database(dbPath);
 
 // Enable foreign keys
@@ -291,6 +305,11 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+// Health endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, ts: Date.now() });
+});
 
 // Auth routes
 app.post('/api/auth/signin', (req, res) => {
