@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: portfolio-backend-latest
+    name: takinggg-portfolio-backend
     env: node
     plan: free
     buildCommand: npm install
