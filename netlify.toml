@@ -1,9 +1,28 @@
 [build]
-  command = "npm run build"
   publish = "dist"
+  command = "npm run build"
 
-[dev]
-  port = 8888
-
-[env]
+[build.environment]
   VITE_API_BASE_URL = "https://back.maxence.design/api"
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Optional: cache headers for assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
