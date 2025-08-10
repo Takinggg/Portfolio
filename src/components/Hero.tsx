@@ -34,7 +34,7 @@ const Hero = () => {
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Simplified Background */}
-      <div className="absolute inset-0 bg-surface-subtle" />
+      <div className="absolute inset-0 bg-surface-alt" />
       
       {/* Simple Floating Elements - keep for visual interest but simplified */}
       {floatingElements.map((element, index) => {
@@ -92,7 +92,7 @@ const Hero = () => {
           transition={{ duration: 1, delay: 0.4 }}
           className="mb-8"
         >
-          <h1 className="text-6xl md:text-8xl font-bold mb-4 text-text-DEFAULT">
+          <h1 className="text-6xl md:text-8xl font-extrabold mb-4 text-text-strong tracking-tight">
             <motion.span
               className="block"
               initial={{ opacity: 0, x: -50 }}
@@ -119,12 +119,12 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 1.2 }}
           className="mb-8 max-w-4xl mx-auto"
         >
-          <h2 className="text-2xl md:text-3xl font-semibold text-text-DEFAULT mb-6 leading-tight">
+          <h2 className="text-2xl md:text-3xl font-bold text-text-strong mb-6 leading-tight">
             Je conçois des interfaces SaaS qui augmentent l'engagement & les conversions
           </h2>
           
           {/* Value Props bullets */}
-          <div className="flex flex-wrap justify-center gap-6 text-lg text-text-soft">
+          <div className="flex flex-wrap justify-center gap-6 text-lg text-text-default leading-relaxed">
             <div className="flex items-center gap-2">
               <Sparkles className="text-accent-green" size={20} />
               <span>SaaS • e-commerce • dashboards</span>
@@ -159,7 +159,7 @@ const Hero = () => {
 
           {/* Secondary CTA */}
           <motion.button
-            className="flex items-center gap-2 px-6 py-3 text-primary-600 hover:text-primary-700 font-medium transition-colors"
+            className="flex items-center gap-2 px-6 py-3 text-primary-600 hover:text-primary-700 font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 rounded-lg"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             data-track="hero-cta-cv"
@@ -192,10 +192,10 @@ const Hero = () => {
                 <div className="w-16 h-16 mx-auto mb-4 bg-primary-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <skill.icon className="text-white" size={24} />
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-text-DEFAULT">
+                <h3 className="text-xl font-semibold mb-2 text-text-strong">
                   {skill.title}
                 </h3>
-                <p className="text-text-soft text-sm">
+                <p className="text-text-soft text-sm leading-relaxed">
                   {skill.desc}
                 </p>
               </GlassCard>
@@ -213,14 +213,14 @@ const Hero = () => {
       >
         <motion.button
           onClick={scrollToProjects}
-          className="flex flex-col items-center text-text-muted hover:text-primary-500 transition-colors group"
+          className="flex flex-col items-center text-text-muted hover:text-primary-600 transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 rounded-lg"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <span className="text-sm mb-2 group-hover:text-primary-500 transition-colors">
+          <span className="text-sm mb-2 group-hover:text-primary-600 transition-colors">
             Scroll pour découvrir
           </span>
-          <ArrowDown size={24} className="group-hover:text-primary-500 transition-colors" />
+          <ArrowDown size={24} className="group-hover:text-primary-600 transition-colors" />
         </motion.button>
       </motion.div>
     </section>
