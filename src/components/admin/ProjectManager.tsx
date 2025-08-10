@@ -56,7 +56,9 @@ const ProjectManager: React.FC = () => {
         throw error;
       }
       
-      setProjects(data || []);
+      // Filter out any null/undefined projects and ensure array integrity
+      const validProjects = (data || []).filter(Boolean);
+      setProjects(validProjects);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des projets';
       setError(errorMessage);
@@ -72,7 +74,8 @@ const ProjectManager: React.FC = () => {
   };
 
   const filterProjects = () => {
-    let filtered = projects;
+    // Filter out any null/undefined projects first
+    let filtered = projects.filter(Boolean);
 
     if (searchQuery) {
       filtered = filtered.filter(project =>
@@ -129,7 +132,9 @@ const ProjectManager: React.FC = () => {
 
       setIsEditing(false);
       setEditingProject(null);
-      await fetchProjects(); // Refresh the list
+      
+      // Refresh the list to show the new/updated project
+      await fetchProjects();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
       console.error('Error saving project:', err);
@@ -307,7 +312,7 @@ const ProjectManager: React.FC = () => {
             <div key={project.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-48">
                 <img
-                  src={project.images[0] || 'https://via.placeholder.com/400x200'}
+                  src={(project?.images ?? [])[0] || 'https://via.placeholder.com/400x200'}
                   alt={project.title}
                   className="w-full h-full object-cover"
                 />
@@ -332,13 +337,13 @@ const ProjectManager: React.FC = () => {
                 <p className="text-gray-600 text-sm line-clamp-2 mb-4">{project.description}</p>
 
                 <div className="flex flex-wrap gap-1 mb-4">
-                  {project.technologies.slice(0, 3).map((tech, index) => (
+                  {(project?.technologies ?? []).slice(0, 3).map((tech, index) => (
                     <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
                       {tech}
                     </span>
                   ))}
-                  {project.technologies.length > 3 && (
-                    <span className="text-xs text-gray-500">+{project.technologies.length - 3}</span>
+                  {(project?.technologies ?? []).length > 3 && (
+                    <span className="text-xs text-gray-500">+{(project?.technologies ?? []).length - 3}</span>
                   )}
                 </div>
 

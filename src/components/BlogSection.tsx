@@ -10,11 +10,13 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   
-  // Use the custom hook to fetch featured posts
-  const { posts: featuredPosts, loading, error } = useBlogPosts({ 
-    featured: true, 
-    limit: 3 
-  });
+  // Use the custom hook to fetch posts (we'll filter for featured ones below)
+  const { posts: allPosts, loading, error } = useBlogPosts();
+  
+  // Filter for featured posts and limit to 3
+  const featuredPosts = React.useMemo(() => {
+    return allPosts.filter(post => post.featured).slice(0, 3);
+  }, [allPosts]);
 
   // Debug logging
   useEffect(() => {
@@ -199,7 +201,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog }) => {
                 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {post.tags.slice(0, 3).map((tag, tagIndex) => (
+                  {(post.tags || []).slice(0, 3).map((tag, tagIndex) => (
                     <span 
                       key={tagIndex}
                       className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium hover:bg-gray-200 transition-colors duration-200"

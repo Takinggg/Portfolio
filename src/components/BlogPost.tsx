@@ -1,41 +1,8 @@
 import React from 'react';
 import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home } from 'lucide-react';
 import { useBlogPost } from '../hooks/useSQLite';
-import { BlogPost as SQLiteBlogPost } from '../lib/database';
+import { NormalizedBlogPost } from '../lib/adapters';
 import Navigation from './Navigation';
-
-// Convert SQLite blog post to display format
-const convertSQLiteBlogPost = (post: SQLiteBlogPost) => ({
-  id: post.id,
-  title: post.title,
-  slug: post.slug,
-  excerpt: post.excerpt || '',
-  content: post.content,
-  author: post.author,
-  publishedAt: post.published_at,
-  updatedAt: post.updated_at || undefined,
-  featuredImage: post.featured_image || '',
-  tags: post.tags || [],
-  category: post.category,
-  readTime: post.read_time || 5,
-  featured: post.featured || false
-});
-
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  publishedAt: string;
-  updatedAt?: string;
-  featuredImage: string;
-  tags: string[];
-  category: string;
-  readTime: number;
-  featured: boolean;
-}
 
 interface BlogPostProps {
   slug: string;
@@ -45,12 +12,9 @@ interface BlogPostProps {
 }
 
 const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNavigateToProjects }) => {
-  // Fetch post from SQLite
-  const { post: sqlitePost, loading, error } = useBlogPost(slug);
+  // Fetch post using our unified hook
+  const { post, loading, error } = useBlogPost(slug);
   
-  // Convert to display format
-  const post = sqlitePost ? convertSQLiteBlogPost(sqlitePost) : null;
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       year: 'numeric',
@@ -188,7 +152,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNav
         {/* Featured Image */}
         <div className="relative h-96 rounded-3xl overflow-hidden mb-12 shadow-2xl">
           <img 
-            src={post.featuredImage}
+            src={post.featured_image}
             alt={post.title}
             className="w-full h-full object-cover"
             loading="eager"
@@ -225,13 +189,13 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNav
             </div>
             <div className="flex items-center gap-2">
               <Calendar size={18} />
-              <time dateTime={post.publishedAt}>
-                {formatDate(post.publishedAt)}
+              <time dateTime={post.published_at}>
+                {formatDate(post.published_at)}
               </time>
             </div>
             <div className="flex items-center gap-2">
               <Clock size={18} />
-              <span>{post.readTime} min de lecture</span>
+              <span>{post.read_time} min de lecture</span>
             </div>
           </div>
 
