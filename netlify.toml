@@ -1,28 +1,9 @@
 [build]
-  publish = "dist"
   command = "npm run build"
+  publish = "dist"
 
-[build.environment]
-  VITE_API_BASE_URL = "https://portfolio-backend-latest-yytb.onrender.com/api"
-  NODE_VERSION = "20"
+[dev]
+  port = 8888
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# Optional: cache headers for assets
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+[env]
+  VITE_API_BASE_URL = "https://back.maxence.design/api"
