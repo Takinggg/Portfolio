@@ -1,5 +1,7 @@
 # Frontend-Backend Connectivity Fix
 
+**NOTE:** This documentation has been updated to use the custom domain `back.maxence.design` instead of the old Render default domain. The old domain may still work as a fallback during DNS propagation if still active.
+
 ## Issue Resolved
 The "Serveur injoignable. Réessayez plus tard." (Server unreachable. Try again later.) error has been successfully fixed.
 
@@ -108,7 +110,7 @@ If connectivity issues persist, check:
 ### Frontend (Netlify)
 Environment variable automatically set in `netlify.toml`:
 ```toml
-VITE_API_BASE_URL = "https://portfolio-backend-latest.onrender.com/api"
+VITE_API_BASE_URL = "https://back.maxence.design/api"
 ```
 
 ### Backend (Render)

@@ -14,7 +14,11 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        value: https://takinggg-portfolio.netlify.app
+        value: https://maxence.design
+      # Optional: Add ALLOWED_ORIGINS for additional flexibility
+      # Changing render.yaml alone does not update existing Render dashboard env vars unless re-synced manually
+      - key: ALLOWED_ORIGINS
+        value: https://maxence.design,https://www.maxence.design
       - key: DATABASE_PATH
         value: ./portfolio.db
     autoDeploy: true
