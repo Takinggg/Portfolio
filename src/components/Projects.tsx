@@ -149,34 +149,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
   }
 
   return (
-    <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-primary-50/30 via-white to-secondary-50/30 dark:from-dark-900 dark:via-dark-800 dark:to-dark-700 relative overflow-hidden">
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0">
-        <motion.div 
-          className="absolute top-40 left-20 w-80 h-80 bg-gradient-to-br from-primary-200/30 to-secondary-200/30 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div 
-          className="absolute bottom-40 right-20 w-96 h-96 bg-gradient-to-br from-accent-green/20 to-accent-orange/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.6, 0.3, 0.6],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
+    <section ref={sectionRef} id="projects" className="py-32 bg-surface-subtle relative overflow-hidden">
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
@@ -194,13 +167,13 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
           >
             <GlassCard className="flex items-center gap-2 px-4 py-2">
               <Star className="text-primary-500" size={16} />
-              <span className="text-gray-700 dark:text-gray-300">Portfolio créatif</span>
+              <span className="text-text-soft">Portfolio créatif</span>
             </GlassCard>
           </motion.div>
           
           <h2 className="text-5xl md:text-7xl font-black mb-8">
             <motion.span 
-              className="block bg-gradient-to-r from-gray-900 via-primary-900 to-secondary-900 bg-clip-text text-transparent dark:from-white dark:via-gray-100 dark:to-gray-300"
+              className="block text-text-DEFAULT"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
@@ -208,7 +181,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
               Mes
             </motion.span>
             <motion.span 
-              className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent"
+              className="block text-primary-600"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
@@ -218,7 +191,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
           </h2>
           
           <motion.p 
-            className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed"
+            className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
@@ -286,21 +259,10 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.8 }}
         >
-          <GlassCard className="p-12 relative overflow-hidden bg-gradient-to-br from-primary-500/10 to-secondary-500/10 border-primary-200/20">
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-secondary-500/20"
-              animate={{
-                opacity: [0.2, 0.4, 0.2],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
+          <GlassCard className="p-12 relative overflow-hidden" variant="subtle">
             <div className="relative z-10">
               <motion.h3 
-                className="text-3xl font-bold mb-4 text-gray-900 dark:text-white"
+                className="text-3xl font-bold mb-4 text-text-DEFAULT"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.4 }}
@@ -308,7 +270,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
                 Prêt à créer quelque chose d'extraordinaire ?
               </motion.h3>
               <motion.p 
-                className="text-xl mb-8 text-gray-600 dark:text-gray-300"
+                className="text-xl mb-8 text-text-soft"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.6 }}
@@ -322,11 +284,11 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
                     contactElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }
                 }}
-                className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-neon hover:shadow-neon-blue transition-all duration-300"
+                className="bg-primary-500 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-card hover:shadow-lg transition-all duration-300"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.8, type: "spring", stiffness: 500 }}
-                whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(99, 102, 241, 0.6)" }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Démarrer un projet

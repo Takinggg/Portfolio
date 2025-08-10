@@ -100,32 +100,26 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
   }
 
   return (
-    <section ref={sectionRef} id="blog" className="py-32 bg-gradient-to-br from-purple-50/30 via-white to-pink-50/30 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 right-20 w-80 h-80 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl" />
-      </div>
-
+    <section ref={sectionRef} id="blog" className="py-32 bg-surface-DEFAULT relative overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-sm font-medium mb-6">
-            <BookOpen className="text-purple-600" size={16} />
-            <span className="text-gray-700">Derniers articles</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full text-sm font-medium mb-6 border border-primary-100">
+            <BookOpen className="text-primary-600" size={16} />
+            <span className="text-text-soft">Derniers articles</span>
           </div>
           
           <h2 className="text-5xl md:text-7xl font-black mb-8">
-            <span className="bg-gradient-to-r from-gray-900 via-purple-900 to-pink-900 bg-clip-text text-transparent">
+            <span className="text-text-DEFAULT">
               Blog &
             </span>
             <br />
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="text-primary-600">
               Insights
             </span>
           </h2>
           
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed">
             Découvrez mes réflexions sur le design, les tendances UX/UI 
             et les meilleures pratiques du design digital
           </p>
@@ -136,13 +130,13 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
           {featuredPosts.map((post, index) => (
             <article 
               key={post.id}
-              className={`group relative bg-white/80 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 ${
+              className={`group relative bg-surface-DEFAULT border border-surface-border rounded-3xl overflow-hidden shadow-card hover:shadow-lg transition-all duration-700 transform hover:-translate-y-4 ${
                 index === 0 ? 'lg:col-span-2 lg:row-span-2' : ''
               } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
               style={{ transitionDelay: `${index * 200}ms` }}
             >
               {/* Featured Badge */}
-              <div className="absolute top-4 left-4 z-20 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+              <div className="absolute top-4 left-4 z-20 bg-accent-orange text-white px-3 py-1 rounded-full text-xs font-bold shadow-card">
                 ⭐ Featured
               </div>
 

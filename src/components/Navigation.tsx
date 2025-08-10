@@ -98,13 +98,13 @@ const Navigation: React.FC<NavigationProps> = ({
         transition={{ duration: 0.8, ease: "easeOut" }}
         className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-700`}
       >
-        <GlassCard className={`px-6 py-3 ${isScrolled ? 'shadow-glass-lg' : 'shadow-glass'}`}>
+        <GlassCard className={`px-6 py-3 ${isScrolled ? 'shadow-lg' : 'shadow-card'}`}>
           <div className="flex items-center gap-6">
             {/* Back Button */}
             {showBackButton && onBack && (
               <motion.button
                 onClick={onBack}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:text-primary-500 transition-all duration-300 font-medium"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-text-soft hover:text-primary-500 transition-all duration-300 font-medium"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
