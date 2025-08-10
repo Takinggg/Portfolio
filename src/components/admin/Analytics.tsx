@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Eye, Users, Calendar, BarChart3, PieChart, Activity } from 'lucide-react';
-import { supabase, blogService, projectService, isSupabaseAvailable } from '../../lib/supabase';
+import { blogService, projectService } from '../../lib/database';
 import { blogPosts as mockBlogPosts } from '../../data/blogPosts';
 
 const Analytics: React.FC = () => {
@@ -30,79 +30,9 @@ const Analytics: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    // Use mock data if Supabase is not available
-    if (!isSupabaseAvailable()) {
-      try {
-        const posts = mockBlogPosts;
-        const projects = []; // Empty array for projects
-
-        const totalPosts = posts.length;
-        const totalProjects = projects.length;
-        const featuredPosts = posts.filter(post => post.featured).length;
-        const featuredProjects = 0;
-
-        const baseViewsPerPost = 250;
-        const totalViews = totalPosts * baseViewsPerPost;
-        const uniqueVisitors = Math.floor(totalViews * 0.65);
-
-        const topPosts = posts
-          .map(post => ({
-            title: post.title,
-            views: Math.floor(Math.random() * 1000) + 200,
-            category: post.category
-          }))
-          .sort((a, b) => b.views - a.views)
-          .slice(0, 5);
-
-        const generateViewsOverTime = () => {
-          const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
-          const viewsData = [];
-          
-          for (let i = days - 1; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            const baseViews = Math.floor(totalViews / days);
-            const variance = Math.floor(Math.random() * (baseViews * 0.4)) - (baseViews * 0.2);
-            
-            viewsData.push({
-              date: date.toISOString().split('T')[0],
-              views: Math.max(0, baseViews + variance)
-            });
-          }
-          
-          return viewsData;
-        };
-
-        setAnalytics({
-          totalViews,
-          uniqueVisitors,
-          avgTimeOnSite: Math.floor(Math.random() * 180) + 120,
-          bounceRate: Math.floor(Math.random() * 20) + 25,
-          topPosts,
-          topProjects: [],
-          trafficSources: [
-            { source: 'Direct', percentage: 45.2, visitors: Math.floor(uniqueVisitors * 0.452) },
-            { source: 'Google', percentage: 32.1, visitors: Math.floor(uniqueVisitors * 0.321) },
-            { source: 'LinkedIn', percentage: 12.8, visitors: Math.floor(uniqueVisitors * 0.128) },
-            { source: 'Twitter', percentage: 6.4, visitors: Math.floor(uniqueVisitors * 0.064) },
-            { source: 'Autres', percentage: 3.5, visitors: Math.floor(uniqueVisitors * 0.035) }
-          ],
-          viewsOverTime: generateViewsOverTime(),
-          totalPosts,
-          totalProjects,
-          featuredPosts,
-          featuredProjects
-        });
-      } catch (err) {
-        setError('Erreur lors du chargement des analytics');
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
 
     try {
-      // Fetch real data from Supabase
+      // Fetch real data from SQLite
       const [postsResult, projectsResult] = await Promise.all([
         blogService.getAllPosts(),
         projectService.getAllProjects()

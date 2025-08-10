@@ -19,7 +19,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
     setIsLoading(true);
     setError('');
 
-    // Mock authentication - replace with actual authentication logic
+    // Simple authentication - in production, use proper API
     try {
       if (credentials.username === 'admin' && credentials.password === 'password') {
         onLogin(credentials);

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home } from 'lucide-react';
-import { useBlogPost } from '../hooks/useSupabase';
-import { BlogPost as SupabaseBlogPost } from '../lib/supabase';
+import { useBlogPost } from '../hooks/useSQLite';
+import { BlogPost as SQLiteBlogPost } from '../lib/database';
 import Navigation from './Navigation';
 
-// Convert Supabase blog post to display format
-const convertSupabaseBlogPost = (post: SupabaseBlogPost) => ({
+// Convert SQLite blog post to display format
+const convertSQLiteBlogPost = (post: SQLiteBlogPost) => ({
   id: post.id,
   title: post.title,
   slug: post.slug,
@@ -45,11 +45,11 @@ interface BlogPostProps {
 }
 
 const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNavigateToProjects }) => {
-  // Fetch post from Supabase
-  const { post: supabasePost, loading, error } = useBlogPost(slug);
+  // Fetch post from SQLite
+  const { post: sqlitePost, loading, error } = useBlogPost(slug);
   
   // Convert to display format
-  const post = supabasePost ? convertSupabaseBlogPost(supabasePost) : null;
+  const post = sqlitePost ? convertSQLiteBlogPost(sqlitePost) : null;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {

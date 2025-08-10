@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ExternalLink, Eye, Heart, Star, ArrowRight } from 'lucide-react';
-import { useProjects } from '../hooks/useSupabase';
+import { useProjects } from '../hooks/useSQLite';
 
 const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
