@@ -64,7 +64,8 @@ class ApiClient {
       return { data: null, error: new Error('API non configurée') };
     }
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const url = `${API_BASE_URL}${endpoint}`;
+      const response = await fetch(url, {
         ...options,
         headers: {
           ...this.getAuthHeaders(),
@@ -79,6 +80,11 @@ class ApiClient {
       }
       return { data: (result && (result.data || result)) || null, error: null };
     } catch (error) {
+      // Enhanced error information for debugging
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        const enhancedError = new Error(`Impossible de se connecter au serveur à l'adresse ${API_BASE_URL}${endpoint}. Vérifiez que le backend est démarré.`);
+        return { data: null, error: enhancedError };
+      }
       return { data: null, error: error instanceof Error ? error : new Error('Unknown error') };
     }
   }
@@ -94,8 +100,14 @@ class ApiClient {
       body: JSON.stringify({ username, password })
     });
 
-    if (networkResult.error && /Failed to fetch|NetworkError|TypeError/i.test(networkResult.error.message)) {
-      return { data: null, error: new Error('Serveur injoignable. Réessayez plus tard.') };
+    if (networkResult.error) {
+      if (/Failed to fetch|NetworkError|TypeError/i.test(networkResult.error.message)) {
+        // More specific error message with URL information
+        const errorMessage = `Serveur injoignable à l'adresse ${API_BASE_URL}. Vérifiez que le backend est démarré sur le port 3001.`;
+        return { data: null, error: new Error(errorMessage) };
+      }
+      // Return the original error if it's not a network error
+      return networkResult;
     }
     return networkResult;
   }
