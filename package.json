@@ -16,7 +16,9 @@
     "preview": "vite preview",
     "prebuild": "npm run type-check",
     "postbuild": "npm run validate-build",
-    "validate-build": "test -d dist && test -f dist/index.html || (echo 'Build validation failed' && exit 1)"
+    "validate-build": "test -d dist && test -f dist/index.html || (echo 'Build validation failed' && exit 1)",
+    "server": "node server/index.js",
+    "start": "npm run server"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.54.0",
