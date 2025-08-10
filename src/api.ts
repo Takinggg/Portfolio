@@ -27,11 +27,9 @@ const getApiBaseUrl = (): string => {
                         window.location.hostname === '127.0.0.1' ||
                         window.location.hostname.startsWith('192.168.'));
   
-  // Environment variable takes priority
+  // Environment variable takes priority (standardized to VITE_API_BASE_URL)
   const envApiUrl = (typeof import.meta !== 'undefined' && (import.meta as { env?: Record<string, string> }).env?.VITE_API_BASE_URL) ||
-                   (typeof import.meta !== 'undefined' && (import.meta as { env?: Record<string, string> }).env?.VITE_API_URL) ||
-                   (typeof process !== 'undefined' && (process as { env?: Record<string, string> }).env?.REACT_APP_API_BASE_URL) ||
-                   (typeof process !== 'undefined' && (process as { env?: Record<string, string> }).env?.REACT_APP_API_URL);
+                   (typeof process !== 'undefined' && (process as { env?: Record<string, string> }).env?.REACT_APP_API_BASE_URL);
   
   if (envApiUrl) {
     return envApiUrl;

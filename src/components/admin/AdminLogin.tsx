@@ -92,9 +92,15 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             {formError && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
                 {formError}
-                {/Serveur injoignable/i.test(formError) && (
-                  <div className="mt-1 text-xs text-red-500">
-                    Astuce: en mode hors-ligne, utilisez <code>admin</code> / <code>password</code> (mode démo).
+                {/Serveur injoignable|Impossible de se connecter/i.test(formError) && (
+                  <div className="mt-2 text-xs text-red-600 bg-red-100 border border-red-300 rounded p-2">
+                    <strong>Diagnostic de connexion :</strong>
+                    <ul className="mt-1 list-disc list-inside space-y-1">
+                      <li>Vérifiez que le serveur backend est démarré sur le port 3001</li>
+                      <li>Commande : <code className="bg-red-200 px-1 rounded">npm run server</code> dans un autre terminal</li>
+                      <li>URL du backend : <code className="bg-red-200 px-1 rounded">{(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001/api'}</code></li>
+                      <li>En mode hors-ligne, utilisez <code className="bg-red-200 px-1 rounded">admin</code> / <code className="bg-red-200 px-1 rounded">password</code></li>
+                    </ul>
                   </div>
                 )}
               </div>
