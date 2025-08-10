@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Liquid Glass Design System */
+@import './styles/liquid-glass.css';
+
 /* Line clamp utility */
 @layer utilities {
   .line-clamp-3 {

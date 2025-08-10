@@ -1,0 +1,267 @@
+/* Liquid Glass Design System CSS Foundation */
+
+/* CSS Custom Properties for Liquid Glass Effects */
+:root {
+  /* Glass transparency levels */
+  --glass-opacity-light: 0.25;
+  --glass-opacity-medium: 0.15;
+  --glass-opacity-dark: 0.10;
+  
+  /* Liquid colors */
+  --liquid-blue: #667eea;
+  --liquid-purple: #764ba2;
+  --liquid-pink: #f093fb;
+  --liquid-cyan: #4facfe;
+  
+  /* Glass blur levels */
+  --glass-blur-light: 12px;
+  --glass-blur-medium: 20px;
+  --glass-blur-heavy: 40px;
+  
+  /* Border opacities */
+  --glass-border-opacity: 0.2;
+  --iridescent-border-opacity: 0.3;
+  
+  /* Animation timings */
+  --liquid-morph-duration: 8s;
+  --glass-shine-duration: 3s;
+  --gradient-flow-duration: 6s;
+  
+  /* Magnetic cursor variables */
+  --magnetic-x: 0px;
+  --magnetic-y: 0px;
+}
+
+/* Base glass effect utility classes */
+.glass-base {
+  background: rgba(255, 255, 255, var(--glass-opacity-light));
+  backdrop-filter: blur(var(--glass-blur-light));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  border: 1px solid rgba(255, 255, 255, var(--glass-border-opacity));
+}
+
+.glass-medium {
+  background: rgba(255, 255, 255, var(--glass-opacity-medium));
+  backdrop-filter: blur(var(--glass-blur-medium));
+  -webkit-backdrop-filter: blur(var(--glass-blur-medium));
+  border: 1px solid rgba(255, 255, 255, var(--glass-border-opacity));
+}
+
+.glass-heavy {
+  background: rgba(255, 255, 255, var(--glass-opacity-dark));
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border: 1px solid rgba(255, 255, 255, var(--glass-border-opacity));
+}
+
+/* Liquid morphing shapes */
+.liquid-shape {
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  animation: liquidMorph var(--liquid-morph-duration) ease-in-out infinite;
+}
+
+.liquid-shape-alt {
+  border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  animation: liquidMorph var(--liquid-morph-duration) ease-in-out infinite reverse;
+}
+
+/* Glass shine effect */
+.glass-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: glassShine var(--glass-shine-duration) ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Iridescent borders */
+.border-iridescent {
+  position: relative;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.border-iridescent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg,
+    var(--liquid-blue),
+    var(--liquid-purple),
+    var(--liquid-pink),
+    var(--liquid-cyan),
+    #00f2fe,
+    var(--liquid-cyan),
+    var(--liquid-pink),
+    var(--liquid-purple),
+    var(--liquid-blue)
+  );
+  background-size: 400% 400%;
+  animation: iridescent 4s ease-in-out infinite;
+}
+
+/* Magnetic cursor effect */
+.magnetic {
+  transition: transform 0.3s ease-out;
+  cursor: pointer;
+}
+
+.magnetic:hover {
+  transform: translate(var(--magnetic-x), var(--magnetic-y)) scale(1.05);
+}
+
+/* Ripple effect */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Floating elements */
+.float-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+.float-element:nth-child(2n) {
+  animation-delay: -2s;
+}
+
+.float-element:nth-child(3n) {
+  animation-delay: -4s;
+}
+
+/* Liquid gradient backgrounds */
+.liquid-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--liquid-blue) 0%,
+    var(--liquid-purple) 25%,
+    var(--liquid-pink) 50%,
+    var(--liquid-cyan) 75%,
+    var(--liquid-blue) 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientFlow var(--gradient-flow-duration) ease-in-out infinite;
+}
+
+/* Typing animation */
+.typing-animation {
+  overflow: hidden;
+  border-right: 2px solid currentColor;
+  white-space: nowrap;
+  animation: typing 3.5s steps(30, end), blink-caret 0.75s step-end infinite;
+}
+
+/* Glass card container */
+.glass-card {
+  @apply glass-base rounded-xl shadow-glass transition-all duration-300;
+}
+
+.glass-card:hover {
+  @apply shadow-glass-lg scale-102;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Liquid button */
+.liquid-button {
+  @apply glass-base rounded-full px-6 py-3 font-medium text-text-glass transition-all duration-300 magnetic ripple relative overflow-hidden;
+  background: linear-gradient(135deg, rgba(103, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+}
+
+.liquid-button:hover {
+  @apply shadow-magnetic scale-103;
+  background: linear-gradient(135deg, rgba(103, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .liquid-shape,
+  .liquid-shape-alt,
+  .glass-shine::before,
+  .border-iridescent::before,
+  .float-element,
+  .liquid-gradient,
+  .typing-animation {
+    animation: none;
+  }
+  
+  .magnetic:hover {
+    transform: scale(1.02);
+  }
+  
+  .ripple::after {
+    transition: none;
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .glass-base,
+  .glass-medium,
+  .glass-heavy {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #000;
+  }
+  
+  .border-iridescent::before {
+    background: linear-gradient(45deg, #000, #333, #666, #000);
+  }
+}
+
+/* Focus styles for accessibility */
+.liquid-button:focus-visible,
+.glass-card:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Dark mode glass adjustments (if needed) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-opacity-light: 0.15;
+    --glass-opacity-medium: 0.10;
+    --glass-opacity-dark: 0.05;
+  }
+  
+  .glass-base,
+  .glass-medium,
+  .glass-heavy {
+    background: rgba(0, 0, 0, var(--glass-opacity-light));
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
