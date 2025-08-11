@@ -65,7 +65,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Enhanced Sidebar with better contrast and flex layout */}
-      <div className="w-64 bg-white shadow-xl border-r-2 border-gray-200 flex flex-col">
+      <div className="w-64 bg-white shadow-xl border-r-2 border-gray-200 flex flex-col min-h-screen">
         <div className="p-6 border-b-2 border-gray-200 bg-blue-50">
           <h2 className="text-xl font-bold text-gray-900">Admin Panel</h2>
           <p className="text-sm text-gray-700 font-medium">FOULON Maxence</p>

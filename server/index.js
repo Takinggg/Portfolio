@@ -734,6 +734,18 @@ app.get('/api/projects/:id', (req, res) => {
   }
 });
 
+// Helper function to normalize array inputs
+const normalizeToArray = (input) => {
+  if (!input) return [];
+  if (Array.isArray(input)) {
+    return input.map(item => String(item).trim()).filter(Boolean);
+  }
+  if (typeof input === 'string') {
+    return input.split(',').map(item => item.trim()).filter(Boolean);
+  }
+  return [];
+};
+
 app.post('/api/projects', authenticateToken, (req, res) => {
   try {
     const project = req.body;
@@ -748,20 +760,24 @@ app.post('/api/projects', authenticateToken, (req, res) => {
     // Generate a UUID for the project
     const projectId = randomUUID();
 
+    // Input normalization: ensure technologies and images are arrays of strings
+    const normalizedTechnologies = normalizeToArray(project.technologies);
+    const normalizedImages = normalizeToArray(project.images);
+
     // Ensure all fields have proper defaults with proper null/undefined checks
     const projectData = {
       id: projectId,
       title: project.title,
       description: project.description,
       long_description: project.long_description || '',
-      technologies: (project.technologies && Array.isArray(project.technologies)) ? project.technologies : [],
+      technologies: normalizedTechnologies,
       category: project.category || 'web',
       status: project.status || 'in-progress',
       start_date: project.start_date || new Date().toISOString().split('T')[0],
       end_date: project.end_date || null,
       client: project.client || null,
       budget: project.budget || null,
-      images: (project.images && Array.isArray(project.images)) ? project.images : [],
+      images: normalizedImages,
       featured: Boolean(project.featured),
       github_url: project.github_url || null,
       live_url: project.live_url || null
@@ -816,9 +832,9 @@ app.put('/api/projects/:id', authenticateToken, (req, res) => {
       if (key !== 'id' && key !== 'created_at' && value !== undefined) {
         setClause.push(`${key} = ?`);
         if (key === 'technologies' || key === 'images') {
-          // Ensure arrays are properly handled with null/undefined checks
-          const arrayValue = (value && Array.isArray(value)) ? value : [];
-          params.push(JSON.stringify(arrayValue));
+          // Normalize and ensure arrays are properly handled
+          const normalizedValue = normalizeToArray(value);
+          params.push(JSON.stringify(normalizedValue));
         } else if (key === 'featured') {
           params.push(value ? 1 : 0);
         } else {
