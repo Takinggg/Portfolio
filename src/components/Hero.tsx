@@ -140,7 +140,7 @@ const Hero = () => {
               transition={{ duration: 0.8, delay: 0.7 }}
             >
               <span className="bg-gradient-to-r from-liquid-blue to-liquid-purple bg-clip-text text-transparent">
-                Alex Johnson
+                FOULON Maxence
               </span>
             </motion.span>
             <motion.div
