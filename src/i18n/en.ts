@@ -24,6 +24,17 @@ const en: TranslationDictionary = {
       clients: 'Happy clients',
       experience: 'Years of experience',
     },
+    metrics: {
+      experience_years: 'Years of experience',
+      projects_delivered: 'Projects delivered',
+      success_rate: 'Success rate',
+      client_satisfaction: 'Client satisfaction',
+    },
+    value_props: {
+      user_centered: 'User-centered design',
+      experience: '5+ years of experience',
+      roi: 'Measurable ROI',
+    },
   },
   about: {
     title: 'About',
@@ -48,6 +59,13 @@ const en: TranslationDictionary = {
     view_all: 'View all articles',
     min_read: 'min read',
     back_to_blog: 'Back to articles',
+    section: {
+      latest: 'Latest articles',
+      blog_and: 'Blog &',
+      description: 'Discover my thoughts on design, UX/UI trends and best practices in digital design',
+      cta_title: 'Want to read more articles?',
+      cta_description: 'Discover all my articles on design, UX and digital trends',
+    },
   },
   contact: {
     title: 'Contact',

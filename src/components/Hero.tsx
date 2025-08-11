@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Calendar, CheckCircle, Users, TrendingUp, Award, Target } from 'lucide-react';
+import { useI18n } from '../hooks/useI18n';
 
 const Hero = () => {
+  const { t } = useI18n();
   const scrollToProjects = () => {
     const element = document.getElementById('projects');
     if (element) {
@@ -37,7 +39,7 @@ const Hero = () => {
           <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur border border-gray-200 rounded-full shadow-sm">
             <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse" />
             <span className="text-sm font-medium text-gray-700">
-              FOULON Maxence • Designer UI/UX
+              {t('hero.availability')}
             </span>
             <CheckCircle className="ml-2 text-green-500" size={16} />
           </div>
@@ -52,10 +54,10 @@ const Hero = () => {
         >
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900 tracking-tight">
             <span className="block mb-2">
-              Créateur d'expériences
+              {t('hero.title')}
             </span>
             <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-              utilisateur exceptionnelles
+              {t('hero.subtitle')}
             </span>
           </h1>
         </motion.div>
@@ -68,23 +70,22 @@ const Hero = () => {
           className="mb-8 max-w-3xl mx-auto"
         >
           <p className="text-xl text-gray-600 leading-relaxed mb-8">
-            Designer UI/UX passionné, je transforme vos idées en interfaces intuitives 
-            qui engagent vos utilisateurs et accélèrent votre croissance.
+            {t('hero.description')}
           </p>
           
           {/* Value Props */}
           <div className="flex flex-wrap justify-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
               <Target className="text-violet-600" size={18} />
-              <span className="text-gray-700 font-medium">Design centré utilisateur</span>
+              <span className="text-gray-700 font-medium">{t('hero.value_props.user_centered')}</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
               <Award className="text-indigo-600" size={18} />
-              <span className="text-gray-700 font-medium">5+ années d'expérience</span>
+              <span className="text-gray-700 font-medium">{t('hero.value_props.experience')}</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
               <TrendingUp className="text-violet-600" size={18} />
-              <span className="text-gray-700 font-medium">ROI mesurable</span>
+              <span className="text-gray-700 font-medium">{t('hero.value_props.roi')}</span>
             </div>
           </div>
         </motion.div>
@@ -100,7 +101,7 @@ const Hero = () => {
             onClick={scrollToProjects}
             className="flex items-center gap-2 px-8 py-4 bg-violet-600 hover:bg-violet-700 text-white rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
           >
-            <span>Voir mes projets</span>
+            <span>{t('hero.cta_projects')}</span>
             <ArrowDown size={20} />
           </button>
 
@@ -109,7 +110,7 @@ const Hero = () => {
             className="flex items-center gap-2 px-8 py-4 bg-white border border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 rounded-full font-semibold transition-all duration-300 shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
           >
             <Calendar size={20} />
-            <span>Planifier un appel</span>
+            <span>{t('hero.cta_contact')}</span>
           </button>
         </motion.div>
 
@@ -121,10 +122,10 @@ const Hero = () => {
           className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
         >
           {[
-            { value: "5+", label: "Années d'expérience", icon: Users },
-            { value: "50+", label: "Projets livrés", icon: CheckCircle },
-            { value: "95%", label: "Taux de réussite", icon: TrendingUp },
-            { value: "4.9/5", label: "Satisfaction client", icon: Award }
+            { value: "5+", label: t('hero.metrics.experience_years'), icon: Users },
+            { value: "50+", label: t('hero.metrics.projects_delivered'), icon: CheckCircle },
+            { value: "95%", label: t('hero.metrics.success_rate'), icon: TrendingUp },
+            { value: "4.9/5", label: t('hero.metrics.client_satisfaction'), icon: Award }
           ].map((metric, index) => {
             const Icon = metric.icon;
             return (

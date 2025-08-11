@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Home, User, Briefcase, BookOpen, Mail, ArrowRight } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useI18n } from '../hooks/useI18n';
+import { LanguageThemeSwitcher } from './ui/LanguageThemeSwitcher';
 
 interface NewNavbarProps {
   onNavigateToSection: (sectionId: string) => void;
@@ -20,13 +22,14 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
   onNavigateToProjects,
   showBackButton = false,
   onBack,
-  backLabel = "Retour",
+  backLabel = t('nav.back'),
   currentPage = 'home',
   isAuthenticated = false
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [isScrolled, setIsScrolled] = useState(false);
+  const { t } = useI18n();
 
   // Scroll detection for enhanced glass effect
   useEffect(() => {
@@ -82,11 +85,11 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
   };
 
   const navItems = [
-    { id: 'hero', label: 'Accueil', icon: Home },
-    { id: 'about', label: 'A propos', icon: User },
-    { id: 'projects', label: 'Projets', icon: Briefcase },
-    { id: 'blog', label: 'Articles', icon: BookOpen },
-    { id: 'contact', label: 'Me contacter', icon: Mail }
+    { id: 'hero', label: t('nav.home'), icon: Home },
+    { id: 'about', label: t('nav.about'), icon: User },
+    { id: 'projects', label: t('nav.projects'), icon: Briefcase },
+    { id: 'blog', label: t('nav.blog'), icon: BookOpen },
+    { id: 'contact', label: t('nav.contact'), icon: Mail }
   ];
 
   // Glass effect styling classes - Always light/translucent
@@ -130,7 +133,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
             className="flex-shrink-0 w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            aria-label="Accueil"
+            aria-label={t('nav.home')}
           >
             <Home size={18} />
           </motion.button>
@@ -176,7 +179,10 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Language & Theme Switcher */}
+            <LanguageThemeSwitcher className="hidden sm:flex" />
+            
             {/* Admin Link */}
             <motion.a
               href="/admin"
@@ -247,6 +253,11 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
               transition={{ type: "spring", duration: 0.3 }}
             >
               <div className={cn(glassMobileMenuClass, "rounded-2xl p-6 shadow-xl")}>
+                {/* Mobile Language & Theme Switcher */}
+                <div className="mb-4 flex justify-center">
+                  <LanguageThemeSwitcher />
+                </div>
+                
                 <div className="space-y-3">
                   {navItems.map((item, index) => {
                     const Icon = item.icon;

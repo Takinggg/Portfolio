@@ -24,6 +24,17 @@ const fr: TranslationDictionary = {
       clients: 'Clients satisfaits',
       experience: 'Années d\'expérience',
     },
+    metrics: {
+      experience_years: 'Années d\'expérience',
+      projects_delivered: 'Projets livrés',
+      success_rate: 'Taux de réussite',
+      client_satisfaction: 'Satisfaction client',
+    },
+    value_props: {
+      user_centered: 'Design centré utilisateur',
+      experience: '5+ années d\'expérience',
+      roi: 'ROI mesurable',
+    },
   },
   about: {
     title: 'À propos',
@@ -48,6 +59,13 @@ const fr: TranslationDictionary = {
     view_all: 'Voir tous les articles',
     min_read: 'min de lecture',
     back_to_blog: 'Retour aux articles',
+    section: {
+      latest: 'Derniers articles',
+      blog_and: 'Blog &',
+      description: 'Découvrez mes réflexions sur le design, les tendances UX/UI et les meilleures pratiques du design digital',
+      cta_title: 'Envie de lire plus d\'articles ?',
+      cta_description: 'Découvrez tous mes articles sur le design, l\'UX et les tendances digitales',
+    },
   },
   contact: {
     title: 'Contact',

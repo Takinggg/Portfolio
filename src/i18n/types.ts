@@ -25,6 +25,17 @@ export interface TranslationDictionary {
       clients: string;
       experience: string;
     };
+    metrics: {
+      experience_years: string;
+      projects_delivered: string;
+      success_rate: string;
+      client_satisfaction: string;
+    };
+    value_props: {
+      user_centered: string;
+      experience: string;
+      roi: string;
+    };
   };
   about: {
     title: string;
@@ -49,6 +60,13 @@ export interface TranslationDictionary {
     view_all: string;
     min_read: string;
     back_to_blog: string;
+    section: {
+      latest: string;
+      blog_and: string;
+      description: string;
+      cta_title: string;
+      cta_description: string;
+    };
   };
   contact: {
     title: string;

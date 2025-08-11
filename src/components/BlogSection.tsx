@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Calendar, Clock, User, BookOpen, Sparkles } from 'lucide-react';
 import { useBlogPosts } from '../hooks/useSQLite';
+import { useI18n } from '../hooks/useI18n';
 
 // Blog placeholder image
 const getBlogPlaceholderImage = () => {
@@ -15,6 +16,7 @@ interface BlogSectionProps {
 const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateToPost }) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const { t } = useI18n();
   
   // Use the custom hook to fetch posts (we'll filter for featured ones below)
   const { posts: allPosts, loading, error } = useBlogPosts();
@@ -106,22 +108,21 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
         <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full text-sm font-medium mb-6 border border-primary-100">
             <BookOpen className="text-primary-600" size={16} />
-            <span className="text-text-soft">Derniers articles</span>
+            <span className="text-text-soft">{t('blog.section.latest')}</span>
           </div>
           
           <h2 className="text-5xl md:text-7xl font-black mb-8">
             <span className="bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">
-              Blog &
+              {t('blog.section.blog_and')}
             </span>
             <br />
             <span className="bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500 bg-clip-text text-transparent">
-              Insights
+              {t('blog.insights')}
             </span>
           </h2>
           
           <p className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed">
-            Découvrez mes réflexions sur le design, les tendances UX/UI 
-            et les meilleures pratiques du design digital
+            {t('blog.section.description')}
           </p>
         </div>
 
@@ -137,7 +138,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
             >
               {/* Featured Badge */}
               <div className="absolute top-4 left-4 z-20 bg-accent-orange text-white px-3 py-1 rounded-full text-xs font-bold shadow-card">
-                ⭐ Featured
+                ⭐ {t('blog.featured')}
               </div>
 
               {/* Image Container */}
@@ -220,7 +221,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
                   onClick={() => readPost(post.slug)}
                   className="group/btn flex items-center gap-2 text-purple-600 font-semibold hover:text-purple-700 transition-colors duration-200"
                 >
-                  <span>Lire la suite</span>
+                  <span>{t('blog.read_more')}</span>
                   <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform duration-300" />
                 </button>
               </div>
@@ -237,15 +238,15 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
             </div>
             
             <div className="relative z-10">
-              <h3 className="text-3xl font-bold mb-4">Envie de lire plus d'articles ?</h3>
+              <h3 className="text-3xl font-bold mb-4">{t('blog.section.cta_title')}</h3>
               <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-                Découvrez tous mes articles sur le design, l'UX et les tendances digitales
+                {t('blog.section.cta_description')}
               </p>
               <button 
                 onClick={navigateToBlog}
                 className="bg-white text-purple-600 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center gap-2 mx-auto"
               >
-                Voir tous les articles
+                {t('blog.view_all')}
                 <ArrowRight size={20} />
               </button>
             </div>
