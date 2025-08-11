@@ -6,7 +6,11 @@ import { Timeline } from './about/Timeline';
 import { ProcessStrip } from './about/ProcessStrip';
 import { useI18n } from '../hooks/useI18n';
 
-const About = memo(() => {
+interface AboutProps {
+  onNavigateToSection?: (sectionId: string) => void;
+}
+
+const About = memo(({ onNavigateToSection }: AboutProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const { t } = useI18n();
@@ -235,7 +239,7 @@ const About = memo(() => {
                    style={{background: 'linear-gradient(135deg, rgba(103, 126, 234, 0.2), rgba(118, 75, 162, 0.2))'}} />
               <div className="relative glass-heavy rounded-3xl p-8 shadow-glass glass-reflection glass-distortion">
                 <img 
-                  src="https://images.pexels.com/photos/3778876/pexels-photo-3778876.jpeg" 
+                  src="/image.png" 
                   alt="Portrait de Maxence FOULON"
                   className="w-full h-96 object-cover rounded-2xl shadow-xl group-hover:scale-105 transition-transform duration-500"
                 />
@@ -243,7 +247,7 @@ const About = memo(() => {
                 {/* Enhanced Glass Floating Stats */}
                 <div className="absolute -top-4 -right-4 glass-ultra rounded-2xl p-4 shadow-glass border-iridescent glass-fragments">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-liquid-blue">50+</div>
+                    <div className="text-2xl font-bold text-liquid-blue">20+</div>
                     <div className="text-xs text-text-muted">Projets</div>
                   </div>
                 </div>
@@ -275,6 +279,68 @@ const About = memo(() => {
               <p className="text-lg leading-relaxed text-text-strong">
                 {t('about.process_text')}
               </p>
+            </div>
+
+            {/* Skills Section */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-text-strong mb-4">{t('about.skills.title')}</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
+                  <span className="text-2xl">⚛️</span>
+                  <span className="text-text-strong font-medium">{t('about.skills.react')}</span>
+                </div>
+                <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
+                  <span className="text-2xl">🎨</span>
+                  <span className="text-text-strong font-medium">{t('about.skills.design')}</span>
+                </div>
+                <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
+                  <span className="text-2xl">🚀</span>
+                  <span className="text-text-strong font-medium">{t('about.skills.node')}</span>
+                </div>
+                <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
+                  <span className="text-2xl">💾</span>
+                  <span className="text-text-strong font-medium">{t('about.skills.database')}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Philosophy Section */}
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-text-strong mb-4">{t('about.philosophy.title')}</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start space-x-3 text-text-strong">
+                  <span className="text-lg">💡</span>
+                  <span>{t('about.philosophy.innovation')}</span>
+                </li>
+                <li className="flex items-start space-x-3 text-text-strong">
+                  <span className="text-lg">🎯</span>
+                  <span>{t('about.philosophy.user_focus')}</span>
+                </li>
+                <li className="flex items-start space-x-3 text-text-strong">
+                  <span className="text-lg">⚡</span>
+                  <span>{t('about.philosophy.performance')}</span>
+                </li>
+                <li className="flex items-start space-x-3 text-text-strong">
+                  <span className="text-lg">🤝</span>
+                  <span>{t('about.philosophy.collaboration')}</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button 
+                onClick={() => onNavigateToSection?.('projects')}
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300"
+              >
+                {t('about.cta.projects')}
+              </button>
+              <button 
+                onClick={() => onNavigateToSection?.('contact')}
+                className="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-text-strong rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
+              >
+                {t('about.cta.contact')}
+              </button>
             </div>
 
             {/* Enhanced Glass Values Grid */}
