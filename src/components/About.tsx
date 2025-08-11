@@ -1,36 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { memo } from 'react';
 import { Target, Lightbulb, Heart, Coffee, Search, Brain, Palette, Code } from 'lucide-react';
 import { CompetencyMatrix } from './about/CompetencyMatrix';
 import { Timeline } from './about/Timeline';
 import { ProcessStrip } from './about/ProcessStrip';
 import { useI18n } from '../hooks/useI18n';
+import { AnimatedBackground } from './ui/AnimatedBackground';
+import { ShimmerText } from './ui/ShimmerText';
+import { PulseButton } from './ui/PulseButton';
+import { GlassmorphismPhotoCard } from './ui/GlassmorphismPhotoCard';
+import { AnimatedPhilosophyCard } from './ui/AnimatedPhilosophyCard';
+import { FadeInWrapper } from './ui/FadeInWrapper';
 
 interface AboutProps {
   onNavigateToSection?: (sectionId: string) => void;
 }
 
 const About = memo(({ onNavigateToSection }: AboutProps) => {
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const { t } = useI18n();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
 
   // Competency Matrix Data
   const competencyCategories = [
@@ -201,69 +189,47 @@ const About = memo(({ onNavigateToSection }: AboutProps) => {
 
   return (
     <section ref={sectionRef} id="about" className="py-32 bg-white dark:bg-gray-950 relative overflow-hidden transition-colors">
-      {/* Enhanced Background Elements for Dark Theme */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 liquid-shape opacity-5 dark:opacity-10 blur-3xl" 
-             style={{background: 'linear-gradient(135deg, rgba(103, 126, 234, 0.15), rgba(118, 75, 162, 0.15))'}} />
-        <div className="absolute bottom-20 right-10 w-96 h-96 liquid-shape-alt opacity-5 dark:opacity-10 blur-3xl" 
-             style={{background: 'linear-gradient(45deg, rgba(240, 147, 251, 0.12), rgba(79, 172, 254, 0.12))'}} />
-      </div>
+      {/* Enhanced Animated Background */}
+      <AnimatedBackground variant="gradient" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <FadeInWrapper direction="up" delay={0.2} className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-4 py-2 glass-base rounded-full text-sm font-medium mb-6 border-iridescent glass-reflection">
             <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
             <span className="text-text-strong">{t('about.discover_universe')}</span>
           </div>
           
+          {/* Enhanced title with shimmer effect */}
           <h2 className="text-5xl md:text-7xl font-black mb-8">
-            <span className="bg-gradient-to-r from-text-strong via-liquid-blue to-liquid-purple bg-clip-text text-transparent">
+            <ShimmerText className="bg-gradient-to-r from-text-strong via-liquid-blue to-liquid-purple bg-clip-text text-transparent">
               {t('about.about_me').split(' ')[0]}
-            </span>
+            </ShimmerText>
             <br />
-            <span className="bg-gradient-to-r from-liquid-blue to-liquid-purple bg-clip-text text-transparent">
+            <ShimmerText delay={0.5} className="bg-gradient-to-r from-liquid-blue to-liquid-purple bg-clip-text text-transparent">
               {t('about.about_me').split(' ').slice(1).join(' ')}
-            </span>
+            </ShimmerText>
           </h2>
           
           <p className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed">
             {t('about.passionate_designer')}
           </p>
-        </div>
+        </FadeInWrapper>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
-          {/* Image Section */}
-          <div className={`transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-            <div className="relative group">
-              <div className="absolute inset-0 liquid-shape opacity-10 blur-xl group-hover:blur-2xl transition-all duration-500"
-                   style={{background: 'linear-gradient(135deg, rgba(103, 126, 234, 0.2), rgba(118, 75, 162, 0.2))'}} />
-              <div className="relative glass-heavy rounded-3xl p-8 shadow-glass glass-reflection glass-distortion">
-                <img 
-                  src="/image.png" 
-                  alt="Portrait de Maxence FOULON"
-                  className="w-full h-96 object-cover rounded-2xl shadow-xl group-hover:scale-105 transition-transform duration-500"
-                />
-                
-                {/* Enhanced Glass Floating Stats */}
-                <div className="absolute -top-4 -right-4 glass-ultra rounded-2xl p-4 shadow-glass border-iridescent glass-fragments">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-liquid-blue">20+</div>
-                    <div className="text-xs text-text-muted">Projets</div>
-                  </div>
-                </div>
-                
-                <div className="absolute -bottom-4 -left-4 glass-ultra rounded-2xl p-4 shadow-glass border-iridescent glass-fragments">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-liquid-purple">3+</div>
-                    <div className="text-xs text-text-muted">Années</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Enhanced Image Section with 3D Glassmorphism Card */}
+          <FadeInWrapper direction="left" delay={0.3}>
+            <GlassmorphismPhotoCard
+              imageSrc="/image.png"
+              imageAlt="Portrait de Maxence FOULON"
+              stats={[
+                { value: "20+", label: "Projets", position: "top-right" },
+                { value: "3+", label: "Années", position: "bottom-left" }
+              ]}
+            />
+          </FadeInWrapper>
 
           {/* Content Section */}
-          <div className={`space-y-8 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+          <FadeInWrapper direction="right" delay={0.5} className="space-y-8">
             <div className="prose prose-lg text-text-soft space-y-6">
               {/* Age moved from Hero */}
               <div className="mb-6">
@@ -282,7 +248,7 @@ const About = memo(({ onNavigateToSection }: AboutProps) => {
             </div>
 
             {/* Skills Section */}
-            <div className="mb-8">
+            <FadeInWrapper direction="up" delay={0.7} className="mb-8">
               <h3 className="text-xl font-bold text-text-strong mb-4">{t('about.skills.title')}</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
@@ -302,88 +268,63 @@ const About = memo(({ onNavigateToSection }: AboutProps) => {
                   <span className="text-text-strong font-medium">{t('about.skills.database')}</span>
                 </div>
               </div>
-            </div>
+            </FadeInWrapper>
 
-            {/* Philosophy Section */}
-            <div className="mb-8">
+            {/* Enhanced Philosophy Section with animated cards */}
+            <FadeInWrapper direction="up" delay={0.9} className="mb-8">
               <h3 className="text-xl font-bold text-text-strong mb-4">{t('about.philosophy.title')}</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start space-x-3 text-text-strong">
-                  <span className="text-lg">💡</span>
-                  <span>{t('about.philosophy.innovation')}</span>
-                </li>
-                <li className="flex items-start space-x-3 text-text-strong">
-                  <span className="text-lg">🎯</span>
-                  <span>{t('about.philosophy.user_focus')}</span>
-                </li>
-                <li className="flex items-start space-x-3 text-text-strong">
-                  <span className="text-lg">⚡</span>
-                  <span>{t('about.philosophy.performance')}</span>
-                </li>
-                <li className="flex items-start space-x-3 text-text-strong">
-                  <span className="text-lg">🤝</span>
-                  <span>{t('about.philosophy.collaboration')}</span>
-                </li>
-              </ul>
-            </div>
+              <div className="grid grid-cols-2 gap-4">
+                {values.map((value, index) => (
+                  <AnimatedPhilosophyCard
+                    key={index}
+                    icon={value.icon}
+                    title={value.title}
+                    description={value.description}
+                    gradient={value.gradient}
+                    delay={1.1 + index * 0.1}
+                  />
+                ))}
+              </div>
+            </FadeInWrapper>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button 
+            {/* Enhanced CTA Buttons */}
+            <FadeInWrapper direction="up" delay={1.5} className="flex flex-col sm:flex-row gap-4">
+              <PulseButton 
+                variant="primary"
                 onClick={() => onNavigateToSection?.('projects')}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300"
               >
                 {t('about.cta.projects')}
-              </button>
-              <button 
+              </PulseButton>
+              <PulseButton 
+                variant="secondary"
                 onClick={() => onNavigateToSection?.('contact')}
-                className="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-text-strong rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
               >
                 {t('about.cta.contact')}
-              </button>
-            </div>
-
-            {/* Enhanced Glass Values Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {values.map((value, index) => {
-                const Icon = value.icon;
-                return (
-                  <div 
-                    key={index}
-                    className="group glass-heavy p-6 rounded-2xl shadow-glass hover:shadow-glass-lg transition-all duration-500 hover:-translate-y-2 magnetic glass-reflection liquid-spread glass-fragments"
-                  >
-                    <div className={`w-12 h-12 bg-gradient-to-br ${value.gradient} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-liquid border border-white/20`}>
-                      <Icon className="text-white" size={20} />
-                    </div>
-                    <h4 className="font-bold text-text-strong mb-2">{value.title}</h4>
-                    <p className="text-sm text-text-soft leading-relaxed">{value.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+              </PulseButton>
+            </FadeInWrapper>
+          </FadeInWrapper>
         </div>
 
         {/* Competency Matrix - Replaces Skills Section */}
-        <div className={`mb-20 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <FadeInWrapper direction="up" delay={0.7} className="mb-20">
           <CompetencyMatrix 
             categories={competencyCategories}
             className="bg-gray-50 dark:bg-gray-900/40 rounded-2xl p-8 transition-colors"
           />
-        </div>
+        </FadeInWrapper>
 
         {/* Process Strip */}
-        <div className={`mb-20 transition-all duration-1000 delay-900 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <FadeInWrapper direction="up" delay={0.9} className="mb-20">
           <ProcessStrip />
-        </div>
+        </FadeInWrapper>
 
         {/* Timeline */}
-        <div className={`transition-all duration-1000 delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <FadeInWrapper direction="up" delay={1.0}>
           <Timeline 
             events={timelineEvents}
             className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors"
           />
-        </div>
+        </FadeInWrapper>
       </div>
     </section>
   );
