@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, Eye, Users, Calendar, BarChart3, PieChart, Activity } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { TrendingUp, Eye, Users, BarChart3, PieChart, Activity } from 'lucide-react';
 import { blogService, projectService } from '../../lib/api';
-import { blogPosts as mockBlogPosts } from '../../data/blogPosts';
 
 const Analytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('30d');
@@ -24,12 +23,11 @@ const Analytics: React.FC = () => {
 
   useEffect(() => {
     fetchAnalytics();
-  }, [timeRange]);
+  }, [timeRange, fetchAnalytics]);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     setError(null);
-
 
     try {
       // Fetch real data from SQLite
@@ -122,7 +120,7 @@ const Analytics: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

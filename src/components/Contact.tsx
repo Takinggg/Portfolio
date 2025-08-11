@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { memo, useCallback } from 'react';
-import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles, Calendar, Upload, Link as LinkIcon, Check, X } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles, Calendar, Upload, Link as LinkIcon, X } from 'lucide-react';
 import { contactService } from '../lib/api';
 import { CONTACT_INFO } from '../config';
-import { validateContactForm, contactFormRateLimiter, type ContactFormData } from '../lib/validation';
-import { generateId, formAccessibility, screenReader } from '../lib/accessibility';
+import { validateContactForm, contactFormRateLimiter } from '../lib/validation';
+import { generateId, screenReader } from '../lib/accessibility';
 import { useI18n } from '../hooks/useI18n';
 
 const Contact = memo(() => {
@@ -31,10 +31,6 @@ const Contact = memo(() => {
   const formId = useRef(generateId('contact-form'));
   const nameId = useRef(generateId('name'));
   const emailId = useRef(generateId('email'));
-  const subjectId = useRef(generateId('subject'));
-  const messageId = useRef(generateId('message'));
-  const budgetId = useRef(generateId('budget'));
-  const timelineId = useRef(generateId('timeline'));
   const rgpdId = useRef(generateId('rgpd'));
   const briefUrlId = useRef(generateId('brief-url'));
   const briefFileId = useRef(generateId('brief-file'));
@@ -86,7 +82,7 @@ const Contact = memo(() => {
       }
 
       // Submit the sanitized message
-      const { data, error } = await contactService.submitMessage(validation.sanitizedData);
+      const { error } = await contactService.submitMessage(validation.sanitizedData);
 
       if (error) {
         throw error;

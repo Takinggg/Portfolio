@@ -20,19 +20,20 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
   onNavigateToSection, 
   onNavigateToBlog,
   onNavigateToProjects,
-  showBackButton = false,
-  onBack,
-  backLabel,
   currentPage = 'home',
-  isAuthenticated = false
+  // TODO: Implement these features in future iterations
+  showBackButton = false, // eslint-disable-line @typescript-eslint/no-unused-vars
+  onBack, // eslint-disable-line @typescript-eslint/no-unused-vars
+  backLabel, // eslint-disable-line @typescript-eslint/no-unused-vars
+  isAuthenticated = false // eslint-disable-line @typescript-eslint/no-unused-vars
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [isScrolled, setIsScrolled] = useState(false);
   const { t } = useI18n();
   
-  // Use the translation for backLabel if none provided
-  const finalBackLabel = backLabel || t('nav.back');
+  // TODO: Use the translation for backLabel when back button is implemented
+  // const finalBackLabel = backLabel || t('nav.back');
 
   // Scroll detection for enhanced glass effect
   useEffect(() => {

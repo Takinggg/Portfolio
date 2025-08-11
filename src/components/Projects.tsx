@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Eye, Heart, Star, ArrowRight, Filter, Code, Smartphone, Palette } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useProjects } from '../hooks/useSQLite';
 import { useI18n } from '../hooks/useI18n';
 import { GlassCard } from './ui/GlassCard';
-import { TiltCard } from './ui/TiltCard';
 import { ProjectCard } from './projects/ProjectCard';
 import { ProjectFilter } from './projects/ProjectFilter';
 
@@ -27,7 +26,6 @@ interface ProjectsProps {
 
 const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const { t } = useI18n();
   
@@ -113,7 +111,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
       views: `${(Math.floor(Math.random() * 15) + 5).toFixed(1)}k`, // Mock data
       featured: project.featured || false
     }));
-  }, [allProjects]);
+  }, [allProjects, getProjectType]);
   const filteredProjects = selectedCategory === 'all' 
     ? projects 
     : projects.filter(project => project.category === selectedCategory);

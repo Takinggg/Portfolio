@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, Search, Filter, Trash2, Download, Eye, Grid, List, Folder, File, Image, FileText } from 'lucide-react';
+import { Upload, Search, Trash2, Download, Eye, Grid, List, Folder, File, Image, FileText } from 'lucide-react';
 
 interface FileItem {
   id: string;

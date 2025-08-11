@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ErrorBoundary from './components/ErrorBoundary';
 import AdminLogin from './components/admin/SimpleAdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
 import NewNavbar from './components/NewNavbar';
@@ -203,7 +204,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen relative bg-white text-gray-900 transition-colors">
+    <ErrorBoundary>
+      <div className="min-h-screen relative bg-white text-gray-900 transition-colors">
       {/* Premium UI Components */}
       {/* CustomCursor removed - keeping only magnetic effects */}
       <ScrollProgress />
@@ -257,6 +259,7 @@ function App() {
         <Footer />
       </footer>
     </div>
+    </ErrorBoundary>
   );
 }
 

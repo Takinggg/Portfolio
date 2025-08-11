@@ -54,8 +54,9 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         setFormError('Identifiants incorrects');
         return;
       }
-    } catch (err: any) {
-      setFormError(err?.message || 'Erreur de connexion');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur de connexion';
+      setFormError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +98,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                     <ul className="mt-1 list-disc list-inside space-y-1">
                       <li>Vérifiez que le serveur backend est démarré sur le port 3001</li>
                       <li>Commande : <code className="bg-red-200 px-1 rounded">npm run server</code> dans un autre terminal</li>
-                      <li>URL du backend : <code className="bg-red-200 px-1 rounded">{(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001/api'}</code></li>
+                      <li>URL du backend : <code className="bg-red-200 px-1 rounded">{import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3001/api'}</code></li>
                       <li>En mode hors-ligne, utilisez <code className="bg-red-200 px-1 rounded">admin</code> / <code className="bg-red-200 px-1 rounded">password</code></li>
                     </ul>
                   </div>
