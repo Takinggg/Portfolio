@@ -6,6 +6,7 @@ import { CONTACT_INFO } from '../config';
 import { validateContactForm, contactFormRateLimiter } from '../lib/validation';
 import { generateId, screenReader } from '../lib/accessibility';
 import { useI18n } from '../hooks/useI18n';
+import { SchedulingWidget } from './scheduling';
 
 const Contact = memo(() => {
   const { t } = useI18n();
@@ -156,11 +157,17 @@ const Contact = memo(() => {
     });
   }, [formData]);
 
-  // Scheduling link handler
-  const handleScheduleCall = () => {
-    const schedulingUrl = process.env.REACT_APP_SCHEDULING_URL || 'https://calendly.com/maxence-foulon';
-    window.open(schedulingUrl, '_blank', 'noopener,noreferrer');
-  };
+  // Scheduling handlers
+  const handleBookingComplete = useCallback((booking: any) => {
+    console.log('Booking completed:', booking);
+    // You could show a success message or track analytics here
+  }, []);
+
+  const handleSchedulingError = useCallback((error: string) => {
+    console.error('Scheduling error:', error);
+    setErrorMessage(`Scheduling error: ${error}`);
+    setSubmitStatus('error');
+  }, []);
 
   const contactMethods = [
     {
@@ -572,15 +579,12 @@ const Contact = memo(() => {
                       <h4 className="font-semibold text-gray-900 mb-1">Préférez-vous un appel ?</h4>
                       <p className="text-sm text-gray-600">Planifiez un créneau qui vous convient</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleScheduleCall}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
-                      data-track="contact-schedule-call"
-                    >
-                      <Calendar size={16} />
-                      Planifier
-                    </button>
+                    <SchedulingWidget
+                      triggerText="Planifier"
+                      triggerClassName="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                      onBookingComplete={handleBookingComplete}
+                      onError={handleSchedulingError}
+                    />
                   </div>
                 </div>
 
