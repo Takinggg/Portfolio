@@ -3,7 +3,7 @@ import AdminLogin from './components/admin/SimpleAdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
 import NewNavbar from './components/NewNavbar';
 import Hero from './components/Hero';
-import About from './components/About';
+import AboutSection from './components/sections/AboutSection';
 import BlogSection from './components/BlogSection';
 import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
@@ -203,7 +203,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen relative bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
+    <div className="min-h-screen relative bg-white text-gray-900 transition-colors">
       {/* Premium UI Components */}
       {/* CustomCursor removed - keeping only magnetic effects */}
       <ScrollProgress />
@@ -246,7 +246,7 @@ function App() {
       {/* Main content area */}
       <main role="main">
         <Hero />
-        <About onNavigateToSection={navigateToSection} />
+        <AboutSection onNavigateToSection={navigateToSection} />
         <Projects onNavigateToProject={navigateToProject} />
         <BlogSection onNavigateToBlog={navigateToBlog} onNavigateToPost={navigateToPost} />
         <Contact />
