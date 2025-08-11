@@ -16,7 +16,7 @@ import Contact from './components/Contact';
 import { SEOHead } from './components/seo';
 import { CustomCursor } from './components/ui/CustomCursor';
 import { ScrollProgress } from './components/ui/ScrollProgress';
-import { ParticleSystem } from './components/ui/ParticleSystem';
+import { EnhancedParticleSystem } from './components/ui/liquid-glass';
 import { MobileFabMenu } from './components/navigation/MobileFabMenu';
 import { ADMIN_CONFIG } from './config';
 
@@ -207,7 +207,7 @@ function App() {
       {/* Premium UI Components */}
       <CustomCursor />
       <ScrollProgress />
-      <ParticleSystem />
+      <EnhancedParticleSystem variant="premium" particleCount={60} />
       
       <SEOHead 
         title="Accueil"
