@@ -1015,6 +1015,16 @@ try {
   process.exit(1);
 }
 
+// Initialize admin scheduling system
+try {
+  const { initializeAdminSchedulingRoutes } = await import('./admin/routes.js');
+  initializeAdminSchedulingRoutes(app, db);
+  console.log('✅ Admin scheduling system initialized successfully');
+} catch (error) {
+  console.error('❌ Failed to initialize admin scheduling system:', error);
+  // Don't exit - admin panel is optional
+}
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   const allowedOrigins = getAllowedOrigins();

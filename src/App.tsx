@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import AdminLogin from './components/admin/SimpleAdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
+import AdminSchedulingLayout from './admin/AdminSchedulingLayout';
 import NewNavbar from './components/NewNavbar';
 import Hero from './components/Hero';
 import AboutSection from './components/sections/AboutSection';
@@ -28,17 +29,23 @@ function App() {
   const [currentPostSlug, setCurrentPostSlug] = useState<string>('');
   const [currentProjectId, setCurrentProjectId] = useState<string>('');
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const [isSchedulingAdmin, setIsSchedulingAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Check if we're on admin route
   React.useEffect(() => {
     const checkAdminRoute = () => {
-      if (window.location.pathname === '/admin') {
+      const path = window.location.pathname;
+      if (path === '/admin') {
         setIsAdminMode(true);
+        setIsSchedulingAdmin(false);
         // Check if already logged in
         if (localStorage.getItem('admin_logged_in') === 'true') {
           setIsLoggedIn(true);
         }
+      } else if (path === '/admin/scheduling') {
+        setIsSchedulingAdmin(true);
+        setIsAdminMode(false);
       }
     };
     
@@ -123,6 +130,17 @@ function App() {
     window.history.pushState({}, '', '/');
     setCurrentPage('home');
   };
+
+  const handleSchedulingAdminLogout = () => {
+    setIsSchedulingAdmin(false);
+    window.history.pushState({}, '', '/');
+    setCurrentPage('home');
+  };
+
+  // Admin scheduling routes
+  if (isSchedulingAdmin) {
+    return <AdminSchedulingLayout onLogout={handleSchedulingAdminLogout} />;
+  }
 
   // Admin routes
   if (isAdminMode) {

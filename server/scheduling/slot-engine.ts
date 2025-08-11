@@ -329,19 +329,68 @@ export class SlotEngine {
   private getExistingBookings(
     eventTypeId: number,
     startDate: DateTime,
-    endDate: DateTime
+    endDate: DateTime,
+    excludeBookingUuid?: string
   ): Booking[] {
-    return this.db.prepare(`
+    let query = `
       SELECT * FROM bookings 
       WHERE event_type_id = ? 
         AND status IN ('confirmed', 'rescheduled')
         AND start_time < ? 
         AND end_time > ?
-      ORDER BY start_time
-    `).all(
-      eventTypeId,
-      endDate.toISO(),
-      startDate.toISO()
-    ) as Booking[];
+    `;
+    
+    const params: any[] = [eventTypeId, endDate.toISO(), startDate.toISO()];
+    
+    if (excludeBookingUuid) {
+      query += ' AND uuid != ?';
+      params.push(excludeBookingUuid);
+    }
+    
+    query += ' ORDER BY start_time';
+    
+    return this.db.prepare(query).all(...params) as Booking[];
+  }
+
+  /**
+   * Check if a specific time slot is available for booking
+   * Useful for admin rescheduling operations
+   */
+  async isSlotAvailable(
+    eventTypeId: number,
+    startTime: string,
+    endTime: string,
+    excludeBookingUuid?: string
+  ): Promise<boolean> {
+    try {
+      const eventType = this.getEventType(eventTypeId);
+      if (!eventType) return false;
+
+      const start = DateTime.fromISO(startTime);
+      const end = DateTime.fromISO(endTime);
+
+      if (!start.isValid || !end.isValid) return false;
+      if (end <= start) return false;
+
+      // Check if slot duration matches event type
+      const slotDuration = end.diff(start, 'minutes').minutes;
+      if (slotDuration !== eventType.duration_minutes) return false;
+
+      // Get available slots for the day
+      const availableSlots = await this.getAvailableSlots(
+        eventTypeId,
+        start.startOf('day').toISO(),
+        start.endOf('day').toISO(),
+        'UTC'
+      );
+
+      // Check if the requested slot is in the available slots
+      return availableSlots.some(slot => 
+        slot.startUTC === startTime && slot.endUTC === endTime
+      );
+    } catch (error) {
+      console.error('Error checking slot availability:', error);
+      return false;
+    }
   }
 }
