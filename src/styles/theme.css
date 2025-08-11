@@ -28,21 +28,24 @@
 
 /* Dark Theme Variables */
 .dark {
-  --bg-primary: 15, 23, 42;
-  --bg-secondary: 30, 41, 59;
-  --bg-muted: 51, 65, 85;
-  --bg-glass: rgba(15, 23, 42, 0.85);
-  --bg-glass-light: rgba(30, 41, 59, 0.95);
-  --bg-glass-dark: rgba(15, 23, 42, 0.95);
+  /* Enhanced background colors for better contrast */
+  --bg-primary: 15, 17, 22;          /* Darker primary background */
+  --bg-secondary: 24, 27, 35;        /* Medium dark for cards */
+  --bg-muted: 32, 37, 48;            /* Lighter muted for sections */
+  --bg-glass: rgba(24, 27, 35, 0.80); /* Glass with better opacity */
+  --bg-glass-light: rgba(32, 37, 48, 0.90); /* Lighter glass */
+  --bg-glass-dark: rgba(15, 17, 22, 0.95);  /* Darker glass */
   
-  --text-strong: 248, 250, 252;
-  --text-primary: 226, 232, 240;
-  --text-soft: 203, 213, 225;
-  --text-muted: 148, 163, 184;
+  /* Enhanced text colors for better readability */
+  --text-strong: 255, 255, 255;      /* Pure white for headings */
+  --text-primary: 240, 242, 247;     /* Very light for main text */
+  --text-soft: 203, 213, 225;        /* Medium for secondary text */
+  --text-muted: 156, 163, 175;       /* Muted for less important text */
   
-  --border-primary: 51, 65, 85;
-  --border-strong: 71, 85, 105;
-  --border-glass: rgba(255, 255, 255, 0.1);
+  /* Enhanced border colors */
+  --border-primary: 55, 65, 81;      /* Lighter borders */
+  --border-strong: 75, 85, 99;       /* Stronger borders */
+  --border-glass: rgba(255, 255, 255, 0.12); /* Better glass borders */
 }
 
 /* Global Transition for Theme Switching */
@@ -107,6 +110,7 @@
 .dark .glass-morphism {
   background: var(--bg-glass);
   border: 1px solid var(--border-glass);
+  backdrop-filter: blur(16px);
 }
 
 .dark .gradient-glass {
@@ -115,6 +119,70 @@
     var(--bg-glass-light) 0%,
     var(--bg-glass-dark) 100%
   );
+}
+
+/* Enhanced dark mode card styles */
+.dark .card-surface {
+  background-color: rgb(var(--bg-secondary));
+  border-color: rgb(var(--border-primary));
+}
+
+.dark .card-surface-alt {
+  background-color: rgb(var(--bg-muted));
+  border-color: rgb(var(--border-strong));
+}
+
+/* Dark mode form styles */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: rgb(var(--bg-secondary));
+  border-color: rgb(var(--border-primary));
+  color: rgb(var(--text-primary));
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: rgb(var(--border-strong));
+  background-color: rgb(var(--bg-muted));
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgb(var(--text-muted));
+}
+
+/* Dark mode button enhancements */
+.dark .btn-secondary {
+  background-color: rgb(var(--bg-secondary));
+  border-color: rgb(var(--border-primary));
+  color: rgb(var(--text-primary));
+}
+
+.dark .btn-secondary:hover {
+  background-color: rgb(var(--bg-muted));
+  border-color: rgb(var(--border-strong));
+}
+
+/* Dark mode navigation */
+.dark .nav-surface {
+  background-color: rgba(var(--bg-primary), 0.95);
+  border-color: rgb(var(--border-primary));
+  backdrop-filter: blur(20px);
+}
+
+/* Dark mode shadows */
+.dark .shadow-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 6px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* Animation for theme toggle button */
