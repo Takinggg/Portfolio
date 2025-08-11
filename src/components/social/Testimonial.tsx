@@ -38,17 +38,17 @@ export const Testimonial: React.FC<TestimonialProps> = ({
       >
         {/* Quote Icon */}
         <motion.div
-          className="inline-flex items-center justify-center w-16 h-16 bg-primary-50 rounded-full mb-6"
+          className="inline-flex items-center justify-center w-16 h-16 bg-primary-50 dark:bg-primary-900/30 rounded-full mb-6 transition-colors"
           initial={{ scale: 0 }}
           whileInView={{ scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          <Quote className="text-primary-600" size={28} />
+          <Quote className="text-primary-600 dark:text-primary-400" size={28} />
         </motion.div>
 
         {/* Quote */}
-        <blockquote className="text-2xl md:text-3xl font-medium text-gray-900 mb-8 leading-relaxed">
+        <blockquote className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-gray-100 mb-8 leading-relaxed transition-colors">
           "{quote}"
         </blockquote>
 
@@ -65,7 +65,7 @@ export const Testimonial: React.FC<TestimonialProps> = ({
               >
                 <Star
                   size={20}
-                  className={i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}
+                  className={i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300 dark:text-gray-600 transition-colors'}
                 />
               </motion.div>
             ))}
@@ -88,14 +88,14 @@ export const Testimonial: React.FC<TestimonialProps> = ({
             />
           )}
           <div className="text-center">
-            <div className="font-semibold text-gray-900">{author.name}</div>
-            <div className="text-gray-600">{author.role}</div>
-            <div className="text-sm text-gray-500">{author.company}</div>
+            <div className="font-semibold text-gray-900 dark:text-gray-100 transition-colors">{author.name}</div>
+            <div className="text-gray-600 dark:text-gray-400 transition-colors">{author.role}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500 transition-colors">{author.company}</div>
           </div>
         </motion.div>
 
         {project && (
-          <div className="mt-4 text-sm text-gray-500">
+          <div className="mt-4 text-sm text-gray-500 dark:text-gray-500 transition-colors">
             Projet: <span className="font-medium">{project}</span>
           </div>
         )}
@@ -106,7 +106,7 @@ export const Testimonial: React.FC<TestimonialProps> = ({
   // Card variant
   return (
     <motion.div
-      className={`bg-white rounded-xl p-8 shadow-lg border border-gray-100 relative ${className}`}
+      className={`bg-white dark:bg-gray-900 rounded-xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 relative transition-colors ${className}`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
@@ -127,14 +127,14 @@ export const Testimonial: React.FC<TestimonialProps> = ({
             <Star
               key={i}
               size={16}
-              className={i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}
+              className={i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300 dark:text-gray-600 transition-colors'}
             />
           ))}
         </div>
       )}
 
       {/* Quote */}
-      <blockquote className="text-gray-700 mb-6 leading-relaxed italic">
+      <blockquote className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed italic transition-colors">
         "{quote}"
       </blockquote>
 
@@ -148,16 +148,16 @@ export const Testimonial: React.FC<TestimonialProps> = ({
           />
         )}
         <div>
-          <div className="font-semibold text-gray-900">{author.name}</div>
-          <div className="text-sm text-gray-600">{author.role}</div>
-          <div className="text-sm text-gray-500">{author.company}</div>
+          <div className="font-semibold text-gray-900 dark:text-gray-100 transition-colors">{author.name}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">{author.role}</div>
+          <div className="text-sm text-gray-500 dark:text-gray-500 transition-colors">{author.company}</div>
         </div>
       </div>
 
       {project && (
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <div className="text-sm text-gray-500">
-            Projet: <span className="font-medium text-gray-700">{project}</span>
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors">
+          <div className="text-sm text-gray-500 dark:text-gray-500 transition-colors">
+            Projet: <span className="font-medium text-gray-700 dark:text-gray-300 transition-colors">{project}</span>
           </div>
         </div>
       )}
