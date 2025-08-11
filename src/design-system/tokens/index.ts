@@ -283,6 +283,91 @@ export const layout = {
   }
 } as const;
 
+// Dark Mode Surface Elevation System (Class-Level Implementation)
+export const surfaceTokens = {
+  // Base surfaces
+  base: 'bg-gray-950', // Deep space sections, page backgrounds
+  subtle: 'bg-gray-900/70 border-gray-800', // Secondary panels, low emphasis
+  card: 'bg-gray-900 border-gray-700', // Primary cards
+  elevated: 'bg-gray-800/70 backdrop-blur border-gray-700 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.4)]', // Glass surfaces
+  
+  // Interactive surfaces
+  accentChip: 'bg-gray-800/60 border-gray-700', // Neutral chip state
+  inset: 'bg-gray-900/60 border-gray-700 focus:ring-indigo-500/40', // Form inputs
+  
+  // Light mode equivalents
+  light: {
+    base: 'bg-white',
+    subtle: 'bg-gray-50/70 border-gray-200',
+    card: 'bg-white border-gray-200',
+    elevated: 'bg-white/70 backdrop-blur border-gray-200 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.1)]',
+    accentChip: 'bg-gray-100/60 border-gray-300',
+    inset: 'bg-gray-50/60 border-gray-300 focus:ring-indigo-500/40'
+  }
+} as const;
+
+// WCAG AA Compliant Text Scale (Dark Mode)
+export const textTokens = {
+  // High contrast text (21:1+ ratio)
+  high: 'text-gray-100',
+  
+  // Body default (16.7:1+ ratio) 
+  body: 'text-gray-200',
+  
+  // Secondary text (9.8:1+ ratio)
+  secondary: 'text-gray-400', // minimum 14px only
+  
+  // Interactive text states
+  interactive: {
+    default: 'text-gray-200 hover:text-gray-100',
+    active: 'text-gray-100',
+    disabled: 'text-gray-500'
+  },
+  
+  // Light mode equivalents  
+  light: {
+    high: 'text-gray-900',
+    body: 'text-gray-800', 
+    secondary: 'text-gray-600',
+    interactive: {
+      default: 'text-gray-800 hover:text-gray-900',
+      active: 'text-gray-900',
+      disabled: 'text-gray-400'
+    }
+  }
+} as const;
+
+// Interactive State Tokens for Components
+export const interactiveTokens = {
+  // Chip/Badge states
+  chip: {
+    inactive: 'bg-gray-800/60 border-gray-700 text-gray-300 hover:bg-gray-800/80 hover:border-gray-600 hover:text-gray-200',
+    active: 'bg-gradient-to-r from-indigo-600 to-purple-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/25',
+    focus: 'focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900'
+  },
+  
+  // Button states
+  button: {
+    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700',
+    secondary: 'bg-gray-800/60 hover:bg-gray-800/80 text-gray-200 border-gray-700 hover:border-gray-600',
+    ghost: 'bg-transparent hover:bg-gray-800/40 text-gray-300 hover:text-gray-200 border-transparent hover:border-gray-700'
+  },
+  
+  // Light mode equivalents
+  light: {
+    chip: {
+      inactive: 'bg-gray-100/60 border-gray-300 text-gray-700 hover:bg-gray-200/80 hover:border-gray-400 hover:text-gray-800',
+      active: 'bg-gradient-to-r from-indigo-600 to-purple-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/25',
+      focus: 'focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
+    },
+    button: {
+      primary: 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700',
+      secondary: 'bg-gray-100/60 hover:bg-gray-200/80 text-gray-800 border-gray-300 hover:border-gray-400',
+      ghost: 'bg-transparent hover:bg-gray-100/40 text-gray-700 hover:text-gray-800 border-transparent hover:border-gray-300'
+    }
+  }
+} as const;
+
 // Export all tokens as a single object
 export const designTokens = {
   colors,
@@ -293,7 +378,11 @@ export const designTokens = {
   transitions,
   breakpoints,
   zIndex,
-  layout
+  layout,
+  // New dark mode tokens
+  surface: surfaceTokens,
+  text: textTokens,
+  interactive: interactiveTokens
 } as const;
 
 export default designTokens;

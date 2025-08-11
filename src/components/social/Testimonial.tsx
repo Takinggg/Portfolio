@@ -89,7 +89,7 @@ export const Testimonial: React.FC<TestimonialProps> = ({
           )}
           <div className="text-center">
             <div className="font-semibold text-gray-900 dark:text-gray-100 transition-colors">{author.name}</div>
-            <div className="text-gray-600 dark:text-gray-400 transition-colors">{author.role}</div>
+            <div className="text-gray-600 dark:text-gray-300 transition-colors">{author.role}</div>
             <div className="text-sm text-gray-500 dark:text-gray-500 transition-colors">{author.company}</div>
           </div>
         </motion.div>
@@ -149,7 +149,7 @@ export const Testimonial: React.FC<TestimonialProps> = ({
         )}
         <div>
           <div className="font-semibold text-gray-900 dark:text-gray-100 transition-colors">{author.name}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">{author.role}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-300 transition-colors">{author.role}</div>
           <div className="text-sm text-gray-500 dark:text-gray-500 transition-colors">{author.company}</div>
         </div>
       </div>
