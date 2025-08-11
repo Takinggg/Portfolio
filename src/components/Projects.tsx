@@ -26,29 +26,11 @@ interface ProjectsProps {
 
 const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const { t } = useI18n();
   
   // Use the custom hook to fetch projects
   const { projects: allProjects, loading, error } = useProjects();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
 
   // Generate categories dynamically from projects
   const categories = React.useMemo(() => {
