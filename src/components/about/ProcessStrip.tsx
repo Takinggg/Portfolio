@@ -198,7 +198,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
         <div className="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
           <div className="text-center mb-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Pourquoi cette approche ?
+              {t('about.process.why_title')}
             </h4>
           </div>
           
@@ -207,24 +207,24 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
               <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <Search size={20} className="text-blue-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">Centré utilisateur</div>
-              <div className="text-gray-600">Décisions basées sur des données réelles et des insights utilisateurs</div>
+              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.user_centered.title')}</div>
+              <div className="text-gray-600">{t('about.process.benefits.user_centered.description')}</div>
             </div>
             
             <div className="text-center">
               <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <TestTube size={20} className="text-purple-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">Itératif</div>
-              <div className="text-gray-600">Tests continus et améliorations basées sur les retours</div>
+              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.iterative.title')}</div>
+              <div className="text-gray-600">{t('about.process.benefits.iterative.description')}</div>
             </div>
             
             <div className="text-center">
               <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <Rocket size={20} className="text-green-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">Orienté résultats</div>
-              <div className="text-gray-600">Focus sur l'impact business et la satisfaction utilisateur</div>
+              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.results_oriented.title')}</div>
+              <div className="text-gray-600">{t('about.process.benefits.results_oriented.description')}</div>
             </div>
           </div>
         </div>

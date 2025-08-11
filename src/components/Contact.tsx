@@ -5,8 +5,10 @@ import { contactService } from '../lib/api';
 import { CONTACT_INFO } from '../config';
 import { validateContactForm, contactFormRateLimiter, type ContactFormData } from '../lib/validation';
 import { generateId, formAccessibility, screenReader } from '../lib/accessibility';
+import { useI18n } from '../hooks/useI18n';
 
 const Contact = memo(() => {
+  const { t } = useI18n();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -226,21 +228,21 @@ const Contact = memo(() => {
         <header className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="inline-flex items-center gap-2 px-4 py-2 glass-base rounded-full text-sm font-medium mb-6">
             <MessageCircle className="text-liquid-purple" size={16} aria-hidden="true" />
-            <span className="text-text-strong">Parlons de votre projet</span>
+            <span className="text-text-strong">{t('contact.discuss_project')}</span>
           </div>
           
           <h2 id="contact-title" className="text-5xl md:text-7xl font-black mb-8">
             <span className="bg-gradient-to-r from-text-strong via-liquid-purple to-liquid-pink bg-clip-text text-transparent">
-              Contactez
+              {t('contact.title').split(' ')[0]}
             </span>
             <br />
             <span className="bg-gradient-to-r from-liquid-purple to-liquid-pink bg-clip-text text-transparent">
-              moi
+              {t('contact.title').split(' ').slice(1).join(' ')}
             </span>
           </h2>
           
           <p className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed">
-            Vous avez un projet ambitieux ? Discutons ensemble de la façon 
+            {t('contact.ambitious_project')} 
             dont nous pouvons créer quelque chose d'extraordinaire
           </p>
         </header>
@@ -252,10 +254,9 @@ const Contact = memo(() => {
             aria-labelledby="contact-methods-title"
           >
             <div className="mb-8">
-              <h3 id="contact-methods-title" className="text-2xl font-bold text-text-strong mb-4">Restons connectés</h3>
+              <h3 id="contact-methods-title" className="text-2xl font-bold text-text-strong mb-4">{t('contact.stay_connected')}</h3>
               <p className="text-text-soft leading-relaxed">
-                Choisissez le moyen de communication qui vous convient le mieux. 
-                Je suis toujours ravi d'échanger sur de nouveaux défis créatifs.
+                {t('contact.choose_communication')}
               </p>
             </div>
 
@@ -321,8 +322,8 @@ const Contact = memo(() => {
           <div className={`lg:col-span-3 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
             <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-100">
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Démarrons votre projet</h3>
-                <p className="text-gray-600">Remplissez ce formulaire et je vous recontacte dans les plus brefs délais</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('contact.start_project')}</h3>
+                <p className="text-gray-600">{t('contact.form_description')}</p>
               </div>
 
               <form 
