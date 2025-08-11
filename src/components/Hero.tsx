@@ -65,7 +65,7 @@ const Hero = () => {
             }}
             whileHover={{ scale: 1.1 }}
           >
-            <GlassCard className="w-16 h-16 flex items-center justify-center magnetic" magnetic shine>
+            <GlassCard className="w-16 h-16 flex items-center justify-center magnetic" magnetic premium iridescent fragments particles>
               <Icon className="text-liquid-purple" size={24} />
             </GlassCard>
           </motion.div>
@@ -81,7 +81,15 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-8"
         >
-          <GlassCard className="inline-flex items-center px-6 py-3 mb-6" magnetic>
+          <GlassCard 
+            className="inline-flex items-center px-6 py-3 mb-6" 
+            magnetic 
+            premium
+            reflection
+            iridescent
+            particles
+            particleVariant="medium"
+          >
             <motion.div
               className="w-3 h-3 bg-accent-green rounded-full mr-3"
               animate={{ scale: [1, 1.2, 1] }}
@@ -101,7 +109,14 @@ const Hero = () => {
           transition={{ duration: 1, delay: 0.3 }}
           className="mb-8"
         >
-          <GlassCard className="w-32 h-32 mx-auto rounded-full p-1 magnetic" magnetic shine>
+          <GlassCard 
+            className="w-32 h-32 mx-auto rounded-full p-1 magnetic" 
+            magnetic 
+            premium
+            reflection
+            distortion
+            fragments
+          >
             <div className="w-full h-full rounded-full bg-gradient-to-br from-liquid-blue to-liquid-purple flex items-center justify-center overflow-hidden">
               <div className="w-28 h-28 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/30">
                 <Users className="text-white" size={32} />
@@ -156,17 +171,17 @@ const Hero = () => {
             I craft exceptional digital experiences that drive user engagement and business growth
           </h2>
           
-          {/* Value Props with Glass Effects */}
+          {/* Value Props with Enhanced Glass Effects */}
           <div className="flex flex-wrap justify-center gap-4 text-lg leading-relaxed">
-            <GlassCard className="flex items-center gap-2 px-4 py-2" magnetic>
+            <GlassCard className="flex items-center gap-2 px-4 py-2" magnetic premium particles>
               <Sparkles className="text-liquid-cyan" size={20} />
               <span className="text-text-strong font-medium">User-Centered Design</span>
             </GlassCard>
-            <GlassCard className="flex items-center gap-2 px-4 py-2" magnetic>
+            <GlassCard className="flex items-center gap-2 px-4 py-2" magnetic premium reflection>
               <Star className="text-liquid-pink" size={20} />
               <span className="text-text-strong font-medium">5+ Years Experience</span>
             </GlassCard>
-            <GlassCard className="flex items-center gap-2 px-4 py-2" magnetic>
+            <GlassCard className="flex items-center gap-2 px-4 py-2" magnetic premium iridescent>
               <Palette className="text-liquid-purple" size={20} />
               <span className="text-text-strong font-medium">Design Systems Expert</span>
             </GlassCard>
@@ -185,7 +200,10 @@ const Hero = () => {
             size="lg"
             onClick={scrollToProjects}
             magnetic
-            ripple
+            premium
+            multiRipple
+            liquidSpread
+            glassReflection
             className="shadow-magnetic"
           >
             <span>View Case Studies</span>
@@ -196,7 +214,9 @@ const Hero = () => {
             variant="outline"
             size="lg"
             magnetic
-            ripple
+            premium
+            multiRipple
+            liquidSpread
             className="magnetic"
           >
             <Calendar size={20} className="mr-2" />
@@ -238,7 +258,7 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 1.8 + index * 0.2 }}
               whileHover={{ y: -10 }}
             >
-              <GlassCard className="p-6 text-center group magnetic" magnetic shine>
+              <GlassCard className="p-6 text-center group magnetic" magnetic premium reflection particles particleVariant="subtle">
                 <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${skill.gradient} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-liquid`}>
                   <skill.icon className="text-white" size={24} />
                 </div>
@@ -266,6 +286,8 @@ const Hero = () => {
           onClick={scrollToProjects}
           className="flex flex-col items-center magnetic"
           magnetic
+          premium
+          glassReflection
         >
           <span className="text-sm mb-2">
             Discover My Work
