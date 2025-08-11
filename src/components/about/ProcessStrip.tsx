@@ -85,7 +85,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
             return (
               <motion.div
                 key={index}
-                className="relative text-center"
+                className="relative text-center magnetic"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -93,7 +93,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
               >
                 {/* Step Icon */}
                 <motion.div
-                  className={`relative mx-auto w-20 h-20 bg-gradient-to-br ${step.color} rounded-full flex items-center justify-center shadow-lg mb-4 z-10`}
+                  className={`relative mx-auto w-20 h-20 bg-gradient-to-br ${step.color} rounded-full flex items-center justify-center shadow-lg mb-4 z-10 magnetic`}
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ duration: 0.3 }}
                 >
