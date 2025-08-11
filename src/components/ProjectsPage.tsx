@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ExternalLink, Github, Eye, Calendar, Code, Layers, Zap, Star, Filter, Search, ArrowRight, Home } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink, Github, Eye, Calendar, Code, Zap, Filter, Search, ArrowRight, Home } from 'lucide-react';
 import { useProjects } from '../hooks/useSQLite';
 import { NormalizedProject } from '../lib/adapters';
 import { SimpleHeader } from './ui/SimpleHeader';

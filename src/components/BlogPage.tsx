@@ -10,7 +10,7 @@ interface BlogPageProps {
   onNavigateToProjects: () => void;
 }
 
-const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost, onNavigateToProjects }) => {
+const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost }) => {
   // Fetch posts using our unified hook
   const { posts, loading, error } = useBlogPosts();
   

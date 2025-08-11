@@ -1,7 +1,6 @@
 import React from 'react';
-import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home } from 'lucide-react';
+import { Calendar, User, Share2, Twitter, Linkedin, Facebook, Home } from 'lucide-react';
 import { useBlogPost } from '../hooks/useSQLite';
-import { NormalizedBlogPost } from '../lib/adapters';
 import { SimpleHeader } from './ui/SimpleHeader';
 
 interface BlogPostProps {
@@ -11,7 +10,7 @@ interface BlogPostProps {
   onNavigateToProjects: () => void;
 }
 
-const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNavigateToProjects }) => {
+const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome }) => {
   // Fetch post using our unified hook
   const { post, loading, error } = useBlogPost(slug);
   

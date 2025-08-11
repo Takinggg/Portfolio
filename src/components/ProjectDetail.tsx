@@ -1,7 +1,6 @@
 import React from 'react';
-import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home, ExternalLink, Github, ArrowLeft, Star, Code, Layers } from 'lucide-react';
+import { Calendar, User, Share2, Twitter, Linkedin, Facebook, Home, ExternalLink, Star, Code, Layers } from 'lucide-react';
 import { useProject } from '../hooks/useSQLite';
-import { NormalizedProject } from '../lib/adapters';
 import { SimpleHeader } from './ui/SimpleHeader';
 
 interface ProjectDetailProps {
@@ -11,7 +10,7 @@ interface ProjectDetailProps {
   onNavigateToBlog: () => void;
 }
 
-const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavigateHome, onNavigateToBlog }) => {
+const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavigateHome }) => {
   // Fetch project using our unified hook
   const { project, loading, error } = useProject(projectId);
 
