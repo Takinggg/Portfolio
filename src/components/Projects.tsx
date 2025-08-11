@@ -53,7 +53,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
 
   // Generate categories dynamically from projects
   const categories = React.useMemo(() => {
-    if (!allProjects.length) return [{ id: 'all', label: 'Tous les projets', count: 0 }];
+    if (!allProjects.length) return [{ id: 'all', label: t('projects.categories.all'), count: 0 }];
     
     const categoryCount = allProjects.reduce((acc, project) => {
       acc[project.category] = (acc[project.category] || 0) + 1;
@@ -61,25 +61,26 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
     }, {} as Record<string, number>);
 
     return [
-      { id: 'all', label: 'Tous les projets', count: allProjects.length },
+      { id: 'all', label: t('projects.categories.all'), count: allProjects.length },
       ...Object.entries(categoryCount).map(([category, count]) => ({
         id: category,
-        label: category.charAt(0).toUpperCase() + category.slice(1),
+        label: t(`projects.categories.${category}`) || category.charAt(0).toUpperCase() + category.slice(1),
         count
       }))
     ];
-  }, [allProjects]);
+  }, [allProjects, t]);
 
   // Helper functions
   const getProjectType = (category: string) => {
-    const types = {
-      mobile: 'Application Mobile',
-      web: 'Interface Web',
-      branding: 'Identité Visuelle',
-      blockchain: 'Blockchain',
-      iot: 'IoT'
+    const typeKeys = {
+      mobile: 'projects.categories.mobile',
+      web: 'projects.categories.web',
+      branding: 'projects.categories.branding',
+      blockchain: 'projects.categories.blockchain',
+      iot: 'projects.categories.iot'
     };
-    return types[category as keyof typeof types] || 'Projet';
+    const key = typeKeys[category as keyof typeof typeKeys];
+    return key ? t(key) : t('projects.categories.all');
   };
 
   const getGradientForCategory = (category: string, index: number) => {
@@ -268,7 +269,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.4 }}
               >
-                Prêt à créer quelque chose d'extraordinaire ?
+                {t('projects.ready_to_create')}
               </motion.h3>
               <motion.p 
                 className="text-xl mb-8 text-text-soft"
@@ -276,7 +277,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.6 }}
               >
-                Collaborons pour donner vie à votre vision
+                {t('projects.collaborate_vision')}
               </motion.p>
               <motion.button 
                 onClick={() => {
@@ -292,7 +293,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Démarrer un projet
+                {t('projects.start_project')}
               </motion.button>
             </div>
           </GlassCard>

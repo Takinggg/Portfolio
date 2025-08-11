@@ -42,6 +42,94 @@ export interface TranslationDictionary {
     title: string;
     subtitle: string;
     description: string;
+    discover_universe: string;
+    about_me: string;
+    passionate_designer: string;
+    age_role: string;
+    intro_text: string;
+    process_text: string;
+    values: {
+      precision: {
+        title: string;
+        description: string;
+      };
+      innovation: {
+        title: string;
+        description: string;
+      };
+      passion: {
+        title: string;
+        description: string;
+      };
+      perseverance: {
+        title: string;
+        description: string;
+      };
+    };
+    competency_matrix: {
+      title: string;
+      subtitle: string;
+      categories: {
+        product_research: string;
+        ui_design: string;
+        ux_methods: string;
+        frontend_tech: string;
+      };
+      expertise_levels: {
+        title: string;
+        expert: string;
+        expert_desc: string;
+        advanced: string;
+        advanced_desc: string;
+        operational: string;
+        operational_desc: string;
+      };
+    };
+    process: {
+      title: string;
+      subtitle: string;
+      steps: {
+        discover: {
+          title: string;
+          description: string;
+        };
+        define: {
+          title: string;
+          description: string;
+        };
+        design: {
+          title: string;
+          description: string;
+        };
+        validate: {
+          title: string;
+          description: string;
+        };
+        ship: {
+          title: string;
+          description: string;
+        };
+      };
+      why_title: string;
+      benefits: {
+        user_centered: {
+          title: string;
+          description: string;
+        };
+        iterative: {
+          title: string;
+          description: string;
+        };
+        results_oriented: {
+          title: string;
+          description: string;
+        };
+      };
+    };
+    timeline: {
+      title: string;
+      subtitle: string;
+    };
   };
   projects: {
     title: string;
@@ -51,6 +139,20 @@ export interface TranslationDictionary {
     case_study: string;
     demo: string;
     source: string;
+    all_projects: string;
+    filter_by: string;
+    see_project: string;
+    ready_to_create: string;
+    collaborate_vision: string;
+    start_project: string;
+    categories: {
+      all: string;
+      web: string;
+      mobile: string;
+      branding: string;
+      blockchain: string;
+      iot: string;
+    };
     section: {
       creative_portfolio: string;
       my_title: string;
@@ -81,12 +183,38 @@ export interface TranslationDictionary {
   contact: {
     title: string;
     subtitle: string;
+    discuss_project: string;
+    ambitious_project: string;
+    stay_connected: string;
+    choose_communication: string;
+    start_project: string;
+    form_description: string;
     form: {
       name: string;
       email: string;
       message: string;
       send: string;
       sending: string;
+      subject: string;
+      describe_project: string;
+      budget: string;
+      timeline: string;
+      brief_title: string;
+      brief_link: string;
+      file_upload: string;
+      choose_file: string;
+      schedule_call: string;
+      schedule_description: string;
+      schedule: string;
+      privacy_consent: string;
+      privacy_link: string;
+      response_time: string;
+      working_hours: string;
+      location: string;
+      remote_missions: string;
+      statistics: string;
+      satisfaction: string;
+      response_time_stat: string;
     };
   };
   footer: {
@@ -120,6 +248,16 @@ export interface TranslationDictionary {
     retry: string;
     close: string;
     open: string;
+    featured: string;
+    read_more: string;
+  };
+  switches: {
+    theme_light: string;
+    theme_dark: string;
+    language_to_en: string;
+    language_to_fr: string;
+    toggle_language: string;
+    toggle_theme: string;
   };
 }
 

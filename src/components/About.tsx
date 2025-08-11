@@ -4,10 +4,12 @@ import { Target, Lightbulb, Heart, Coffee, Search, Brain, Palette, Code } from '
 import { CompetencyMatrix } from './about/CompetencyMatrix';
 import { Timeline } from './about/Timeline';
 import { ProcessStrip } from './about/ProcessStrip';
+import { useI18n } from '../hooks/useI18n';
 
 const About = memo(() => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const { t } = useI18n();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -169,26 +171,26 @@ const About = memo(() => {
   const values = [
     {
       icon: Target,
-      title: "Précision",
-      description: "Attention méticuleuse aux détails et à la cohérence visuelle",
+      title: t('about.values.precision.title'),
+      description: t('about.values.precision.description'),
       gradient: "from-blue-500 to-cyan-500"
     },
     {
       icon: Lightbulb,
-      title: "Innovation",
-      description: "Recherche constante de solutions créatives et originales",
+      title: t('about.values.innovation.title'),
+      description: t('about.values.innovation.description'),
       gradient: "from-yellow-500 to-orange-500"
     },
     {
       icon: Heart,
-      title: "Passion",
-      description: "Amour profond pour le design et l'expérience utilisateur",
+      title: t('about.values.passion.title'),
+      description: t('about.values.passion.description'),
       gradient: "from-pink-500 to-red-500"
     },
     {
       icon: Coffee,
-      title: "Persévérance",
-      description: "Engagement total dans chaque projet jusqu'à la perfection",
+      title: t('about.values.perseverance.title'),
+      description: t('about.values.perseverance.description'),
       gradient: "from-amber-600 to-yellow-600"
     }
   ];
@@ -207,22 +209,21 @@ const About = memo(() => {
         <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="inline-flex items-center gap-2 px-4 py-2 glass-base rounded-full text-sm font-medium mb-6 border-iridescent glass-reflection">
             <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
-            <span className="text-text-strong">Découvrez mon univers</span>
+            <span className="text-text-strong">{t('about.discover_universe')}</span>
           </div>
           
           <h2 className="text-5xl md:text-7xl font-black mb-8">
             <span className="bg-gradient-to-r from-text-strong via-liquid-blue to-liquid-purple bg-clip-text text-transparent">
-              À propos
+              {t('about.about_me').split(' ')[0]}
             </span>
             <br />
             <span className="bg-gradient-to-r from-liquid-blue to-liquid-purple bg-clip-text text-transparent">
-              de moi
+              {t('about.about_me').split(' ').slice(1).join(' ')}
             </span>
           </h2>
           
           <p className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed">
-            Designer passionné avec une vision moderne du design digital, 
-            je transforme les idées complexes en expériences utilisateur exceptionnelles
+            {t('about.passionate_designer')}
           </p>
         </div>
 
@@ -263,20 +264,16 @@ const About = memo(() => {
               {/* Age moved from Hero */}
               <div className="mb-6">
                 <span className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full text-sm font-medium text-gray-700">
-                  22 ans • Designer UI/UX
+                  {t('about.age_role')}
                 </span>
               </div>
               
               <p className="text-lg leading-relaxed text-text-strong">
-                Diplômé en design graphique et spécialisé en UX/UI design, 
-                je combine créativité artistique et approche scientifique pour 
-                créer des interfaces qui séduisent et convertissent.
+                {t('about.intro_text')}
               </p>
               
               <p className="text-lg leading-relaxed text-text-strong">
-                Mon processus de design s'appuie sur la recherche utilisateur, 
-                le prototypage itératif et les tests d'usabilité pour garantir 
-                des expériences optimales sur tous les supports.
+                {t('about.process_text')}
               </p>
             </div>
 
