@@ -6,7 +6,7 @@ interface ProcessStepData {
   number: number;
   title: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
 }
 
 interface ProcessStripProps {
@@ -48,6 +48,15 @@ const processSteps: ProcessStepData[] = [
   }
 ];
 
+// Gradient backgrounds for each step
+const stepGradients = [
+  'from-violet-500 to-fuchsia-500',
+  'from-fuchsia-500 to-rose-500', 
+  'from-indigo-500 to-sky-500',
+  'from-emerald-500 to-teal-500',
+  'from-amber-500 to-orange-500'
+];
+
 export const ProcessStrip: React.FC<ProcessStripProps> = ({
   title = 'Processus en 5 étapes',
   subtitle = 'Ma méthodologie éprouvée pour créer des expériences utilisateur exceptionnelles',
@@ -57,7 +66,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
     <div className={`${className}`}>
       <div className="text-center mb-12">
         <div className="inline-block px-6 py-3 mb-4 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
-          <h3 className="text-2xl font-bold text-gray-900">
+          <h3 className="text-2xl font-bold bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">
             {title}
           </h3>
         </div>
@@ -85,9 +94,12 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
                 viewport={{ once: true }}
               >
                 {/* Step Card */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gradient-to-br hover:from-violet-50 hover:to-fuchsia-50 relative z-10">
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gradient-to-br hover:from-violet-50 hover:to-fuchsia-50 relative z-10 overflow-hidden">
+                  {/* Subtle gradient accent at bottom */}
+                  <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${stepGradients[index]} opacity-60`} />
+                  
                   {/* Step Icon */}
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm">
+                  <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-r ${stepGradients[index]} rounded-2xl flex items-center justify-center shadow-sm relative`}>
                     <Icon size={24} className="text-white" />
                     
                     {/* Step Number */}

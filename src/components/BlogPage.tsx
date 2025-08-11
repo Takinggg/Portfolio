@@ -47,7 +47,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
     return [...new Set(posts.flatMap(post => post.tags))];
   }, [posts]);
   
-  const searchPosts = (query: string): BlogPost[] => {
+  const searchPosts = (query: string): NormalizedBlogPost[] => {
     const lowercaseQuery = query.toLowerCase();
     return posts.filter(post => 
       post.title.toLowerCase().includes(lowercaseQuery) ||
@@ -56,13 +56,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
     );
   };
 
-  useEffect(() => {
-    if (!loading && posts.length > 0) {
-      filterPosts();
-    }
-  }, [posts, searchQuery, selectedCategory, selectedTag, loading]);
-
-  const filterPosts = () => {
+  const filterPosts = React.useCallback(() => {
     let filtered = posts;
 
     // Search filter
@@ -82,7 +76,13 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
 
     setFilteredPosts(filtered);
     setCurrentPage(1);
-  };
+  }, [posts, searchQuery, selectedCategory, selectedTag]);
+
+  useEffect(() => {
+    if (!loading && posts.length > 0) {
+      filterPosts();
+    }
+  }, [posts, searchQuery, selectedCategory, selectedTag, loading, filterPosts]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -166,8 +166,8 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
 
             {/* Main Title */}
             <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-              <span className="block text-white">Blog &</span>
-              <span className="block text-white/90">Insights</span>
+              <span className="block bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">Blog &</span>
+              <span className="block bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500 bg-clip-text text-transparent">Insights</span>
             </h1>
             
             {/* Subtitle */}

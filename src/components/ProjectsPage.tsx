@@ -72,11 +72,10 @@ const convertProject = (project: NormalizedProject, index: number) => {
 
 interface ProjectsPageProps {
   onNavigateHome: () => void;
-  onNavigateToBlog: () => void;
   onNavigateToProject?: (projectId: string) => void;
 }
 
-const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateToBlog, onNavigateToProject }) => {
+const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateToProject }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -197,8 +196,8 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-              <span className="block text-white">Mes</span>
-              <span className="block text-white/90">Projets</span>
+              <span className="block bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">Mes</span>
+              <span className="block bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500 bg-clip-text text-transparent">Créations</span>
             </h1>
             
             <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-8">

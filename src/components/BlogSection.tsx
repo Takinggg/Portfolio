@@ -110,11 +110,11 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
           </div>
           
           <h2 className="text-5xl md:text-7xl font-black mb-8">
-            <span className="text-text-DEFAULT">
+            <span className="bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">
               Blog &
             </span>
             <br />
-            <span className="text-primary-600">
+            <span className="bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500 bg-clip-text text-transparent">
               Insights
             </span>
           </h2>
