@@ -1,0 +1,32 @@
+User-agent: *
+Allow: /
+
+# Allow all search engines to index all content
+# Sitemap will be added here when generated
+Sitemap: https://foulonmaxence-ux.com/sitemap.xml
+
+# Performance optimization - allow crawling of assets
+Allow: /assets/
+Allow: /images/
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.webp
+Allow: *.svg
+
+# Block access to sensitive files and directories
+Disallow: /server/
+Disallow: /.env
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /.git/
+Disallow: /database.ts
+Disallow: /server.ts
+
+# Crawl delay to be respectful to server resources
+Crawl-delay: 1
+
+# Host directive for canonical domain
+Host: https://foulonmaxence-ux.com
