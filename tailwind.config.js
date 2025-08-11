@@ -8,28 +8,47 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // WCAG 2.1 AA Compliant WHITE Theme Color Palette
+        // Enhanced theme-aware colors for both light and dark modes
         text: {
-          strong: '#0F172A',      // High contrast for headings (21:1 ratio)
-          DEFAULT: '#1E293B',     // Standard text (16.7:1 ratio)
-          soft: '#334155',        // Secondary text (9.8:1 ratio)
-          muted: '#64748B',       // Muted text (4.6:1 ratio - minimum for normal text)
-          glass: '#1E293B',       // Dark text for white glass overlays
+          strong: '#0F172A',      // Light mode: High contrast for headings
+          DEFAULT: '#1E293B',     // Light mode: Standard text
+          soft: '#334155',        // Light mode: Secondary text
+          muted: '#64748B',       // Light mode: Muted text
+          glass: '#1E293B',       // Light mode: Dark text for glass overlays
         },
         surface: {
-          base: '#FFFFFF',        // Pure white for main surfaces
-          alt: '#F8F9FA',         // Very light gray for subtle backgrounds  
-          muted: '#F1F3F4',       // Light gray for sections
-          glass: 'rgba(255, 255, 255, 0.85)',     // WHITE Glass surface
+          base: '#FFFFFF',        // Light mode: Pure white for main surfaces
+          alt: '#F8F9FA',         // Light mode: Very light gray backgrounds  
+          muted: '#F1F3F4',       // Light mode: Light gray for sections
+          glass: 'rgba(255, 255, 255, 0.85)',     // Light mode: Glass surface
           'glass-light': 'rgba(255, 255, 255, 0.95)', // Lighter glass
-          'glass-dark': 'rgba(255, 255, 255, 0.75)', // Slightly darker glass
+          'glass-dark': 'rgba(255, 255, 255, 0.75)', // Darker glass
         },
         border: {
-          DEFAULT: '#E2E8F0',     // Standard border color
-          strong: '#CBD5E1',      // Stronger borders when needed
+          DEFAULT: '#E2E8F0',     // Light mode: Standard border color
+          strong: '#CBD5E1',      // Light mode: Stronger borders
           glass: 'rgba(255, 255, 255, 0.3)',      // Glass borders
           'glass-strong': 'rgba(255, 255, 255, 0.5)', // Stronger glass borders
           iridescent: 'rgba(103, 126, 234, 0.3)',  // Soft iridescent borders
+        },
+        // Dark theme specific colors
+        dark: {
+          bg: {
+            primary: '#0F1116',    // Dark mode: Primary background
+            secondary: '#181B23',  // Dark mode: Secondary background  
+            muted: '#202530',      // Dark mode: Muted background
+            glass: 'rgba(24, 27, 35, 0.80)', // Dark mode: Glass surface
+          },
+          text: {
+            primary: '#FFFFFF',    // Dark mode: Primary text (pure white)
+            secondary: '#F0F2F7',  // Dark mode: Secondary text
+            muted: '#9CA3AF',      // Dark mode: Muted text
+          },
+          border: {
+            primary: '#374151',    // Dark mode: Primary borders
+            strong: '#4B5563',     // Dark mode: Strong borders
+            glass: 'rgba(255, 255, 255, 0.12)', // Dark mode: Glass borders
+          }
         },
         // Soft Liquid Glass color palette
         liquid: {

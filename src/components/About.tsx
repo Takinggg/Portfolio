@@ -197,11 +197,11 @@ const About = memo(() => {
 
   return (
     <section ref={sectionRef} id="about" className="py-32 bg-white dark:bg-gray-950 relative overflow-hidden transition-colors">
-      {/* WHITE Liquid Glass Background Elements */}
+      {/* Enhanced Background Elements for Dark Theme */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 liquid-shape opacity-5 blur-3xl" 
+        <div className="absolute top-20 left-10 w-72 h-72 liquid-shape opacity-5 dark:opacity-10 blur-3xl" 
              style={{background: 'linear-gradient(135deg, rgba(103, 126, 234, 0.15), rgba(118, 75, 162, 0.15))'}} />
-        <div className="absolute bottom-20 right-10 w-96 h-96 liquid-shape-alt opacity-5 blur-3xl" 
+        <div className="absolute bottom-20 right-10 w-96 h-96 liquid-shape-alt opacity-5 dark:opacity-10 blur-3xl" 
              style={{background: 'linear-gradient(45deg, rgba(240, 147, 251, 0.12), rgba(79, 172, 254, 0.12))'}} />
       </div>
 
@@ -263,7 +263,7 @@ const About = memo(() => {
             <div className="prose prose-lg text-text-soft space-y-6">
               {/* Age moved from Hero */}
               <div className="mb-6">
-                <span className="inline-flex items-center px-4 py-2 bg-white/80 dark:bg-gray-800/70 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+                <span className="inline-flex items-center px-4 py-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur border border-gray-200/50 dark:border-gray-600/50 rounded-full text-sm font-medium text-gray-700 dark:text-gray-200 transition-all duration-300">
                   {t('about.age_role')}
                 </span>
               </div>
