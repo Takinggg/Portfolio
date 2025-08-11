@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star } from 'lucide-react';
 import { useProjects } from '../hooks/useSQLite';
 import { useI18n } from '../hooks/useI18n';
 import { GlassCard } from './ui/GlassCard';
 import { ProjectCard } from './projects/ProjectCard';
 import { ProjectFilter } from './projects/ProjectFilter';
+import { SectionHeader } from './SectionHeader';
 
 // Placeholder images as data URLs
 const getPlaceholderImage = (category: string) => {
@@ -26,6 +26,7 @@ interface ProjectsProps {
 
 const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const { t } = useI18n();
   
@@ -154,52 +155,12 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
-        <motion.div 
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <motion.div 
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <GlassCard className="flex items-center gap-2 px-4 py-2">
-              <Star className="text-primary-500" size={16} />
-              <span className="text-text-soft">{t('projects.section.creative_portfolio')}</span>
-            </GlassCard>
-          </motion.div>
-          
-          <h2 className="text-5xl md:text-7xl font-black mb-8">
-            <motion.span 
-              className="block text-text-DEFAULT"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              {t('projects.section.my_title')}
-            </motion.span>
-            <motion.span 
-              className="block text-primary-600"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-            >
-              {t('projects.section.my_subtitle')}
-            </motion.span>
-          </h2>
-          
-          <motion.p 
-            className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-          >
-            {t('projects.section.description')}
-          </motion.p>
-        </motion.div>
+        <SectionHeader 
+          eyebrow={t('projects.section.creative_portfolio')}
+          titleFirst={t('projects.section.my_title')}
+          titleSecond={t('projects.section.my_subtitle')}
+          description={t('projects.section.description')}
+        />
 
         {/* Category Filter */}
         <motion.div 

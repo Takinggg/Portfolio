@@ -428,9 +428,12 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
 
         {/* CTA Section */}
         <section className="mt-20">
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl p-12 text-white text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
-            <div className="absolute top-8 right-8">
+          <div 
+            className="[background:linear-gradient(90deg,#7c3aed_0%,#ec4899_100%)] rounded-3xl p-12 text-white text-center relative overflow-hidden"
+            style={{ background: 'linear-gradient(90deg, #7c3aed 0%, #ec4899 100%)' }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <div className="absolute top-8 right-8 pointer-events-none">
               <Zap className="text-white/30" size={48} />
             </div>
             

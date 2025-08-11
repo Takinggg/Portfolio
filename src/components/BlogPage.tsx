@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Calendar, Clock, User, Tag, Home, BookOpen } from 'lucide-react';
+import { Search, Filter, Calendar, Clock, User, Tag } from 'lucide-react';
 import { useBlogPosts } from '../hooks/useSQLite';
 import { NormalizedBlogPost } from '../lib/adapters';
 import { SimpleHeader } from './ui/SimpleHeader';
+import { BlogHeader } from './BlogHeader';
 
 interface BlogPageProps {
   onNavigateHome: () => void;
@@ -137,81 +138,12 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
       <SimpleHeader onBack={onNavigateHome} backLabel="Retour au portfolio" />
 
       {/* Header */}
-      <header className="bg-gradient-to-br from-purple-600 to-pink-600 text-white py-20 pt-24 relative overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute inset-0">
-            <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 dark:bg-gray-800/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          {/* Breadcrumb Navigation */}
-            <nav className="flex items-center gap-2 text-white/80 mb-8">
-            <button 
-              onClick={onNavigateHome}
-              className="flex items-center gap-2 hover:text-white transition-colors duration-200"
-            >
-              <Home size={16} />
-              Accueil
-            </button>
-            <span>/</span>
-            <span className="text-white font-medium">Blog</span>
-          </nav>
-          
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 dark:bg-gray-800/30 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
-              <BookOpen className="text-white/80" size={18} />
-              <span>Articles & Insights Design</span>
-            </div>
-
-            {/* Main Title */}
-            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-              <span className="block bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">Blog &</span>
-              <span className="block bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500 bg-clip-text text-transparent">Insights</span>
-            </h1>
-            
-            {/* Subtitle */}
-            <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed mb-8">
-              Découvrez mes réflexions sur le design UI/UX, les tendances digitales et les meilleures pratiques du design moderne
-            </p>
-
-            {/* Stats */}
-            <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
-              <div className="text-center bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/40">
-                <div className="text-2xl font-bold text-white mb-1">
-                  {posts.length}
-                </div>
-                <div className="text-sm text-white/80">Articles</div>
-              </div>
-              
-              <div className="text-center bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/40">
-                <div className="text-2xl font-bold text-white mb-1">
-                  {categories.length}
-                </div>
-                <div className="text-sm text-white/80">Catégories</div>
-              </div>
-              
-              <div className="text-center bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/40">
-                <div className="text-2xl font-bold text-white mb-1">
-                  {tags.length}
-                </div>
-                <div className="text-sm text-white/80">Tags</div>
-              </div>
-            </div>
-            
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button 
-                onClick={onNavigateHome}
-                className="px-6 py-3 bg-white/20 dark:bg-gray-800/30 backdrop-blur-sm border border-white/30 dark:border-gray-700/50 text-white rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 flex items-center gap-2"
-              >
-                <Home size={18} />
-                Retour au Portfolio
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <BlogHeader 
+        onNavigateHome={onNavigateHome}
+        totalPosts={posts.length}
+        totalCategories={categories.length}
+        totalTags={tags.length}
+      />
 
       <main className="max-w-7xl mx-auto px-6 py-16">
         {/* Search and Filters */}
