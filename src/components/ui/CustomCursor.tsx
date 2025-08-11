@@ -72,7 +72,7 @@ export const CustomCursor: React.FC = () => {
           mass: 0.5,
         }}
       >
-        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+        <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-600 transition-colors">
           <motion.div
             className="w-2 h-2 bg-primary-500 rounded-full"
             animate={{

@@ -21,30 +21,30 @@ const eventTypeConfig = {
   education: {
     icon: Award,
     color: 'bg-blue-500',
-    bgLight: 'bg-blue-50',
-    textColor: 'text-blue-700',
-    borderColor: 'border-blue-200'
+    bgLight: 'bg-blue-50 dark:bg-blue-900/30',
+    textColor: 'text-blue-700 dark:text-blue-300',
+    borderColor: 'border-blue-200 dark:border-blue-700'
   },
   work: {
     icon: Briefcase,
     color: 'bg-green-500', 
-    bgLight: 'bg-green-50',
-    textColor: 'text-green-700',
-    borderColor: 'border-green-200'
+    bgLight: 'bg-green-50 dark:bg-green-900/30',
+    textColor: 'text-green-700 dark:text-green-300',
+    borderColor: 'border-green-200 dark:border-green-700'
   },
   certification: {
     icon: Award,
     color: 'bg-purple-500',
-    bgLight: 'bg-purple-50', 
-    textColor: 'text-purple-700',
-    borderColor: 'border-purple-200'
+    bgLight: 'bg-purple-50 dark:bg-purple-900/30', 
+    textColor: 'text-purple-700 dark:text-purple-300',
+    borderColor: 'border-purple-200 dark:border-purple-700'
   },
   milestone: {
     icon: Calendar,
     color: 'bg-orange-500',
-    bgLight: 'bg-orange-50',
-    textColor: 'text-orange-700',
-    borderColor: 'border-orange-200'
+    bgLight: 'bg-orange-50 dark:bg-orange-900/30',
+    textColor: 'text-orange-700 dark:text-orange-300',
+    borderColor: 'border-orange-200 dark:border-orange-700'
   }
 };
 
@@ -57,10 +57,10 @@ export const Timeline: React.FC<TimelineProps> = ({
   return (
     <div className={`${className}`}>
       <div className="text-center mb-12">
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors">
           {t('about.timeline.title')}
         </h3>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400 transition-colors">
           {t('about.timeline.subtitle')}
         </p>
       </div>
@@ -95,13 +95,13 @@ export const Timeline: React.FC<TimelineProps> = ({
 
                 {/* Year Badge */}
                 <motion.div
-                  className={`hidden md:block absolute left-1/2 top-12 transform -translate-x-1/2 px-3 py-1 ${config.bgLight} ${config.borderColor} border rounded-full`}
+                  className={`hidden md:block absolute left-1/2 top-12 transform -translate-x-1/2 px-3 py-1 ${config.bgLight} ${config.borderColor} border rounded-full transition-colors`}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   transition={{ duration: 0.3, delay: index * 0.1 + 0.2 }}
                   viewport={{ once: true }}
                 >
-                  <span className={`text-sm font-semibold ${config.textColor}`}>
+                  <span className={`text-sm font-semibold ${config.textColor} transition-colors`}>
                     {event.year}
                   </span>
                 </motion.div>
@@ -114,30 +114,30 @@ export const Timeline: React.FC<TimelineProps> = ({
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className={`bg-white rounded-xl p-6 shadow-md border ${config.borderColor} hover:shadow-lg transition-all duration-300`}>
+                  <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border ${config.borderColor} hover:shadow-lg transition-all duration-300`}>
                     {/* Mobile Year */}
                     <div className="md:hidden mb-3">
-                      <span className={`inline-flex items-center px-3 py-1 ${config.bgLight} ${config.textColor} rounded-full text-sm font-semibold`}>
+                      <span className={`inline-flex items-center px-3 py-1 ${config.bgLight} ${config.textColor} rounded-full text-sm font-semibold transition-colors`}>
                         {event.year}
                       </span>
                     </div>
 
                     {/* Header */}
                     <div className="flex items-start gap-3 mb-3">
-                      <div className={`p-2 ${config.bgLight} rounded-lg`}>
+                      <div className={`p-2 ${config.bgLight} rounded-lg transition-colors`}>
                         <Icon size={20} className={config.color.replace('bg-', 'text-')} />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-1">
+                        <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1 transition-colors">
                           {event.title}
                         </h4>
                         {event.company && (
-                          <div className="text-sm text-gray-600 mb-1">
+                          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1 transition-colors">
                             {event.company}
                           </div>
                         )}
                         {event.location && (
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
+                          <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-500 transition-colors">
                             <MapPin size={12} />
                             <span>{event.location}</span>
                           </div>
@@ -146,7 +146,7 @@ export const Timeline: React.FC<TimelineProps> = ({
                     </div>
 
                     {/* Description */}
-                    <p className="text-gray-600 text-sm leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors">
                       {event.description}
                     </p>
                   </div>

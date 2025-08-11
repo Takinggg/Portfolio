@@ -113,7 +113,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
 
       <div className="relative">
         {/* Connection Lines */}
-        <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 transform -translate-y-1/2" />
+        <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 transform -translate-y-1/2 transition-colors" />
 
         {/* Process Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">

@@ -162,7 +162,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
                   <button 
                     onClick={() => readPost(post.slug)}
-                    className="px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full text-white font-semibold hover:bg-white/30 transition-all duration-200 transform hover:scale-105"
+                    className="px-6 py-3 bg-white/20 dark:bg-gray-800/40 backdrop-blur-sm rounded-full text-white font-semibold hover:bg-white/30 dark:hover:bg-gray-800/60 transition-all duration-200 transform hover:scale-105"
                   >
                     Lire l'article
                   </button>
@@ -209,7 +209,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
                   {(post.tags || []).slice(0, 3).map((tag, tagIndex) => (
                     <span 
                       key={tagIndex}
-                      className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium hover:bg-gray-200 transition-colors duration-200"
+                      className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
                     >
                       #{tag}
                     </span>
@@ -244,7 +244,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateToBlog, onNavigateT
               </p>
               <button 
                 onClick={navigateToBlog}
-                className="bg-white text-purple-600 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center gap-2 mx-auto"
+                className="bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center gap-2 mx-auto"
               >
                 {t('blog.view_all')}
                 <ArrowRight size={20} />

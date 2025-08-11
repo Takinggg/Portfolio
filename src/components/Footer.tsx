@@ -70,7 +70,7 @@ const Footer = () => {
                       key={index}
                       href={social.href}
                       aria-label={social.label}
-                      className={`w-12 h-12 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:bg-white/20 ${social.color}`}
+                      className={`w-12 h-12 bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:bg-white/20 dark:hover:bg-gray-800/40 ${social.color}`}
                     >
                       <Icon size={20} />
                     </a>

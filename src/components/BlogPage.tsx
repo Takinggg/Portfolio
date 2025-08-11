@@ -140,7 +140,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
       <header className="bg-gradient-to-br from-purple-600 to-pink-600 text-white py-20 pt-24 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
-            <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 dark:bg-gray-800/10 rounded-full blur-3xl" />
             <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
         </div>
 
@@ -159,7 +159,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
           </nav>
           
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 dark:bg-gray-800/30 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
               <BookOpen className="text-white/80" size={18} />
               <span>Articles & Insights Design</span>
             </div>
@@ -177,21 +177,21 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
 
             {/* Stats */}
             <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="text-center bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/40">
                 <div className="text-2xl font-bold text-white mb-1">
                   {posts.length}
                 </div>
                 <div className="text-sm text-white/80">Articles</div>
               </div>
               
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="text-center bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/40">
                 <div className="text-2xl font-bold text-white mb-1">
                   {categories.length}
                 </div>
                 <div className="text-sm text-white/80">Catégories</div>
               </div>
               
-              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="text-center bg-white/10 dark:bg-gray-800/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/40">
                 <div className="text-2xl font-bold text-white mb-1">
                   {tags.length}
                 </div>
@@ -203,7 +203,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button 
                 onClick={onNavigateHome}
-                className="px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 flex items-center gap-2"
+                className="px-6 py-3 bg-white/20 dark:bg-gray-800/30 backdrop-blur-sm border border-white/30 dark:border-gray-700/50 text-white rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 flex items-center gap-2"
               >
                 <Home size={18} />
                 Retour au Portfolio
@@ -225,14 +225,14 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
                 placeholder="Rechercher un article..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/80 backdrop-blur-sm"
+                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm"
               />
             </div>
 
             {/* Filter Toggle */}
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="flex items-center gap-2 px-6 py-4 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl hover:border-gray-300 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="flex items-center gap-2 px-6 py-4 bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <Filter size={20} />
               <span className="font-medium">Filtres</span>
@@ -242,7 +242,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
 
           {/* Filters Panel */}
           <div className={`mt-6 transition-all duration-500 ${isFilterOpen ? 'opacity-100 max-h-96' : 'opacity-0 max-h-0 overflow-hidden'}`}> 
-            <div className="p-6 bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200 shadow-xl">
+            <div className="p-6 bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Category Filter */}
                 <div>
@@ -252,7 +252,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50"
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50"
                   >
                     <option value="all">Toutes les catégories ({posts.length})</option>
                     {categories.map(category => (
@@ -271,7 +271,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
                   <select
                     value={selectedTag}
                     onChange={(e) => setSelectedTag(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50"
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50"
                   >
                     <option value="all">Tous les tags</option>
                     {tags.map(tag => (
@@ -309,7 +309,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
                 {currentPosts.map((post, index) => (
                   <article 
                     key={post.id}
-                    className="group bg-white/80 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 border border-gray-100"
+                    className="group bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 border border-gray-100"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     {/* Image */}

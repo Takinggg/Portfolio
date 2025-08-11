@@ -212,7 +212,7 @@ const Contact = memo(() => {
     <section 
       ref={sectionRef} 
       id="contact" 
-      className="py-32 bg-white relative overflow-hidden"
+      className="py-32 bg-white dark:bg-gray-950 relative overflow-hidden transition-colors"
       aria-labelledby="contact-title"
     >
       {/* WHITE Liquid Glass Background Elements */}
@@ -320,10 +320,10 @@ const Contact = memo(() => {
 
           {/* Contact Form */}
           <div className={`lg:col-span-3 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-100">
+            <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-100 dark:border-gray-700 transition-colors">
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('contact.start_project')}</h3>
-                <p className="text-gray-600">{t('contact.form_description')}</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors">{t('contact.start_project')}</h3>
+                <p className="text-gray-600 dark:text-gray-400 transition-colors">{t('contact.form_description')}</p>
               </div>
 
               <form 
@@ -336,7 +336,7 @@ const Contact = memo(() => {
                 {/* Success Message */}
                 {submitStatus === 'success' && (
                   <div 
-                    className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl"
+                    className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl transition-colors"
                     role="alert"
                     aria-live="polite"
                   >
@@ -348,7 +348,7 @@ const Contact = memo(() => {
                 {/* Error Message */}
                 {submitStatus === 'error' && (
                   <div 
-                    className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl"
+                    className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl transition-colors"
                     role="alert"
                     aria-live="assertive"
                   >
@@ -359,7 +359,7 @@ const Contact = memo(() => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
-                    <label htmlFor={nameId.current} className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor={nameId.current} className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                       {t('contact.form.name')} *
                     </label>
                     <input
@@ -368,8 +368,8 @@ const Contact = memo(() => {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300 ${
-                        validationErrors.name ? 'border-red-300' : 'border-gray-200'
+                      className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300 dark:group-hover:border-gray-600 ${
+                        validationErrors.name ? 'border-red-300 dark:border-red-600' : 'border-gray-200 dark:border-gray-700 dark:border-gray-700'
                       }`}
                       placeholder="Votre nom"
                       required
@@ -390,7 +390,7 @@ const Contact = memo(() => {
                   </div>
                   
                   <div className="group">
-                    <label htmlFor={emailId.current} className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor={emailId.current} className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                       Email *
                     </label>
                     <input
@@ -399,8 +399,8 @@ const Contact = memo(() => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300 ${
-                        validationErrors.email ? 'border-red-300' : 'border-gray-200'
+                      className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300 ${
+                        validationErrors.email ? 'border-red-300' : 'border-gray-200 dark:border-gray-700'
                       }`}
                       placeholder="votre@email.com"
                       required
@@ -423,7 +423,7 @@ const Contact = memo(() => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
-                    <label htmlFor="budget" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor="budget" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                       {t('contact.form.budget')}
                     </label>
                     <select
@@ -431,7 +431,7 @@ const Contact = memo(() => {
                       name="budget"
                       value={formData.budget}
                       onChange={handleChange}
-                      className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
+                      className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300"
                       disabled={isSubmitting}
                     >
                       <option value="">Sélectionnez un budget</option>
@@ -442,7 +442,7 @@ const Contact = memo(() => {
                   </div>
                   
                   <div className="group">
-                    <label htmlFor="timeline" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label htmlFor="timeline" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                       Timeline souhaitée
                     </label>
                     <select
@@ -450,7 +450,7 @@ const Contact = memo(() => {
                       name="timeline"
                       value={formData.timeline}
                       onChange={handleChange}
-                      className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300"
+                      className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300"
                       disabled={isSubmitting}
                     >
                       <option value="">Sélectionnez une timeline</option>
@@ -462,7 +462,7 @@ const Contact = memo(() => {
                 </div>
 
                 <div className="group">
-                  <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                     Sujet du projet *
                   </label>
                   <input
@@ -471,8 +471,8 @@ const Contact = memo(() => {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm group-hover:border-gray-300 ${
-                      validationErrors.subject ? 'border-red-300' : 'border-gray-200'
+                    className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300 ${
+                      validationErrors.subject ? 'border-red-300' : 'border-gray-200 dark:border-gray-700'
                     }`}
                     placeholder="Ex: Refonte d'application mobile"
                     required
@@ -484,7 +484,7 @@ const Contact = memo(() => {
                 </div>
 
                 <div className="group">
-                  <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                     Décrivez votre projet *
                   </label>
                   <textarea
@@ -493,8 +493,8 @@ const Contact = memo(() => {
                     rows={6}
                     value={formData.message}
                     onChange={handleChange}
-                    className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none bg-white/50 backdrop-blur-sm group-hover:border-gray-300 ${
-                      validationErrors.message ? 'border-red-300' : 'border-gray-200'
+                    className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300 ${
+                      validationErrors.message ? 'border-red-300' : 'border-gray-200 dark:border-gray-700'
                     }`}
                     placeholder="Parlez-moi de votre vision, vos objectifs, votre audience cible..."
                     required
@@ -522,7 +522,7 @@ const Contact = memo(() => {
                         name="briefUrl"
                         value={formData.briefUrl}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 backdrop-blur-sm"
+                        className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm"
                         placeholder="https://notion.so/mon-brief"
                         disabled={isSubmitting}
                       />

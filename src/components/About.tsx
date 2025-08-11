@@ -196,7 +196,7 @@ const About = memo(() => {
   ];
 
   return (
-    <section ref={sectionRef} id="about" className="py-32 bg-white relative overflow-hidden">
+    <section ref={sectionRef} id="about" className="py-32 bg-white dark:bg-gray-950 relative overflow-hidden transition-colors">
       {/* WHITE Liquid Glass Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-72 h-72 liquid-shape opacity-5 blur-3xl" 
@@ -263,7 +263,7 @@ const About = memo(() => {
             <div className="prose prose-lg text-text-soft space-y-6">
               {/* Age moved from Hero */}
               <div className="mb-6">
-                <span className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full text-sm font-medium text-gray-700">
+                <span className="inline-flex items-center px-4 py-2 bg-white/80 dark:bg-gray-800/70 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
                   {t('about.age_role')}
                 </span>
               </div>
@@ -302,7 +302,7 @@ const About = memo(() => {
         <div className={`mb-20 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <CompetencyMatrix 
             categories={competencyCategories}
-            className="bg-gray-50 rounded-2xl p-8"
+            className="bg-gray-50 dark:bg-gray-900/40 rounded-2xl p-8 transition-colors"
           />
         </div>
 
@@ -315,7 +315,7 @@ const About = memo(() => {
         <div className={`transition-all duration-1000 delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <Timeline 
             events={timelineEvents}
-            className="bg-white rounded-2xl p-8 shadow-lg"
+            className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors"
           />
         </div>
       </div>
