@@ -97,11 +97,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           <div className="space-y-8">
             {/* Stats Cards */}
             <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${loading ? 'animate-pulse' : ''}`}>
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+              <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Articles</p>
-                    <p className="text-3xl font-bold text-gray-900">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Articles</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                       {loading ? '...' : stats.totalPosts}
                     </p>
                   </div>
@@ -111,11 +111,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+              <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Projets</p>
-                    <p className="text-3xl font-bold text-gray-900">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Projets</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                       {loading ? '...' : stats.totalProjects}
                     </p>
                   </div>
@@ -125,11 +125,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+              <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Vues totales</p>
-                    <p className="text-3xl font-bold text-gray-900">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Vues totales</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                       {loading ? '...' : stats.totalViews.toLocaleString()}
                     </p>
                   </div>
@@ -139,11 +139,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+              <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Visiteurs uniques</p>
-                    <p className="text-3xl font-bold text-gray-900">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Visiteurs uniques</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                       {loading ? '...' : Math.floor(stats.totalViews * 0.65).toLocaleString()}
                     </p>
                   </div>

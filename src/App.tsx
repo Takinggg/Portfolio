@@ -203,7 +203,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen relative bg-white">
+    <div className="min-h-screen relative bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
       {/* Premium UI Components */}
       {/* CustomCursor removed - keeping only magnetic effects */}
       <ScrollProgress />
