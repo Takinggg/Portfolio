@@ -56,8 +56,27 @@ const ProjectManager: React.FC = () => {
         throw error;
       }
       
-      // Filter out any null/undefined projects and ensure array integrity
-      const validProjects = (data || []).filter(Boolean);
+      // Ensure data is an array and validate/sanitize project objects
+      const rawProjects = Array.isArray(data) ? data : [];
+      const validProjects = rawProjects
+        .filter(Boolean) // Remove null/undefined
+        .map(project => ({
+          ...project,
+          // Ensure required properties have safe defaults
+          id: project.id || '',
+          title: project.title || '',
+          description: project.description || '',
+          long_description: project.long_description || '',
+          technologies: Array.isArray(project.technologies) ? project.technologies : [],
+          images: Array.isArray(project.images) ? project.images : [],
+          category: project.category || 'web',
+          status: project.status || 'in-progress',
+          start_date: project.start_date || new Date().toISOString().split('T')[0],
+          featured: Boolean(project.featured),
+          created_at: project.created_at || new Date().toISOString(),
+          updated_at: project.updated_at || new Date().toISOString()
+        }));
+      
       setProjects(validProjects);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des projets';
@@ -164,13 +183,13 @@ const ProjectManager: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-200 text-green-900 border border-green-300';
       case 'in-progress':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-200 text-blue-900 border border-blue-300';
       case 'archived':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-200 text-gray-900 border border-gray-300';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-200 text-gray-900 border border-gray-300';
     }
   };
 
@@ -197,13 +216,26 @@ const ProjectManager: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-        <p className="font-medium">Erreur</p>
-        <p className="text-sm">{error}</p>
+      <div 
+        className="bg-red-50 border-2 border-red-200 text-red-900 px-6 py-4 rounded-xl shadow-md"
+        role="alert"
+        aria-live="assertive"
+      >
+        <div className="flex items-center gap-3 mb-2">
+          <div className="flex-shrink-0 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
+            <span className="text-white text-xs font-bold">!</span>
+          </div>
+          <p className="font-semibold text-red-900">Erreur</p>
+        </div>
+        <p className="text-sm text-red-800 mb-3">{error}</p>
         <button 
           onClick={fetchProjects}
-          className="mt-2 text-sm underline hover:no-underline"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-900 bg-red-100 border border-red-300 rounded-lg hover:bg-red-200 hover:border-red-400 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
+          aria-label="Réessayer le chargement des projets"
         >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
           Réessayer
         </button>
       </div>
@@ -230,12 +262,13 @@ const ProjectManager: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Gestion des Projets</h2>
-          <p className="text-gray-600">{filteredProjects.length} projet(s) trouvé(s)</p>
+          <p className="text-gray-700 mt-1">{filteredProjects.length} projet(s) trouvé(s)</p>
         </div>
         <button
           onClick={handleCreate}
           disabled={loading}
-          className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+          className="bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          aria-label="Créer un nouveau projet"
         >
           <Plus size={20} />
           Nouveau Projet
@@ -243,46 +276,58 @@ const ProjectManager: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+      <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200">
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
+            <label htmlFor="search-projects" className="sr-only">Rechercher un projet</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={20} />
               <input
+                id="search-projects"
                 type="text"
                 placeholder="Rechercher un projet..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-600"
               />
             </div>
           </div>
           
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          >
-            <option value="all">Toutes les catégories</option>
-            {categories.map(category => (
-              <option key={category} value={category}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-4">
+            <div>
+              <label htmlFor="category-filter" className="sr-only">Filtrer par catégorie</label>
+              <select
+                id="category-filter"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+              >
+                <option value="all">Toutes les catégories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          >
-            <option value="all">Tous les statuts</option>
-            {statuses.map(status => (
-              <option key={status} value={status}>
-                {getStatusLabel(status)}
-              </option>
-            ))}
-          </select>
+            <div>
+              <label htmlFor="status-filter" className="sr-only">Filtrer par statut</label>
+              <select
+                id="status-filter"
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+              >
+                <option value="all">Tous les statuts</option>
+                {statuses.map(status => (
+                  <option key={status} value={status}>
+                    {getStatusLabel(status)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -309,68 +354,71 @@ const ProjectManager: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => (
-            <div key={project.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            <div key={project.id} className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 overflow-hidden hover:shadow-xl hover:border-blue-300 transition-all duration-300">
               <div className="relative h-48">
                 <img
-                  src={(project?.images && Array.isArray(project.images) ? project.images : [])[0] || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImFkbWluIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNmI3MjgwIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzljYTNhZiIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2FkbWluKSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFETUlOIFBSRVZJRVc8L3RleHQ+PC9zdmc+'}
-                  alt={project.title}
+                  src={project.images?.[0] || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImFkbWluIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNGY0NjU2IiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzZiNzI4MCIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2FkbWluKSIgLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JTUFHRSBOT04gRElTUE9OSUJMRTwvdGV4dD48L3N2Zz4='}
+                  alt={project.title || 'Image du projet'}
                   className="w-full h-full object-cover"
                 />
                 {project.featured && (
-                  <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold">
+                  <div className="absolute top-3 left-3 bg-yellow-500 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-md">
                     ⭐ Featured
                   </div>
                 )}
-                <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
+                <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${getStatusColor(project.status)}`}>
                   {getStatusLabel(project.status)}
                 </div>
               </div>
 
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{project.title}</h3>
-                  <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full font-medium">
-                    {project.category.toUpperCase()}
+                  <h3 className="text-lg font-bold text-gray-900 line-clamp-1 flex-1 mr-2">{project.title}</h3>
+                  <span className="text-xs bg-blue-100 text-blue-900 px-3 py-1 rounded-full font-semibold whitespace-nowrap">
+                    {(project.category || 'web').toUpperCase()}
                   </span>
                 </div>
 
-                <p className="text-gray-600 text-sm line-clamp-2 mb-4">{project.description}</p>
+                <p className="text-gray-700 text-sm line-clamp-2 mb-4 leading-relaxed">{project.description}</p>
 
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {(project?.technologies && Array.isArray(project.technologies) ? project.technologies : []).slice(0, 3).map((tech, index) => (
-                    <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {project.technologies?.slice(0, 3).map((tech, index) => (
+                    <span key={`${project.id}-tech-${index}`} className="bg-gray-200 text-gray-800 px-2 py-1 rounded-md text-xs font-medium">
                       {tech}
                     </span>
                   ))}
-                  {(project?.technologies && Array.isArray(project.technologies) ? project.technologies : []).length > 3 && (
-                    <span className="text-xs text-gray-500">+{(project?.technologies && Array.isArray(project.technologies) ? project.technologies : []).length - 3}</span>
+                  {(project.technologies?.length || 0) > 3 && (
+                    <span className="text-xs text-gray-600 font-medium">+{(project.technologies?.length || 0) - 3}</span>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-500">
-                    {project.client && <div>Client: {project.client}</div>}
-                    <div>Début: {new Date(project.start_date).toLocaleDateString('fr-FR')}</div>
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <div className="text-xs text-gray-600">
+                    {project.client && <div className="font-medium">Client: {project.client}</div>}
+                    <div>Début: {project.start_date ? new Date(project.start_date).toLocaleDateString('fr-FR') : 'N/A'}</div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEdit(project)}
-                      className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+                      className="p-2 text-gray-700 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-colors duration-200 border border-gray-300 hover:border-blue-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                       title="Modifier"
+                      aria-label={`Modifier le projet ${project.title}`}
                     >
                       <Edit size={16} />
                     </button>
                     <button
-                      className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                      className="p-2 text-gray-700 hover:text-green-700 hover:bg-green-100 rounded-lg transition-colors duration-200 border border-gray-300 hover:border-green-300 focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
                       title="Voir"
+                      aria-label={`Voir le projet ${project.title}`}
                     >
                       <Eye size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(project.id)}
-                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                      className="p-2 text-gray-700 hover:text-red-700 hover:bg-red-100 rounded-lg transition-colors duration-200 border border-gray-300 hover:border-red-300 focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
                       title="Supprimer"
+                      aria-label={`Supprimer le projet ${project.title}`}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -394,9 +442,59 @@ interface ProjectEditorProps {
 }
 
 const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel, loading = false }) => {
-  const [formData, setFormData] = useState<Partial<Project>>(project || {});
-  const [technologies, setTechnologies] = useState<string>((project?.technologies && Array.isArray(project.technologies)) ? project.technologies.join(', ') : '');
-  const [imageUrls, setImageUrls] = useState<string>((project?.images && Array.isArray(project.images)) ? project.images.join('\n') : '');
+  // Safely initialize form data with proper defaults
+  const getInitialFormData = (): Partial<Project> => {
+    if (!project) {
+      return {
+        title: '',
+        description: '',
+        long_description: '',
+        technologies: [],
+        images: [],
+        category: 'web',
+        status: 'in-progress',
+        start_date: new Date().toISOString().split('T')[0],
+        featured: false
+      };
+    }
+    
+    return {
+      ...project,
+      // Ensure arrays are properly initialized
+      technologies: Array.isArray(project.technologies) ? project.technologies : [],
+      images: Array.isArray(project.images) ? project.images : [],
+      // Ensure required fields have defaults
+      title: project.title || '',
+      description: project.description || '',
+      long_description: project.long_description || '',
+      category: project.category || 'web',
+      status: project.status || 'in-progress',
+      start_date: project.start_date || new Date().toISOString().split('T')[0],
+      featured: Boolean(project.featured)
+    };
+  };
+
+  const [formData, setFormData] = useState<Partial<Project>>(getInitialFormData());
+  const [technologies, setTechnologies] = useState<string>(() => {
+    const techs = Array.isArray(project?.technologies) ? project.technologies : [];
+    return techs.join(', ');
+  });
+  const [imageUrls, setImageUrls] = useState<string>(() => {
+    const images = Array.isArray(project?.images) ? project.images : [];
+    return images.join('\n');
+  });
+
+  // Update form data when project prop changes
+  React.useEffect(() => {
+    const newFormData = getInitialFormData();
+    setFormData(newFormData);
+    
+    const techs = Array.isArray(newFormData.technologies) ? newFormData.technologies : [];
+    setTechnologies(techs.join(', '));
+    
+    const images = Array.isArray(newFormData.images) ? newFormData.images : [];
+    setImageUrls(images.join('\n'));
+  }, [project]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -434,7 +532,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
           <button
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-3 border-2 border-gray-400 text-gray-800 rounded-xl font-semibold hover:bg-gray-100 hover:border-gray-500 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Annuler l'édition du projet"
           >
             <X size={20} />
             Annuler
@@ -442,7 +541,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2 disabled:opacity-50"
+            className="bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            aria-label={loading ? 'Sauvegarde en cours...' : 'Enregistrer le projet'}
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -457,59 +557,63 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onSave, onCancel
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations générales</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="project-title" className="block text-sm font-semibold text-gray-800 mb-2">
                   Titre du projet *
                 </label>
                 <input
+                  id="project-title"
                   type="text"
                   value={formData.title || ''}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-600"
                   placeholder="Nom de votre projet"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="project-description" className="block text-sm font-semibold text-gray-800 mb-2">
                   Description courte *
                 </label>
                 <textarea
+                  id="project-description"
                   value={formData.description || ''}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-600"
                   placeholder="Description courte du projet"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="project-long-description" className="block text-sm font-semibold text-gray-800 mb-2">
                   Description détaillée
                 </label>
                 <textarea
+                  id="project-long-description"
                   value={formData.long_description || ''}
                   onChange={(e) => setFormData({ ...formData, long_description: e.target.value })}
                   rows={5}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-600"
                   placeholder="Description détaillée du projet"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="project-technologies" className="block text-sm font-semibold text-gray-800 mb-2">
                   Technologies utilisées (séparées par des virgules)
                 </label>
                 <input
+                  id="project-technologies"
                   type="text"
                   value={technologies}
                   onChange={(e) => setTechnologies(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-600"
                   placeholder="React, TypeScript, Node.js"
                 />
               </div>
