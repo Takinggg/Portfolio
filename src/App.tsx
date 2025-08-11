@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
-import Navigation from './components/Navigation';
-import RightSidebar from './components/RightSidebar';
+import NewNavbar from './components/NewNavbar';
 import Hero from './components/Hero';
 import About from './components/About';
 import BlogSection from './components/BlogSection';
@@ -136,7 +135,7 @@ function App() {
     return (
       <>
         <SEOHead 
-          title="Blog" 
+          title="Articles" 
           description="Articles sur le développement web, design et technologies"
           url="/blog"
         />
@@ -217,7 +216,7 @@ function App() {
       
       {/* Navigation with semantic header */}
       <header role="banner">
-        <Navigation 
+        <NewNavbar 
           onNavigateToSection={navigateToSection}
           onNavigateToBlog={navigateToBlog}
           onNavigateToProjects={navigateToProjects}

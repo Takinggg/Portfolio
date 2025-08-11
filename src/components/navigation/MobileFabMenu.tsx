@@ -50,7 +50,7 @@ export const MobileFabMenu: React.FC<MobileFabMenuProps> = ({
     { id: 'hero', label: 'Accueil', icon: Home, action: () => handleNavigation('hero') },
     { id: 'about', label: 'À propos', icon: User, action: () => handleNavigation('about') },
     { id: 'projects', label: 'Projets', icon: Briefcase, action: () => handleNavigation('projects') },
-    { id: 'blog', label: 'Blog', icon: BookOpen, action: () => handleNavigation('blog') },
+    { id: 'blog', label: 'Articles', icon: BookOpen, action: () => handleNavigation('blog') },
     { id: 'contact', label: 'Contact', icon: Mail, action: () => handleNavigation('contact') },
     { id: 'scroll-top', label: 'Haut de page', icon: ArrowUp, action: scrollToTop },
   ];
