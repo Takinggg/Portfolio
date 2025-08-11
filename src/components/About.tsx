@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { memo } from 'react';
-import { Target, Lightbulb, Heart, Coffee, Search, Brain, Palette, Code, Users, Briefcase, Award, Calendar } from 'lucide-react';
+import { Target, Lightbulb, Heart, Coffee, Search, Brain, Palette, Code } from 'lucide-react';
 import { CompetencyMatrix } from './about/CompetencyMatrix';
 import { Timeline } from './about/Timeline';
 import { ProcessStrip } from './about/ProcessStrip';
@@ -26,11 +26,6 @@ const About = memo(() => {
     return () => observer.disconnect();
   }, []);
 
-  const skills = [
-    { name: 'Figma', level: 95, color: 'from-purple-500 to-pink-500' },
-    { name: 'Adobe XD', level: 90, color: 'from-blue-500 to-cyan-500' },
-  ];
-
   // Competency Matrix Data
   const competencyCategories = [
     {
@@ -40,17 +35,17 @@ const About = memo(() => {
       skills: [
         {
           name: 'Recherche utilisateur',
-          level: 'Expert' as const,
+          rating: 4,
           evidence: ['15+ études utilisateur menées', 'Certification Google UX', 'Formation d\'équipes']
         },
         {
           name: 'Analytics & Data',
-          level: 'Avancé' as const,
+          rating: 3,
           evidence: ['Google Analytics certified', 'A/B tests sur 8 projets', 'Dashboard de KPIs']
         },
         {
           name: 'Product Strategy',
-          level: 'Avancé' as const,
+          rating: 3,
           evidence: ['3 roadmaps produit', 'OKRs définition', 'Go-to-market strategy']
         }
       ]
@@ -62,17 +57,17 @@ const About = memo(() => {
       skills: [
         {
           name: 'Interface Design',
-          level: 'Expert' as const,
+          rating: 4,
           evidence: ['50+ interfaces livrées', 'Design Systems créés', 'Atomic Design maîtrise']
         },
         {
           name: 'Design Systems',
-          level: 'Expert' as const,
+          rating: 4,
           evidence: ['3 Design Systems de A à Z', 'Tokens & Components', 'Documentation complète']
         },
         {
           name: 'Visual Design',
-          level: 'Avancé' as const,
+          rating: 3,
           evidence: ['Brand identity projets', 'Illustrations custom', 'Motion design']
         }
       ]
@@ -84,17 +79,17 @@ const About = memo(() => {
       skills: [
         {
           name: 'Prototypage',
-          level: 'Expert' as const,
+          rating: 4,
           evidence: ['Figma/Framer expert', '20+ prototypes validés', 'Micro-interactions']
         },
         {
           name: 'Tests utilisateur',
-          level: 'Avancé' as const,
+          rating: 3,
           evidence: ['Tests modérés/non-modérés', 'UserTesting platform', 'A/B testing']
         },
         {
           name: 'Information Architecture',
-          level: 'Avancé' as const,
+          rating: 3,
           evidence: ['Card sorting études', 'Tree testing', 'Sitemaps optimisés']
         }
       ]
@@ -106,17 +101,17 @@ const About = memo(() => {
       skills: [
         {
           name: 'React / TypeScript',
-          level: 'Avancé' as const,
+          rating: 2,
           evidence: ['4 apps React livrées', 'TypeScript sur projets', 'Hooks & Context']
         },
         {
           name: 'CSS / Animations',
-          level: 'Avancé' as const,
+          rating: 2,
           evidence: ['CSS avancé', 'Framer Motion', 'Animations performantes']
         },
         {
           name: 'Design to Code',
-          level: 'Opérationnel' as const,
+          rating: 2,
           evidence: ['Handoff optimisé', 'Design tokens', 'Collaboration dev']
         }
       ]
@@ -267,7 +262,7 @@ const About = memo(() => {
             <div className="prose prose-lg text-text-soft space-y-6">
               {/* Age moved from Hero */}
               <div className="mb-6">
-                <span className="inline-flex items-center px-3 py-1 glass-medium text-text-strong rounded-full text-sm font-medium border-iridescent-multi">
+                <span className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full text-sm font-medium text-gray-700">
                   22 ans • Designer UI/UX
                 </span>
               </div>
