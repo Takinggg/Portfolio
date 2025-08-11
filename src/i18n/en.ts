@@ -42,7 +42,7 @@ const en: TranslationDictionary = {
     subtitle: 'Passionate about innovation',
     description: 'I design and develop digital solutions that combine modern aesthetics with technical performance.',
     discover_universe: 'Discover my world',
-    about_me: 'About me',
+    about_me: 'My Journey',
     passionate_designer: 'Passionate developer creating innovative digital experiences',
     age_role: '22 years old • Full-Stack Developer',
     intro_text: 'Hello! I\'m Maxence FOULON, a full-stack developer passionate about technological innovation and creating modern web applications.',

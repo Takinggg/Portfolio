@@ -42,7 +42,7 @@ const fr: TranslationDictionary = {
     subtitle: 'Passionné par l\'innovation',
     description: 'Je conçois et développe des solutions digitales qui allient esthétique moderne et performance technique.',
     discover_universe: 'Découvrez mon univers',
-    about_me: 'À propos de moi',
+    about_me: 'Mon Parcours',
     passionate_designer: 'Développeur passionné par la création d\'expériences numériques innovantes',
     age_role: '22 ans • Développeur Full-Stack',
     intro_text: 'Bonjour ! Je suis Maxence FOULON, développeur full-stack passionné par l\'innovation technologique et la création d\'applications web modernes.',

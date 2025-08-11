@@ -113,8 +113,11 @@ export const GlassmorphismPhotoCard: React.FC<GlassmorphismPhotoCardProps> = ({
           <motion.img
             src={imageSrc}
             alt={imageAlt}
-            className="w-full h-96 object-cover"
-            style={{ transformStyle: "preserve-3d" }}
+            className="w-full h-80 object-cover"
+            style={{ 
+              transformStyle: "preserve-3d",
+              aspectRatio: "4/3"
+            }}
             animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           />
