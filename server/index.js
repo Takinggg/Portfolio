@@ -7,6 +7,8 @@ import jwt from 'jsonwebtoken';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 import { randomUUID } from 'crypto';
+import { initializeSchedulingSchema } from './scheduling/database.js';
+import { initializeSchedulingRoutes } from './scheduling/routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1002,6 +1004,16 @@ app.get('/api/contact/unread-count', authenticateToken, (req, res) => {
 
 // Initialize database and start server
 initializeDatabase();
+
+// Initialize scheduling system
+try {
+  initializeSchedulingSchema(db);
+  initializeSchedulingRoutes(app, db);
+  console.log('✅ Scheduling system initialized successfully');
+} catch (error) {
+  console.error('❌ Failed to initialize scheduling system:', error);
+  process.exit(1);
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
