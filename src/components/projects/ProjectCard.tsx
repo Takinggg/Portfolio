@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Eye, Heart, ArrowRight } from 'lucide-react';
 import { TiltCard } from '../ui/TiltCard';
+import { useI18n } from '../../hooks/useI18n';
 
 interface ProjectCardProps {
   id: string;
@@ -36,6 +37,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   onClick,
   className = '',
 }) => {
+  const { t } = useI18n();
+  
   const handleClick = () => {
     if (onClick) {
       onClick(id);
@@ -58,14 +61,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           handleClick();
         }
       }}
-      aria-label={`Voir le projet ${title}`}
+      aria-label={`${t('projects.see_project')} ${title}`}
     >
       <TiltCard className="relative h-full overflow-hidden bg-surface-DEFAULT border border-surface-border rounded-2xl shadow-card hover:shadow-lg transition-all duration-300">
         {/* Featured ribbon */}
         {featured && (
           <div className="absolute top-4 right-4 z-20">
             <div className="bg-accent-orange text-white text-xs font-semibold px-3 py-1 rounded-full shadow-card">
-              Mis en avant
+              {t('common.featured')}
             </div>
           </div>
         )}
@@ -90,7 +93,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               whileHover={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.2 }}
             >
-              <span>Étude de cas</span>
+              <span>{t('projects.case_study')}</span>
               <ArrowRight size={16} />
             </motion.div>
           </div>
@@ -151,7 +154,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             
             {/* CTA indicator */}
             <div className="flex items-center gap-1 text-primary-600 group-hover:text-primary-700 transition-colors">
-              <span className="text-sm font-medium">Voir le projet</span>
+              <span className="text-sm font-medium">{t('projects.see_project')}</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </div>

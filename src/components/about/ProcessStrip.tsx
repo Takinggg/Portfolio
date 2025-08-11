@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Lightbulb, Palette, TestTube, Rocket } from 'lucide-react';
+import { useI18n } from '../../hooks/useI18n';
 
 interface ProcessStepData {
   number: number;
@@ -58,20 +59,55 @@ const stepGradients = [
 ];
 
 export const ProcessStrip: React.FC<ProcessStripProps> = ({
-  title = 'Processus en 5 étapes',
-  subtitle = 'Ma méthodologie éprouvée pour créer des expériences utilisateur exceptionnelles',
+  title,
+  subtitle,
   className = '',
 }) => {
+  const { t } = useI18n();
+
+  const processStepsData: ProcessStepData[] = [
+    {
+      number: 1,
+      title: t('about.process.steps.discover.title'),
+      description: t('about.process.steps.discover.description'),
+      icon: Search,
+    },
+    {
+      number: 2,
+      title: t('about.process.steps.define.title'),
+      description: t('about.process.steps.define.description'),
+      icon: Lightbulb,
+    },
+    {
+      number: 3,
+      title: t('about.process.steps.design.title'),
+      description: t('about.process.steps.design.description'),
+      icon: Palette,
+    },
+    {
+      number: 4,
+      title: t('about.process.steps.validate.title'),
+      description: t('about.process.steps.validate.description'),
+      icon: TestTube,
+    },
+    {
+      number: 5,
+      title: t('about.process.steps.ship.title'),
+      description: t('about.process.steps.ship.description'),
+      icon: Rocket,
+    }
+  ];
+
   return (
     <div className={`${className}`}>
       <div className="text-center mb-12">
         <div className="inline-block px-6 py-3 mb-4 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
           <h3 className="text-2xl font-bold bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">
-            {title}
+            {title || t('about.process.title')}
           </h3>
         </div>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          {subtitle}
+          {subtitle || t('about.process.subtitle')}
         </p>
       </div>
 
@@ -81,7 +117,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
 
         {/* Process Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
-          {processSteps.map((step, index) => {
+          {processStepsData.map((step, index) => {
             const Icon = step.icon;
             
             return (
@@ -162,7 +198,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
         <div className="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
           <div className="text-center mb-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Pourquoi cette approche ?
+              {t('about.process.why_title')}
             </h4>
           </div>
           
@@ -171,24 +207,24 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
               <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <Search size={20} className="text-blue-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">Centré utilisateur</div>
-              <div className="text-gray-600">Décisions basées sur des données réelles et des insights utilisateurs</div>
+              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.user_centered.title')}</div>
+              <div className="text-gray-600">{t('about.process.benefits.user_centered.description')}</div>
             </div>
             
             <div className="text-center">
               <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <TestTube size={20} className="text-purple-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">Itératif</div>
-              <div className="text-gray-600">Tests continus et améliorations basées sur les retours</div>
+              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.iterative.title')}</div>
+              <div className="text-gray-600">{t('about.process.benefits.iterative.description')}</div>
             </div>
             
             <div className="text-center">
               <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <Rocket size={20} className="text-green-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">Orienté résultats</div>
-              <div className="text-gray-600">Focus sur l'impact business et la satisfaction utilisateur</div>
+              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.results_oriented.title')}</div>
+              <div className="text-gray-600">{t('about.process.benefits.results_oriented.description')}</div>
             </div>
           </div>
         </div>

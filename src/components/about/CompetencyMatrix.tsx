@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, CheckCircle, Star } from 'lucide-react';
+import { useI18n } from '../../hooks/useI18n';
 
 interface Skill {
   name: string;
@@ -20,26 +21,28 @@ interface CompetencyMatrixProps {
   className?: string;
 }
 
-const getRatingLevel = (rating: number) => {
-  if (rating >= 4) return { label: 'Expert', color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-200' };
-  if (rating >= 3) return { label: 'Avancé', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200' };
-  return { label: 'Opérationnel', color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-200' };
+const getRatingLevel = (rating: number, t: (key: string) => string) => {
+  if (rating >= 4) return { label: t('about.competency_matrix.expertise_levels.expert'), color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-200' };
+  if (rating >= 3) return { label: t('about.competency_matrix.expertise_levels.advanced'), color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200' };
+  return { label: t('about.competency_matrix.expertise_levels.operational'), color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-200' };
 };
 
 export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
   categories,
   className = '',
 }) => {
+  const { t } = useI18n();
+  
   return (
     <div className={`${className}`}>
       <div className="text-center mb-12">
         <div className="inline-block px-6 py-3 mb-4 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
           <h3 className="text-2xl font-bold text-gray-900">
-            Matrice de Compétences
+            {t('about.competency_matrix.title')}
           </h3>
         </div>
         <p className="text-gray-600">
-          Expertise validée par des certifications et projets livrés
+          {t('about.competency_matrix.subtitle')}
         </p>
       </div>
 
@@ -69,7 +72,7 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
                 {/* Skills List */}
                 <div className="space-y-4">
                   {category.skills.map((skill, skillIndex) => {
-                    const levelInfo = getRatingLevel(skill.rating);
+                    const levelInfo = getRatingLevel(skill.rating, t);
                     
                     return (
                       <motion.div
@@ -132,7 +135,7 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
 
       {/* Enhanced Legend */}
       <div className="mt-8 p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
-        <h5 className="font-semibold text-gray-900 mb-4">Niveaux d'expertise</h5>
+        <h5 className="font-semibold text-gray-900 mb-4">{t('about.competency_matrix.expertise_levels.title')}</h5>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="flex items-center gap-3">
             <div className="flex gap-1">
@@ -141,8 +144,8 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
               ))}
             </div>
             <div>
-              <div className="font-medium text-green-700">Expert (4-5/5)</div>
-              <div className="text-gray-600">Maîtrise complète + formation d'équipes</div>
+              <div className="font-medium text-green-700">{t('about.competency_matrix.expertise_levels.expert')}</div>
+              <div className="text-gray-600">{t('about.competency_matrix.expertise_levels.expert_desc')}</div>
             </div>
           </div>
           
@@ -153,8 +156,8 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
               ))}
             </div>
             <div>
-              <div className="font-medium text-blue-700">Avancé (3/5)</div>
-              <div className="text-gray-600">Autonomie sur projets complexes</div>
+              <div className="font-medium text-blue-700">{t('about.competency_matrix.expertise_levels.advanced')}</div>
+              <div className="text-gray-600">{t('about.competency_matrix.expertise_levels.advanced_desc')}</div>
             </div>
           </div>
           
@@ -165,8 +168,8 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
               ))}
             </div>
             <div>
-              <div className="font-medium text-orange-700">Opérationnel (1-2/5)</div>
-              <div className="text-gray-600">Capable d'exécuter avec supervision</div>
+              <div className="font-medium text-orange-700">{t('about.competency_matrix.expertise_levels.operational')}</div>
+              <div className="text-gray-600">{t('about.competency_matrix.expertise_levels.operational_desc')}</div>
             </div>
           </div>
         </div>
