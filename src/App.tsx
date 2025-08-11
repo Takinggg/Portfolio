@@ -246,7 +246,7 @@ function App() {
       {/* Main content area */}
       <main role="main">
         <Hero />
-        <About />
+        <About onNavigateToSection={navigateToSection} />
         <Projects onNavigateToProject={navigateToProject} />
         <BlogSection onNavigateToBlog={navigateToBlog} onNavigateToPost={navigateToPost} />
         <Contact />

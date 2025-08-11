@@ -43,10 +43,28 @@ const fr: TranslationDictionary = {
     description: 'Je conçois et développe des solutions digitales qui allient esthétique moderne et performance technique.',
     discover_universe: 'Découvrez mon univers',
     about_me: 'À propos de moi',
-    passionate_designer: 'Designer passionné avec une vision moderne du design digital, je transforme les idées complexes en expériences utilisateur exceptionnelles',
-    age_role: '22 ans • Designer UI/UX',
-    intro_text: 'Diplômé en design graphique et spécialisé en UX/UI design, je combine créativité artistique et approche scientifique pour créer des interfaces qui séduisent et convertissent.',
-    process_text: 'Mon processus de design s\'appuie sur la recherche utilisateur, le prototypage itératif et les tests d\'usabilité pour garantir des expériences optimales sur tous les supports.',
+    passionate_designer: 'Développeur passionné par la création d\'expériences numériques innovantes',
+    age_role: '22 ans • Développeur Full-Stack',
+    intro_text: 'Bonjour ! Je suis Maxence FOULON, développeur full-stack passionné par l\'innovation technologique et la création d\'applications web modernes.',
+    process_text: 'Avec une solide expérience en développement frontend et backend, je me spécialise dans la création de solutions numériques performantes et user-friendly.',
+    skills: {
+      title: 'Mes domaines d\'expertise',
+      react: 'React / Next.js',
+      design: 'UI/UX Design', 
+      node: 'Node.js / Express',
+      database: 'Bases de données'
+    },
+    philosophy: {
+      title: 'Ma philosophie',
+      innovation: '💡 Innovation et créativité dans chaque projet',
+      user_focus: '🎯 Focus sur l\'expérience utilisateur',
+      performance: '⚡ Performance et qualité du code',
+      collaboration: '🤝 Collaboration et communication'
+    },
+    cta: {
+      projects: 'Voir mes projets',
+      contact: 'Me contacter'
+    },
     values: {
       precision: {
         title: 'Précision',
