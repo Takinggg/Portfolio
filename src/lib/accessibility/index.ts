@@ -155,7 +155,6 @@ export const screenReader = {
    * Generate descriptive text for screen readers
    */
   generateDescription: (element: HTMLElement): string => {
-    const role = element.getAttribute('role');
     const ariaLabel = element.getAttribute('aria-label');
     const ariaLabelledBy = element.getAttribute('aria-labelledby');
     
