@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home } from 'lucide-react';
 import { useBlogPost } from '../hooks/useSQLite';
 import { NormalizedBlogPost } from '../lib/adapters';
-import Navigation from './Navigation';
+import { SimpleHeader } from './ui/SimpleHeader';
 
 interface BlogPostProps {
   slug: string;
@@ -56,15 +56,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNav
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-        <Navigation 
-          onNavigateToSection={onNavigateHome}
-          onNavigateToBlog={onBack}
-          onNavigateToProjects={onNavigateToProjects}
-          showBackButton={true}
-          onBack={onBack}
-          backLabel="Retour au blog"
-          currentPage="post"
-        />
+        <SimpleHeader onBack={onBack} backLabel="Retour au blog" />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
@@ -79,15 +71,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNav
   if (error || !post) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-        <Navigation 
-          onNavigateToSection={onNavigateHome}
-          onNavigateToBlog={onBack}
-          onNavigateToProjects={onNavigateToProjects}
-          showBackButton={true}
-          onBack={onBack}
-          backLabel="Retour au blog"
-          currentPage="post"
-        />
+        <SimpleHeader onBack={onBack} backLabel="Retour au blog" />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <p className="text-red-600 mb-4">Article non trouvé</p>
@@ -105,19 +89,11 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome, onNav
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-      {/* Navigation with Back Button */}
-      <Navigation 
-        onNavigateToSection={onNavigateHome}
-        onNavigateToBlog={onBack}
-        onNavigateToProjects={onNavigateToProjects}
-        showBackButton={true}
-        onBack={onBack}
-        backLabel="Retour au blog"
-        currentPage="post"
-      />
+      {/* Header with Back Button */}
+      <SimpleHeader onBack={onBack} backLabel="Retour au blog" />
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12 pt-32 relative overflow-hidden">
+      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12 pt-24 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
