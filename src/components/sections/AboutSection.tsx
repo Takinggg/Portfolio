@@ -58,13 +58,30 @@ const AboutSection = memo(({ onNavigateToSection }: AboutSectionProps) => {
             <span className={styles.badgeText}>{t('about.discover_universe')}</span>
           </div>
           
-          {/* Main title - ensure it's visible */}
-          <h1 className={styles.mainTitle}>
-            <ShimmerText className={styles.titleFirstWord}>
+          {/* Main title - ensure it's visible with proper Safari support */}
+          <h1 className={`${styles.mainTitle} relative z-10`}>
+            <ShimmerText 
+              className={`${styles.titleFirstWord} bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]`}
+              style={{
+                background: 'linear-gradient(135deg, #374151 0%, #3b82f6 50%, #8b5cf6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
+            >
               {t('about.about_me').split(' ')[0]}
             </ShimmerText>
             <br />
-            <ShimmerText delay={0.5} className={styles.titleSecondPart}>
+            <ShimmerText 
+              delay={0.5} 
+              className={`${styles.titleSecondPart} bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]`}
+              style={{
+                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
+            >
               {t('about.about_me').split(' ').slice(1).join(' ')}
             </ShimmerText>
           </h1>

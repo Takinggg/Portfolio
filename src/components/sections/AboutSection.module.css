@@ -50,13 +50,13 @@
   font-weight: 600;
 }
 
-/* Main Title - ensuring visibility */
+/* Main Title - ensuring visibility and Safari compatibility */
 .mainTitle {
   font-size: clamp(2.5rem, 8vw, 4.5rem);
   font-weight: 900;
   line-height: 1.1;
   margin-bottom: 2rem;
-  /* Ensure visibility */
+  /* Ensure visibility and proper stacking */
   position: relative;
   z-index: 20;
   opacity: 1 !important;
@@ -70,6 +70,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-fill-color: transparent;
+  /* Ensure Safari compatibility */
+  color: transparent;
 }
 
 .titleSecondPart {
@@ -78,6 +80,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-fill-color: transparent;
+  /* Ensure Safari compatibility */
+  color: transparent;
 }
 
 .subtitle {
