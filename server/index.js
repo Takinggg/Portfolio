@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
+import { randomUUID } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -497,6 +498,9 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
       });
     }
     
+    // Generate a UUID for the post
+    const postId = randomUUID();
+    
     // Generate or normalize slug
     let baseSlug;
     if (post.slug) {
@@ -513,6 +517,7 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
 
     // Prepare data for insertion
     const postData = {
+      id: postId,
       title: post.title,
       slug: finalSlug,
       excerpt: post.excerpt || '',
@@ -530,20 +535,23 @@ app.post('/api/blog/posts', authenticateToken, (req, res) => {
     // Insert the new post
     const result = db.prepare(`
       INSERT INTO blog_posts (
-        title, slug, excerpt, content, author, published_at, updated_at,
+        id, title, slug, excerpt, content, author, published_at, updated_at,
         featured_image, tags, category, read_time, featured
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      postData.title, postData.slug, postData.excerpt, postData.content, postData.author,
+      postData.id, postData.title, postData.slug, postData.excerpt, postData.content, postData.author,
       postData.published_at, postData.updated_at, postData.featured_image,
       JSON.stringify(postData.tags), postData.category, postData.read_time, postData.featured ? 1 : 0
     );
 
-    // Get the newly created post
-    const newPost = db.prepare('SELECT * FROM blog_posts WHERE rowid = ?').get(result.lastInsertRowid);
+    // Get the newly created post by its ID (not rowid)
+    const newPost = db.prepare('SELECT * FROM blog_posts WHERE id = ?').get(postId);
     
     if (!newPost) {
-      throw new Error('Failed to retrieve created post');
+      console.error('Failed to retrieve created post with id:', postId);
+      return res.status(500).json({ 
+        error: { message: 'Failed to retrieve created post' } 
+      });
     }
     
     // Return 201 status code with the created post
@@ -737,8 +745,12 @@ app.post('/api/projects', authenticateToken, (req, res) => {
       });
     }
 
+    // Generate a UUID for the project
+    const projectId = randomUUID();
+
     // Ensure all fields have proper defaults with proper null/undefined checks
     const projectData = {
+      id: projectId,
       title: project.title,
       description: project.description,
       long_description: project.long_description || '',
@@ -757,20 +769,28 @@ app.post('/api/projects', authenticateToken, (req, res) => {
 
     const result = db.prepare(`
       INSERT INTO projects (
-        title, description, long_description, technologies, category, status,
+        id, title, description, long_description, technologies, category, status,
         start_date, end_date, client, budget, images, featured, github_url, live_url
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      projectData.title, projectData.description, projectData.long_description,
+      projectData.id, projectData.title, projectData.description, projectData.long_description,
       JSON.stringify(projectData.technologies), projectData.category, projectData.status,
       projectData.start_date, projectData.end_date, projectData.client, projectData.budget,
       JSON.stringify(projectData.images), projectData.featured ? 1 : 0,
       projectData.github_url, projectData.live_url
     );
 
-    const newProject = db.prepare('SELECT * FROM projects WHERE id = ?').get(result.lastInsertRowid);
+    // Get the newly created project by its ID (not rowid)
+    const newProject = db.prepare('SELECT * FROM projects WHERE id = ?').get(projectId);
     
-    res.json({ 
+    if (!newProject) {
+      console.error('Failed to retrieve created project with id:', projectId);
+      return res.status(500).json({ 
+        error: { message: 'Failed to retrieve created project' } 
+      });
+    }
+    
+    res.status(201).json({ 
       data: {
         ...newProject,
         technologies: JSON.parse(newProject.technologies || '[]'),
@@ -852,15 +872,26 @@ app.post('/api/contact', (req, res) => {
   try {
     const messageData = req.body;
 
+    // Generate a UUID for the message
+    const messageId = randomUUID();
+
     const result = db.prepare(`
-      INSERT INTO contact_messages (name, email, subject, message, budget, timeline)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO contact_messages (id, name, email, subject, message, budget, timeline)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(
-      messageData.name, messageData.email, messageData.subject,
+      messageId, messageData.name, messageData.email, messageData.subject,
       messageData.message, messageData.budget, messageData.timeline
     );
 
-    const newMessage = db.prepare('SELECT * FROM contact_messages WHERE id = ?').get(result.lastInsertRowid);
+    // Get the newly created message by its ID (not rowid)
+    const newMessage = db.prepare('SELECT * FROM contact_messages WHERE id = ?').get(messageId);
+    
+    if (!newMessage) {
+      console.error('Failed to retrieve created message with id:', messageId);
+      return res.status(500).json({ 
+        error: { message: 'Failed to retrieve created message' } 
+      });
+    }
     
     res.json({ data: newMessage });
   } catch (error) {
