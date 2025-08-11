@@ -139,8 +139,8 @@ export class ApiClient {
       const data = await this.rawFetch<Post[]>('/posts');
       saveLocal(LS_POSTS, data);
       return data;
-    } catch (err: any) {
-      if (/Failed to fetch|NetworkError|TypeError/.test(err?.message)) {
+    } catch (err: unknown) {
+      if (err instanceof Error && /Failed to fetch|NetworkError|TypeError/.test(err.message)) {
         return loadLocal<Post>(LS_POSTS);
       }
       throw err;
@@ -159,8 +159,8 @@ export class ApiClient {
         saveLocal(LS_POSTS, [...list, data]);
       }
       return data;
-    } catch (err: any) {
-      if (/Failed to fetch|NetworkError|TypeError/.test(err?.message)) {
+    } catch (err: unknown) {
+      if (err instanceof Error && /Failed to fetch|NetworkError|TypeError/.test(err.message)) {
         const list = loadLocal<Post>(LS_POSTS);
         const offline: Post = {
           id: genId('post'),

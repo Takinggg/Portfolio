@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, CheckCircle, Star } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { useI18n } from '../../hooks/useI18n';
 
 interface Skill {
@@ -11,7 +11,7 @@ interface Skill {
 
 interface SkillCategory {
   title: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
   skills: Skill[];
 }
