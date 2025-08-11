@@ -98,7 +98,7 @@ const Navigation: React.FC<NavigationProps> = ({
         transition={{ duration: 0.8, ease: "easeOut" }}
         className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-700`}
       >
-        <GlassCard className={`px-6 py-3 ${isScrolled ? 'shadow-lg' : 'shadow-card'}`}>
+        <GlassCard className={`px-6 py-3 ${isScrolled ? 'shadow-lg' : 'shadow-card'}`} premium reflection iridescent>
           <div className="flex items-center gap-6">
             {/* Back Button */}
             {showBackButton && onBack && (
@@ -204,8 +204,8 @@ const Navigation: React.FC<NavigationProps> = ({
               {/* CTA Button */}
               <motion.button
                 onClick={() => handleNavigation('contact')}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-liquid-blue to-liquid-purple text-white rounded-xl font-medium text-sm shadow-liquid hover:shadow-magnetic transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-liquid-purple"
-                whileHover={{ scale: 1.05 }}
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-liquid-blue to-liquid-purple text-white rounded-xl font-medium text-sm shadow-liquid hover:shadow-magnetic transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-liquid-purple liquid-spread glass-reflection"
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 data-track="nav-cta-collaborate"
               >
@@ -258,7 +258,7 @@ const Navigation: React.FC<NavigationProps> = ({
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ type: "spring", duration: 0.3 }}
             >
-              <GlassCard className="p-6">
+              <GlassCard className="p-6" premium reflection particles>
                 <div className="space-y-3">
                   {navItems.map((item, index) => {
                     const Icon = item.icon;

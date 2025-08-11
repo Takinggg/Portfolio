@@ -210,7 +210,7 @@ const About = memo(() => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-flex items-center gap-2 px-4 py-2 glass-base rounded-full text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 glass-base rounded-full text-sm font-medium mb-6 border-iridescent glass-reflection">
             <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
             <span className="text-text-strong">Découvrez mon univers</span>
           </div>
@@ -237,22 +237,22 @@ const About = memo(() => {
             <div className="relative group">
               <div className="absolute inset-0 liquid-shape opacity-10 blur-xl group-hover:blur-2xl transition-all duration-500"
                    style={{background: 'linear-gradient(135deg, rgba(103, 126, 234, 0.2), rgba(118, 75, 162, 0.2))'}} />
-              <div className="relative glass-base rounded-3xl p-8 shadow-glass">
+              <div className="relative glass-heavy rounded-3xl p-8 shadow-glass glass-reflection glass-distortion">
                 <img 
                   src="https://images.pexels.com/photos/3778876/pexels-photo-3778876.jpeg" 
                   alt="Portrait de Maxence FOULON"
                   className="w-full h-96 object-cover rounded-2xl shadow-xl group-hover:scale-105 transition-transform duration-500"
                 />
                 
-                {/* WHITE Glass Floating Stats */}
-                <div className="absolute -top-4 -right-4 glass-medium rounded-2xl p-4 shadow-glass">
+                {/* Enhanced Glass Floating Stats */}
+                <div className="absolute -top-4 -right-4 glass-ultra rounded-2xl p-4 shadow-glass border-iridescent glass-fragments">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-liquid-blue">50+</div>
                     <div className="text-xs text-text-muted">Projets</div>
                   </div>
                 </div>
                 
-                <div className="absolute -bottom-4 -left-4 glass-medium rounded-2xl p-4 shadow-glass">
+                <div className="absolute -bottom-4 -left-4 glass-ultra rounded-2xl p-4 shadow-glass border-iridescent glass-fragments">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-liquid-purple">3+</div>
                     <div className="text-xs text-text-muted">Années</div>
@@ -267,7 +267,7 @@ const About = memo(() => {
             <div className="prose prose-lg text-text-soft space-y-6">
               {/* Age moved from Hero */}
               <div className="mb-6">
-                <span className="inline-flex items-center px-3 py-1 glass-base text-text-strong rounded-full text-sm font-medium">
+                <span className="inline-flex items-center px-3 py-1 glass-medium text-text-strong rounded-full text-sm font-medium border-iridescent-multi">
                   22 ans • Designer UI/UX
                 </span>
               </div>
@@ -285,16 +285,16 @@ const About = memo(() => {
               </p>
             </div>
 
-            {/* WHITE Glass Values Grid */}
+            {/* Enhanced Glass Values Grid */}
             <div className="grid grid-cols-2 gap-4">
               {values.map((value, index) => {
                 const Icon = value.icon;
                 return (
                   <div 
                     key={index}
-                    className="group glass-base p-6 rounded-2xl shadow-glass hover:shadow-glass-lg transition-all duration-300 hover:-translate-y-1 magnetic"
+                    className="group glass-heavy p-6 rounded-2xl shadow-glass hover:shadow-glass-lg transition-all duration-500 hover:-translate-y-2 magnetic glass-reflection liquid-spread glass-fragments"
                   >
-                    <div className={`w-12 h-12 bg-gradient-to-br ${value.gradient} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-liquid`}>
+                    <div className={`w-12 h-12 bg-gradient-to-br ${value.gradient} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-liquid border border-white/20`}>
                       <Icon className="text-white" size={20} />
                     </div>
                     <h4 className="font-bold text-text-strong mb-2">{value.title}</h4>

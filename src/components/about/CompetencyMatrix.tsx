@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, CheckCircle, Star } from 'lucide-react';
+import { GlassCard } from '../ui/liquid-glass';
 
 interface Skill {
   name: string;
@@ -51,9 +52,11 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
   return (
     <div className={`${className}`}>
       <div className="text-center mb-12">
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">
-          Matrice de Compétences
-        </h3>
+        <GlassCard className="inline-block px-6 py-3 mb-4" premium iridescent>
+          <h3 className="text-2xl font-bold text-gray-900">
+            Matrice de Compétences
+          </h3>
+        </GlassCard>
         <p className="text-gray-600">
           Expertise validée par des certifications et projets livrés
         </p>
@@ -66,12 +69,19 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
           return (
             <motion.div
               key={categoryIndex}
-              className="bg-white rounded-xl p-6 shadow-md border border-gray-100"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
               viewport={{ once: true }}
             >
+              <GlassCard 
+                className="p-6" 
+                premium 
+                reflection 
+                particles 
+                particleVariant="subtle"
+                magnetic
+              >
               {/* Category Header */}
               <div className="flex items-center gap-3 mb-6">
                 <div className={`p-3 rounded-lg ${category.color}`}>
@@ -135,13 +145,14 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
                   );
                 })}
               </div>
+              </GlassCard>
             </motion.div>
           );
         })}
       </div>
 
-      {/* Legend */}
-      <div className="mt-8 bg-gray-50 rounded-xl p-6">
+      {/* Enhanced Legend */}
+      <GlassCard className="mt-8 p-6" premium distortion>
         <h5 className="font-semibold text-gray-900 mb-4">Niveaux d'expertise</h5>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="flex items-center gap-3">
@@ -180,7 +191,7 @@ export const CompetencyMatrix: React.FC<CompetencyMatrixProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </GlassCard>
     </div>
   );
 };
