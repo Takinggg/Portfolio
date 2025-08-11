@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, MailOpen, Search, Filter, Trash2, Eye, Calendar, User, MessageCircle, AlertCircle } from 'lucide-react';
 import { contactService } from '../../lib/api';
+import { useI18n } from '../../hooks/useI18n';
 
 interface ContactMessage {
   id: string;
@@ -16,6 +17,7 @@ interface ContactMessage {
 }
 
 const MessagesManager: React.FC = () => {
+  const { t } = useI18n();
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [filteredMessages, setFilteredMessages] = useState<ContactMessage[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -232,7 +234,7 @@ const MessagesManager: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
               {viewingMessage.budget && (
                 <div>
-                  <span className="text-sm font-semibold text-gray-700">Budget estimé :</span>
+                  <span className="text-sm font-semibold text-gray-700">{t('contact.form.budget')} :</span>
                   <p className="text-gray-900">{viewingMessage.budget}</p>
                 </div>
               )}
