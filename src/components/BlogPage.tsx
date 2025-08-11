@@ -219,20 +219,20 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
           <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
             {/* Search Bar */}
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={20} />
               <input
                 type="text"
                 placeholder="Rechercher un article..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm"
+                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-indigo-500/40 focus:border-transparent transition-all duration-300 bg-white/80 dark:bg-gray-900/60 backdrop-blur-sm text-gray-900 dark:text-gray-200"
               />
             </div>
 
             {/* Filter Toggle */}
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="flex items-center gap-2 px-6 py-4 bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="flex items-center gap-2 px-6 py-4 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-gray-900 dark:text-gray-200"
             >
               <Filter size={20} />
               <span className="font-medium">Filtres</span>
@@ -242,7 +242,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
 
           {/* Filters Panel */}
           <div className={`mt-6 transition-all duration-500 ${isFilterOpen ? 'opacity-100 max-h-96' : 'opacity-0 max-h-0 overflow-hidden'}`}> 
-            <div className="p-6 bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl">
+            <div className="p-6 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Category Filter */}
                 <div>
@@ -309,7 +309,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
                 {currentPosts.map((post, index) => (
                   <article 
                     key={post.id}
-                    className="group bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 border border-gray-100"
+                    className="group bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 border border-gray-100 dark:border-gray-700"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     {/* Image */}
@@ -388,7 +388,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onNavigateHome, onNavigateToPost })
                           </span>
                         ))}
                         {post.tags.length > 3 && (
-                          <span className="text-xs text-gray-400">+{post.tags.length - 3}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">+{post.tags.length - 3}</span>
                         )}
                       </div>
 

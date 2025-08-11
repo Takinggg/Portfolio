@@ -42,11 +42,11 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
           <motion.button
             key={category.id}
             onClick={() => onCategoryChange(category.id)}
-            className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+            className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 border ${
               isActive
-                ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
-                : 'bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-primary-300 dark:hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors'
-            }`}
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40'
+                : 'bg-gray-100/60 dark:bg-gray-800/60 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200/80 dark:hover:bg-gray-800/80 hover:border-gray-400 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-gray-100'
+            } focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 20 }}
@@ -60,7 +60,7 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
             {/* Background glow for active state */}
             {isActive && (
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full blur-lg opacity-30"
+                className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full blur-lg opacity-30"
                 layoutId="filterGlow"
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
@@ -69,7 +69,7 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
             {/* Icon */}
             <Icon 
               size={16} 
-              className={`relative z-10 ${isActive ? 'text-white' : 'text-gray-500'}`} 
+              className={`relative z-10 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} 
             />
 
             {/* Label and count */}
@@ -82,7 +82,7 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
               className={`relative z-10 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold ${
                 isActive 
                   ? 'bg-white/20 text-white' 
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
               }`}
             >
               {category.count}
