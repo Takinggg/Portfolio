@@ -18,6 +18,7 @@ const badgeVariants = cva(
         success: 'bg-green-50 dark:bg-green-900/50 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/70 focus-visible:ring-green-500/40',
         warning: 'bg-yellow-50 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/70 focus-visible:ring-yellow-500/40',
         error: 'bg-red-50 dark:bg-red-900/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/70 focus-visible:ring-red-500/40',
+        destructive: 'bg-red-50 dark:bg-red-900/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/70 focus-visible:ring-red-500/40',
         outline: 'bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800/40 focus-visible:ring-gray-500/40',
         gradient: 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 focus-visible:ring-indigo-500/40'
       }

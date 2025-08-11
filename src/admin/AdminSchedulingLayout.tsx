@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Users, Settings, LogOut, BarChart3, FileDown } from 'lucide-react';
+import { Calendar, Clock, Users, Settings, LogOut, BarChart3, Mail } from 'lucide-react';
 import AdminOverview from './AdminOverview';
 import EventTypesManager from './EventTypesManager';
 import AvailabilityManager from './AvailabilityManager';
 import BookingsManager from './BookingsManager';
+import { NotificationsManager } from './NotificationsManager';
 
-type AdminPage = 'overview' | 'event-types' | 'availability' | 'bookings';
+type AdminPage = 'overview' | 'event-types' | 'availability' | 'bookings' | 'notifications';
 
 interface AdminSchedulingLayoutProps {
   onLogout: () => void;
@@ -58,6 +59,12 @@ const AdminSchedulingLayout: React.FC<AdminSchedulingLayoutProps> = ({ onLogout 
       name: 'Bookings',
       icon: Users,
       description: 'Manage appointments'
+    },
+    {
+      id: 'notifications' as AdminPage,
+      name: 'Notifications',
+      icon: Mail,
+      description: 'Email & reminders'
     }
   ];
 
@@ -71,6 +78,8 @@ const AdminSchedulingLayout: React.FC<AdminSchedulingLayoutProps> = ({ onLogout 
         return <AvailabilityManager isAuthenticated={isAuthenticated} />;
       case 'bookings':
         return <BookingsManager isAuthenticated={isAuthenticated} />;
+      case 'notifications':
+        return <NotificationsManager />;
       default:
         return <AdminOverview isAuthenticated={isAuthenticated} />;
     }
