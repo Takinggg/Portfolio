@@ -38,6 +38,13 @@ export default defineConfig({
     port: 5173,
     hmr: {
       overlay: false
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      }
     }
   },
   // Improve development performance
