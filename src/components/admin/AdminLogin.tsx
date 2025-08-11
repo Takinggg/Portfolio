@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Lock, User, Eye, EyeOff, Sparkles, Loader2 } from 'lucide-react';
-import { authService } from '../../lib/auth';
 
 interface AdminLoginProps {
   onLogin: (credentials: { username: string; password: string }) => boolean;
