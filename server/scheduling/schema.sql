@@ -102,6 +102,20 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Admin audit logs
+CREATE TABLE IF NOT EXISTS admin_audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    admin_user TEXT NOT NULL,
+    action TEXT NOT NULL,
+    resource_type TEXT NOT NULL,
+    resource_id TEXT,
+    old_values TEXT, -- JSON
+    new_values TEXT, -- JSON
+    ip_address TEXT,
+    user_agent TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_availability_rules_event_type ON availability_rules(event_type_id);
 CREATE INDEX IF NOT EXISTS idx_availability_rules_day ON availability_rules(day_of_week);
@@ -115,6 +129,9 @@ CREATE INDEX IF NOT EXISTS idx_invitees_booking ON invitees(booking_id);
 CREATE INDEX IF NOT EXISTS idx_invitees_email ON invitees(email);
 CREATE INDEX IF NOT EXISTS idx_question_answers_booking ON question_answers(booking_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_booking ON notifications(booking_id);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_admin_user ON admin_audit_logs(admin_user);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_resource ON admin_audit_logs(resource_type, resource_id);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_created_at ON admin_audit_logs(created_at);
 
 -- Insert default event types
 INSERT OR IGNORE INTO event_types (id, name, description, duration_minutes, location_type, color, max_bookings_per_day, min_lead_time_hours) VALUES

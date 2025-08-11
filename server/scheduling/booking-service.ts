@@ -428,4 +428,113 @@ export class BookingService {
       }
     };
   }
+
+  /**
+   * Admin-only booking cancellation without token validation
+   */
+  async cancelBookingAdmin(bookingUuid: string, reason?: string): Promise<ActionResponse> {
+    try {
+      const booking = this.getBooking(bookingUuid);
+      if (!booking) {
+        return { success: false, message: 'Booking not found' };
+      }
+
+      if (booking.status === 'cancelled') {
+        return { success: false, message: 'Booking is already cancelled' };
+      }
+
+      // Update booking status
+      const stmt = this.db.prepare(`
+        UPDATE bookings 
+        SET status = 'cancelled', 
+            cancelled_at = CURRENT_TIMESTAMP,
+            cancellation_reason = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE uuid = ?
+      `);
+
+      stmt.run(reason || 'Cancelled by admin', bookingUuid);
+
+      return {
+        success: true,
+        message: 'Booking cancelled successfully',
+        booking: { uuid: bookingUuid, status: 'cancelled' as const }
+      };
+    } catch (error) {
+      console.error('Error cancelling booking (admin):', error);
+      return { success: false, message: 'Failed to cancel booking' };
+    }
+  }
+
+  /**
+   * Admin-only booking rescheduling without token validation
+   */
+  async rescheduleBookingAdmin(bookingUuid: string, newStart: string, newEnd: string): Promise<ActionResponse> {
+    try {
+      const booking = this.getBooking(bookingUuid);
+      if (!booking) {
+        return { success: false, message: 'Booking not found' };
+      }
+
+      if (booking.status !== 'confirmed') {
+        return { success: false, message: 'Only confirmed bookings can be rescheduled' };
+      }
+
+      // Validate new time slot
+      const startTime = DateTime.fromISO(newStart);
+      const endTime = DateTime.fromISO(newEnd);
+
+      if (!startTime.isValid || !endTime.isValid) {
+        return { success: false, message: 'Invalid date format' };
+      }
+
+      if (endTime <= startTime) {
+        return { success: false, message: 'End time must be after start time' };
+      }
+
+      // Get event type
+      const eventType = this.getEventType(booking.event_type_id);
+      if (!eventType) {
+        return { success: false, message: 'Event type not found' };
+      }
+
+      // Check if new slot is available (excluding current booking)
+      const isSlotAvailable = await this.slotEngine.isSlotAvailable(
+        booking.event_type_id,
+        newStart,
+        newEnd,
+        bookingUuid // Exclude current booking from overlap check
+      );
+
+      if (!isSlotAvailable) {
+        return { success: false, message: 'Selected time slot is not available' };
+      }
+
+      // Update booking
+      const stmt = this.db.prepare(`
+        UPDATE bookings 
+        SET start_time = ?, 
+            end_time = ?,
+            status = 'rescheduled',
+            updated_at = CURRENT_TIMESTAMP
+        WHERE uuid = ?
+      `);
+
+      stmt.run(newStart, newEnd, bookingUuid);
+
+      return {
+        success: true,
+        message: 'Booking rescheduled successfully',
+        booking: { 
+          uuid: bookingUuid, 
+          start_time: newStart, 
+          end_time: newEnd,
+          status: 'rescheduled' as const
+        }
+      };
+    } catch (error) {
+      console.error('Error rescheduling booking (admin):', error);
+      return { success: false, message: 'Failed to reschedule booking' };
+    }
+  }
 }
