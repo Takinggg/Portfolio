@@ -3,11 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* WHITE Theme Base Styles */
+/* Theme-aware Base Styles */
 @layer base {
   html, body {
-    background-color: #ffffff;
-    color: #1E293B;
+    background-color: rgb(var(--bg-primary));
+    color: rgb(var(--text-primary));
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
