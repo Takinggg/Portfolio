@@ -828,6 +828,140 @@ export function initializeAdminSchedulingRoutes(
     }
   });
 
+  /**
+   * Notification Management Routes
+   */
+
+  // Test email endpoint with rate limiting
+  const testEmailRateLimit = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 test emails per window
+    message: { error: 'Too many test emails sent, please try again later' },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  // POST /api/admin/scheduling/notifications/test-send
+  router.post('/notifications/test-send', testEmailRateLimit, async (req, res) => {
+    try {
+      const { to } = req.body;
+      
+      if (!to || !to.includes('@')) {
+        return res.status(400).json({ error: 'Valid email address is required' });
+      }
+
+      // Import notification service dynamically
+      const { NotificationService } = await import('../notifications/notifier.js');
+      const notificationService = new NotificationService(db);
+      
+      const result = await notificationService.sendTestEmail(to);
+      
+      if (result.success) {
+        res.json({ success: true, message: 'Test email sent successfully' });
+        logAdminAction(req, 'test_email', 'notifications', null, null, { to });
+      } else {
+        res.status(500).json({ success: false, error: result.error });
+      }
+    } catch (error) {
+      console.error('Error sending test email:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // GET /api/admin/scheduling/notifications/settings
+  router.get('/notifications/settings', (req, res) => {
+    try {
+      const settings = {
+        emailProvider: process.env.EMAIL_PROVIDER || 'log-only',
+        enableNotifications: process.env.ENABLE_NOTIFICATIONS === 'true',
+        enableReminders: process.env.ENABLE_REMINDERS === 'true',
+        reminderOffsets: process.env.REMINDER_OFFSETS || '24h,2h',
+        fromEmail: process.env.FROM_EMAIL || 'noreply@maxence.design',
+        fromName: process.env.FROM_NAME || 'Maxence FOULON',
+        ownerNotify: process.env.OWNER_NOTIFY === 'true',
+        ownerEmail: process.env.OWNER_EMAIL || '',
+        smtpConfigured: !!(process.env.SMTP_HOST && process.env.SMTP_USER),
+        resendConfigured: !!process.env.RESEND_API_KEY,
+        postmarkConfigured: !!process.env.POSTMARK_TOKEN
+      };
+
+      res.json({ settings });
+      logAdminAction(req, 'view', 'notification_settings');
+    } catch (error) {
+      console.error('Error getting notification settings:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // GET /api/admin/scheduling/notifications/stats
+  router.get('/notifications/stats', (req, res) => {
+    try {
+      const stats = {
+        notifications: {
+          total: db.prepare('SELECT COUNT(*) as count FROM notifications').get(),
+          sent: db.prepare("SELECT COUNT(*) as count FROM notifications WHERE status = 'sent'").get(),
+          failed: db.prepare("SELECT COUNT(*) as count FROM notifications WHERE status = 'failed'").get(),
+          pending: db.prepare("SELECT COUNT(*) as count FROM notifications WHERE status = 'pending'").get(),
+          byType: db.prepare(`
+            SELECT notification_type, COUNT(*) as count 
+            FROM notifications 
+            GROUP BY notification_type
+          `).all(),
+          recent: db.prepare(`
+            SELECT notification_type, status, recipient_email, created_at, sent_at, error_message
+            FROM notifications 
+            ORDER BY created_at DESC 
+            LIMIT 10
+          `).all()
+        },
+        reminders: {
+          total: db.prepare('SELECT COUNT(*) as count FROM reminders').get(),
+          pending: db.prepare('SELECT COUNT(*) as count FROM reminders WHERE sent_at IS NULL AND scheduled_for <= datetime("now")').get(),
+          sent: db.prepare('SELECT COUNT(*) as count FROM reminders WHERE sent_at IS NOT NULL').get(),
+          failed: db.prepare('SELECT COUNT(*) as count FROM reminders WHERE attempts > 0 AND sent_at IS NULL').get(),
+          upcomingToday: db.prepare(`
+            SELECT COUNT(*) as count FROM reminders 
+            WHERE sent_at IS NULL 
+              AND DATE(scheduled_for) = DATE('now')
+          `).get()
+        }
+      };
+
+      res.json({ stats });
+      logAdminAction(req, 'view', 'notification_stats');
+    } catch (error) {
+      console.error('Error getting notification stats:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // POST /api/admin/scheduling/notifications/process-reminders
+  router.post('/notifications/process-reminders', async (req, res) => {
+    try {
+      // Import notification service dynamically
+      const { NotificationService } = await import('../notifications/notifier.js');
+      const notificationService = new NotificationService(db);
+      
+      const beforeCount = db.prepare('SELECT COUNT(*) as count FROM reminders WHERE sent_at IS NULL AND scheduled_for <= datetime("now")').get() as any;
+      
+      await notificationService.processPendingReminders();
+      
+      const afterCount = db.prepare('SELECT COUNT(*) as count FROM reminders WHERE sent_at IS NULL AND scheduled_for <= datetime("now")').get() as any;
+      const processed = beforeCount.count - afterCount.count;
+
+      res.json({ 
+        success: true, 
+        message: `Processed ${processed} pending reminders`,
+        processed
+      });
+      
+      logAdminAction(req, 'trigger', 'reminder_processing', null, null, { processed });
+    } catch (error) {
+      console.error('Error processing reminders:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Mount the router
   app.use('/api/admin/scheduling', router);
 }

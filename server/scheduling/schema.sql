@@ -94,11 +94,23 @@ CREATE TABLE IF NOT EXISTS question_answers (
 CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     booking_id INTEGER NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
-    notification_type TEXT NOT NULL CHECK (notification_type IN ('booking_confirmation', 'cancellation', 'reschedule', 'reminder')),
+    notification_type TEXT NOT NULL CHECK (notification_type IN ('confirmation', 'cancellation', 'reschedule', 'reminder')),
     recipient_email TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'failed')),
     sent_at DATETIME NULL,
     error_message TEXT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Reminders scheduling
+CREATE TABLE IF NOT EXISTS reminders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_id INTEGER NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+    offset_hours INTEGER NOT NULL, -- Hours before booking to send reminder
+    scheduled_for DATETIME NOT NULL, -- When to send the reminder
+    sent_at DATETIME NULL,
+    attempts INTEGER DEFAULT 0,
+    last_error TEXT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -129,6 +141,10 @@ CREATE INDEX IF NOT EXISTS idx_invitees_booking ON invitees(booking_id);
 CREATE INDEX IF NOT EXISTS idx_invitees_email ON invitees(email);
 CREATE INDEX IF NOT EXISTS idx_question_answers_booking ON question_answers(booking_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_booking ON notifications(booking_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_status ON notifications(status);
+CREATE INDEX IF NOT EXISTS idx_reminders_booking ON reminders(booking_id);
+CREATE INDEX IF NOT EXISTS idx_reminders_scheduled ON reminders(scheduled_for);
+CREATE INDEX IF NOT EXISTS idx_reminders_sent ON reminders(sent_at);
 CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_admin_user ON admin_audit_logs(admin_user);
 CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_resource ON admin_audit_logs(resource_type, resource_id);
 CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_created_at ON admin_audit_logs(created_at);
