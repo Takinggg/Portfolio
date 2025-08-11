@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Palette, Smartphone, Sparkles, Star, Zap, Users, Calendar, CheckCircle } from 'lucide-react';
-import { GlassCard, LiquidButton, TypingText, LiquidBackground, MagneticCursor } from './ui/liquid-glass';
-import { useProjects } from '../hooks/useSQLite';
+import { GlassCard, LiquidButton, TypingText, LiquidBackground } from './ui/liquid-glass';
 
 const Hero = () => {
-  const { projects } = useProjects();
-
   const scrollToProjects = () => {
     const element = document.getElementById('projects');
     if (element) {
@@ -23,24 +20,19 @@ const Hero = () => {
     "Interaction Designer"
   ];
 
-  // Floating design tool icons
+  // Floating design tool icons - Reduced for performance
   const floatingElements = [
     { icon: Palette, color: 'from-pink-400 to-rose-600', delay: '0s', position: 'top-20 left-20' },
-    { icon: Smartphone, color: 'from-blue-400 to-cyan-600', delay: '0.5s', position: 'top-32 right-32' },
     { icon: Sparkles, color: 'from-purple-400 to-indigo-600', delay: '1s', position: 'bottom-40 left-40' },
     { icon: Star, color: 'from-yellow-400 to-orange-600', delay: '1.5s', position: 'bottom-32 right-20' },
-    { icon: Zap, color: 'from-green-400 to-emerald-600', delay: '2s', position: 'top-1/2 left-10' },
   ];
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Liquid Glass Background */}
       <LiquidBackground variant="vibrant" />
-      
-      {/* Magnetic Cursor */}
-      <MagneticCursor />
 
-      {/* Floating Design Elements */}
+      {/* Floating Design Elements - Optimized */}
       {floatingElements.map((element, index) => {
         const Icon = element.icon;
         return (
@@ -51,16 +43,17 @@ const Hero = () => {
             animate={{ 
               opacity: 1, 
               scale: 1,
-              y: [0, -20, 0],
             }}
             transition={{
-              duration: 2,
-              delay: index * 0.3,
-              y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+              duration: 1.5,
+              delay: index * 0.5,
             }}
-            whileHover={{ scale: 1.1 }}
+            style={{
+              animation: 'float 6s ease-in-out infinite',
+              animationDelay: `${index * 0.5}s`
+            }}
           >
-            <GlassCard className="w-16 h-16 flex items-center justify-center magnetic" magnetic premium iridescent fragments particles>
+            <GlassCard className="w-16 h-16 flex items-center justify-center hover:scale-110 transition-transform duration-300" magnetic premium>
               <Icon className="text-liquid-purple" size={24} />
             </GlassCard>
           </motion.div>
@@ -183,7 +176,7 @@ const Hero = () => {
           </div>
         </motion.div>
 
-        {/* CTA Buttons with Liquid Effects */}
+        {/* CTA Buttons with Proper Alignment */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -199,7 +192,7 @@ const Hero = () => {
             multiRipple
             liquidSpread
             glassReflection
-            className="shadow-magnetic w-full sm:w-auto"
+            className="shadow-lg w-full sm:w-auto"
           >
             <span>View Case Studies</span>
             <ArrowDown size={20} className="ml-2" />
@@ -212,14 +205,32 @@ const Hero = () => {
             premium
             multiRipple
             liquidSpread
-            className="magnetic w-full sm:w-auto"
+            className="shadow-lg w-full sm:w-auto"
           >
             <Calendar size={20} className="mr-2" />
             <span>Schedule a Call</span>
           </LiquidButton>
+
+          {/* Discover My Work - Integrated as third CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.6 }}
+            className="w-full sm:w-auto"
+          >
+            <LiquidButton
+              variant="ghost"
+              size="lg"
+              onClick={scrollToProjects}
+              className="w-full sm:w-auto text-text-soft hover:text-liquid-purple transition-colors"
+            >
+              <span className="text-sm font-medium">Discover My Work</span>
+              <ArrowDown size={16} className="ml-2" />
+            </LiquidButton>
+          </motion.div>
         </motion.div>
 
-        {/* Skills Preview with Enhanced Glass Cards */}
+        {/* Skills Preview with Optimized Effects */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -251,10 +262,10 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.8 + index * 0.2 }}
-              whileHover={{ y: -10 }}
+              className="group hover:-translate-y-2 transition-transform duration-300"
             >
-              <GlassCard className="p-6 text-center group magnetic" magnetic premium reflection particles particleVariant="subtle">
-                <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${skill.gradient} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-liquid`}>
+              <GlassCard className="p-6 text-center" magnetic premium reflection>
+                <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${skill.gradient} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
                   <skill.icon className="text-white" size={24} />
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-text-strong">
@@ -268,33 +279,6 @@ const Hero = () => {
           ))}
         </motion.div>
       </div>
-
-      {/* Enhanced Scroll Indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 2.5 }}
-      >
-        <LiquidButton
-          variant="ghost"
-          onClick={scrollToProjects}
-          className="flex flex-col items-center magnetic"
-          magnetic
-          premium
-          glassReflection
-        >
-          <span className="text-sm mb-2 font-medium">
-            Discover My Work
-          </span>
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ArrowDown size={24} />
-          </motion.div>
-        </LiquidButton>
-      </motion.div>
     </section>
   );
 };

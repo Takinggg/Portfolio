@@ -212,7 +212,7 @@ const Navigation: React.FC<NavigationProps> = ({
                   title="Administration"
                   aria-label="Connexion administrateur"
                 >
-                  <span className="text-sm">🔧</span>
+                  <span className="text-sm">⚙️</span>
                 </motion.a>
               )}
 
