@@ -247,31 +247,8 @@ const About = memo(({ onNavigateToSection }: AboutProps) => {
               </p>
             </div>
 
-            {/* Skills Section */}
-            <FadeInWrapper direction="up" delay={0.7} className="mb-8">
-              <h3 className="text-xl font-bold text-text-strong mb-4">{t('about.skills.title')}</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-2xl">⚛️</span>
-                  <span className="text-text-strong font-medium">{t('about.skills.react')}</span>
-                </div>
-                <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-2xl">🎨</span>
-                  <span className="text-text-strong font-medium">{t('about.skills.design')}</span>
-                </div>
-                <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-2xl">🚀</span>
-                  <span className="text-text-strong font-medium">{t('about.skills.node')}</span>
-                </div>
-                <div className="skill-item flex items-center space-x-3 p-3 bg-white/80 dark:bg-gray-800/80 rounded-xl backdrop-blur border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-2xl">💾</span>
-                  <span className="text-text-strong font-medium">{t('about.skills.database')}</span>
-                </div>
-              </div>
-            </FadeInWrapper>
-
             {/* Enhanced Philosophy Section with animated cards */}
-            <FadeInWrapper direction="up" delay={0.9} className="mb-8">
+            <FadeInWrapper direction="up" delay={0.7} className="mb-8">
               <h3 className="text-xl font-bold text-text-strong mb-4">{t('about.philosophy.title')}</h3>
               <div className="grid grid-cols-2 gap-4">
                 {values.map((value, index) => (
@@ -288,7 +265,7 @@ const About = memo(({ onNavigateToSection }: AboutProps) => {
             </FadeInWrapper>
 
             {/* Enhanced CTA Buttons */}
-            <FadeInWrapper direction="up" delay={1.5} className="flex flex-col sm:flex-row gap-4">
+            <FadeInWrapper direction="up" delay={0.9} className="flex flex-col sm:flex-row gap-4">
               <PulseButton 
                 variant="primary"
                 onClick={() => onNavigateToSection?.('projects')}
