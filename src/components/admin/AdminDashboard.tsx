@@ -65,13 +65,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Enhanced Sidebar with better contrast */}
-      <div className="w-64 bg-white shadow-xl border-r-2 border-gray-200">
+      <div className="w-64 bg-white shadow-xl border-r-2 border-gray-200 flex flex-col relative">
         <div className="p-6 border-b-2 border-gray-200 bg-blue-50">
           <h2 className="text-xl font-bold text-gray-900">Admin Panel</h2>
           <p className="text-sm text-gray-700 font-medium">FOULON Maxence</p>
         </div>
         
-        <nav className="p-4">
+        <nav className="p-4 flex-1">
           <div className="space-y-2">
             {sidebarItems.map((item) => (
               <button
@@ -100,7 +100,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           </div>
         </nav>
 
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="mt-auto p-4">
           <button
             onClick={onLogout}
             className="w-full px-4 py-3 bg-red-100 text-red-900 rounded-xl hover:bg-red-200 border-2 border-red-300 hover:border-red-400 transition-all font-semibold focus:ring-2 focus:ring-red-500 focus:ring-offset-2"

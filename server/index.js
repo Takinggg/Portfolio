@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
+import { randomUUID } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -737,8 +738,12 @@ app.post('/api/projects', authenticateToken, (req, res) => {
       });
     }
 
+    // Generate a UUID for the project
+    const projectId = randomUUID();
+
     // Ensure all fields have proper defaults with proper null/undefined checks
     const projectData = {
+      id: projectId,
       title: project.title,
       description: project.description,
       long_description: project.long_description || '',
@@ -757,20 +762,33 @@ app.post('/api/projects', authenticateToken, (req, res) => {
 
     const result = db.prepare(`
       INSERT INTO projects (
-        title, description, long_description, technologies, category, status,
+        id, title, description, long_description, technologies, category, status,
         start_date, end_date, client, budget, images, featured, github_url, live_url
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      projectData.title, projectData.description, projectData.long_description,
+      projectData.id, projectData.title, projectData.description, projectData.long_description,
       JSON.stringify(projectData.technologies), projectData.category, projectData.status,
       projectData.start_date, projectData.end_date, projectData.client, projectData.budget,
       JSON.stringify(projectData.images), projectData.featured ? 1 : 0,
       projectData.github_url, projectData.live_url
     );
 
-    const newProject = db.prepare('SELECT * FROM projects WHERE id = ?').get(result.lastInsertRowid);
+    // Read back the project using the generated ID
+    const newProject = db.prepare('SELECT * FROM projects WHERE id = ?').get(projectData.id);
     
-    res.json({ 
+    if (!newProject) {
+      console.error('Failed to retrieve created project with id:', projectData.id);
+      // Return the original data with timestamp fallbacks if database read fails
+      return res.status(201).json({
+        data: {
+          ...projectData,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      });
+    }
+    
+    res.status(201).json({ 
       data: {
         ...newProject,
         technologies: JSON.parse(newProject.technologies || '[]'),
@@ -822,6 +840,10 @@ app.put('/api/projects/:id', authenticateToken, (req, res) => {
     }
 
     const updatedProject = db.prepare('SELECT * FROM projects WHERE id = ?').get(id);
+    
+    if (!updatedProject) {
+      return res.status(404).json({ error: { message: 'Project not found after update' } });
+    }
     
     res.json({ 
       data: {

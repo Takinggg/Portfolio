@@ -138,24 +138,38 @@ const ProjectManager: React.FC = () => {
     try {
       setLoading(true);
 
+      // Final safeguard: ensure technologies and images are always arrays
+      const safeProjectData = {
+        ...projectData,
+        technologies: Array.isArray(projectData.technologies) ? projectData.technologies : [],
+        images: Array.isArray(projectData.images) ? projectData.images : []
+      };
+
       let result;
-      if (projectData.id) {
+      if (safeProjectData.id) {
         // Update existing project
-        result = await projectService.updateProject(projectData.id, projectData);
+        console.log('Updating project with data:', safeProjectData);
+        result = await projectService.updateProject(safeProjectData.id, safeProjectData);
       } else {
         // Create new project
-        result = await projectService.createProject(projectData as Omit<Project, 'id' | 'created_at' | 'updated_at'>);
+        console.log('Creating project with data:', safeProjectData);
+        result = await projectService.createProject(safeProjectData as Omit<Project, 'id' | 'created_at' | 'updated_at'>);
       }
 
-      if (result.error) throw result.error;
+      if (result.error) {
+        console.error('API returned error:', result.error);
+        throw result.error;
+      }
 
+      console.log('Project saved successfully:', result.data);
       setIsEditing(false);
       setEditingProject(null);
       
       // Refresh the list to show the new/updated project
       await fetchProjects();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
+      setError(errorMessage);
       console.error('Error saving project:', err);
     } finally {
       setLoading(false);
