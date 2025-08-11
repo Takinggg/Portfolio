@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, Palette, Smartphone, Sparkles, Star, Zap, Download, Users, Calendar, CheckCircle } from 'lucide-react';
+import { ArrowDown, Palette, Smartphone, Sparkles, Star, Zap, Users, Calendar, CheckCircle } from 'lucide-react';
 import { GlassCard, LiquidButton, TypingText, LiquidBackground, MagneticCursor } from './ui/liquid-glass';
 import { useProjects } from '../hooks/useSQLite';
 
 const Hero = () => {
-  const [isVisible, setIsVisible] = useState(false);
   const { projects } = useProjects();
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   const scrollToProjects = () => {
     const element = document.getElementById('projects');
@@ -193,7 +188,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.4 }}
-          className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
+          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-16"
         >
           <LiquidButton
             variant="primary"
@@ -204,7 +199,7 @@ const Hero = () => {
             multiRipple
             liquidSpread
             glassReflection
-            className="shadow-magnetic"
+            className="shadow-magnetic w-full sm:w-auto"
           >
             <span>View Case Studies</span>
             <ArrowDown size={20} className="ml-2" />
@@ -217,7 +212,7 @@ const Hero = () => {
             premium
             multiRipple
             liquidSpread
-            className="magnetic"
+            className="magnetic w-full sm:w-auto"
           >
             <Calendar size={20} className="mr-2" />
             <span>Schedule a Call</span>
@@ -276,7 +271,7 @@ const Hero = () => {
 
       {/* Enhanced Scroll Indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 2.5 }}
@@ -289,7 +284,7 @@ const Hero = () => {
           premium
           glassReflection
         >
-          <span className="text-sm mb-2">
+          <span className="text-sm mb-2 font-medium">
             Discover My Work
           </span>
           <motion.div

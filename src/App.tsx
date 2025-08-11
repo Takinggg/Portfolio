@@ -14,7 +14,8 @@ import Projects from './components/Projects';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
 import { SEOHead } from './components/seo';
-import { CustomCursor } from './components/ui/CustomCursor';
+// CustomCursor removed - keeping magnetic effects only
+// import { CustomCursor } from './components/ui/CustomCursor';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { EnhancedParticleSystem } from './components/ui/liquid-glass';
 import { MobileFabMenu } from './components/navigation/MobileFabMenu';
@@ -205,7 +206,7 @@ function App() {
   return (
     <div className="min-h-screen relative bg-white">
       {/* Premium UI Components */}
-      <CustomCursor />
+      {/* CustomCursor removed - keeping only magnetic effects */}
       <ScrollProgress />
       <EnhancedParticleSystem variant="premium" particleCount={60} />
       

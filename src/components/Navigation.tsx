@@ -87,8 +87,6 @@ const Navigation: React.FC<NavigationProps> = ({
     { id: 'contact', label: 'Contact', icon: Mail, type: 'anchor' }
   ];
 
-  const scrollProgress = Math.min(100, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
-
   return (
     <>
       {/* Floating Navigation */}
@@ -96,55 +94,58 @@ const Navigation: React.FC<NavigationProps> = ({
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-700`}
+        className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-700 w-auto max-w-4xl`}
       >
         <GlassCard className={`px-6 py-3 ${isScrolled ? 'shadow-lg' : 'shadow-card'}`} premium reflection iridescent>
-          <div className="flex items-center gap-6">
-            {/* Back Button */}
-            {showBackButton && onBack && (
-              <motion.button
-                onClick={onBack}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-text-soft hover:text-primary-500 transition-all duration-300 font-medium"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ArrowLeft size={18} />
-                <span className="hidden sm:inline">{backLabel}</span>
-              </motion.button>
-            )}
+          <div className="flex items-center gap-4 lg:gap-6">
+            {/* Left Section - Back Button or Logo */}
+            <div className="flex items-center">
+              {/* Back Button */}
+              {showBackButton && onBack && (
+                <motion.button
+                  onClick={onBack}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-text-soft hover:text-primary-500 transition-all duration-300 font-medium"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ArrowLeft size={18} />
+                  <span className="hidden sm:inline">{backLabel}</span>
+                </motion.button>
+              )}
 
-            {/* Logo - Only show on home page */}
-            {currentPage === 'home' && !showBackButton && (
-              <motion.div 
-                className="flex items-center gap-3 cursor-pointer group"
-                onClick={() => handleNavigation('hero')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="relative">
-                  <motion.div 
-                    className="w-10 h-10 bg-gradient-to-br from-liquid-blue to-liquid-purple rounded-xl flex items-center justify-center shadow-liquid"
-                    whileHover={{ rotate: 10 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  >
-                    <Sparkles className="text-white" size={16} />
-                  </motion.div>
-                </div>
-                <div className="hidden sm:block">
-                  <div className="text-lg font-bold text-liquid-blue">
-                    FOULON
+              {/* Logo - Only show on home page */}
+              {currentPage === 'home' && !showBackButton && (
+                <motion.div 
+                  className="flex items-center gap-3 cursor-pointer group"
+                  onClick={() => handleNavigation('hero')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="relative">
+                    <motion.div 
+                      className="w-10 h-10 bg-gradient-to-br from-liquid-blue to-liquid-purple rounded-xl flex items-center justify-center shadow-liquid"
+                      whileHover={{ rotate: 10 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    >
+                      <Sparkles className="text-white" size={16} />
+                    </motion.div>
                   </div>
-                  <div className="text-xs text-text-muted font-medium -mt-1">
-                    UI/UX Designer
+                  <div className="hidden sm:block">
+                    <div className="text-lg font-bold text-liquid-blue">
+                      FOULON
+                    </div>
+                    <div className="text-xs text-text-muted font-medium -mt-1">
+                      UI/UX Designer
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </div>
             
             {/* Desktop Menu */}
             <div className="hidden lg:flex items-center">
               <div className="flex items-center gap-1">
-                {navItems.map((item, index) => {
+                {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
                   return (
@@ -187,18 +188,32 @@ const Navigation: React.FC<NavigationProps> = ({
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-3">
-              {/* Admin Button - Only show if authenticated */}
+              {/* Admin Button - Discrete but visible when authenticated */}
               {isAuthenticated && (
-                <motion.button
-                  onClick={() => window.location.href = '/admin'}
-                  className="hidden md:flex items-center px-3 py-2 rounded-xl text-sm font-medium text-text-soft hover:text-text-strong transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2"
+                <motion.a
+                  href="/admin"
+                  className="flex items-center justify-center w-9 h-9 rounded-xl text-text-soft hover:text-text-strong hover:bg-surface-alt transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-liquid-blue focus-visible:ring-offset-2"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   title="Administration"
                   aria-label="Accéder à l'administration"
                 >
-                  Admin
-                </motion.button>
+                  <span className="text-lg">⚙️</span>
+                </motion.a>
+              )}
+
+              {/* Admin Login Button - Visible when not authenticated */}
+              {!isAuthenticated && (
+                <motion.a
+                  href="/admin"
+                  className="hidden md:flex items-center justify-center w-9 h-9 rounded-xl text-text-soft hover:text-text-strong hover:bg-surface-alt transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-liquid-blue focus-visible:ring-offset-2 opacity-50 hover:opacity-100"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Administration"
+                  aria-label="Connexion administrateur"
+                >
+                  <span className="text-sm">🔧</span>
+                </motion.a>
               )}
 
               {/* CTA Button */}
