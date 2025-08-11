@@ -89,25 +89,25 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
     { id: 'contact', label: 'Me contacter', icon: Mail }
   ];
 
-  // Glass effect styling classes
+  // Glass effect styling classes - Always light/translucent
   const glassNavClass = cn(
-    // Base glass styling
-    "bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md",
+    // Base glass styling - always light
+    "bg-white/75 backdrop-blur-xl backdrop-saturate-150",
     // Border and ring for depth
-    "border border-white/20 dark:border-neutral-700/30",
-    "ring-1 ring-white/10 dark:ring-neutral-600/20",
+    "border border-gray-200/50",
+    "ring-1 ring-white/20",
     // Enhanced styles when scrolled
-    isScrolled && "bg-white/80 dark:bg-neutral-900/80 shadow-2xl",
+    isScrolled && "bg-white/90 shadow-2xl",
     // Transition for smooth effect
     "transition-all duration-300 ease-out"
   );
 
   const glassMobileMenuClass = cn(
-    // Base glass styling for mobile menu
-    "bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md",
+    // Base glass styling for mobile menu - always light
+    "bg-white/80 backdrop-blur-xl backdrop-saturate-150",
     // Border and ring for depth
-    "border border-white/20 dark:border-neutral-700/30",
-    "ring-1 ring-white/10 dark:ring-neutral-600/20"
+    "border border-gray-200/50",
+    "ring-1 ring-white/20"
   );
 
   return (
@@ -127,7 +127,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
           {/* Left: Logo Button */}
           <motion.button
             onClick={() => handleNavigation('hero')}
-            className="flex-shrink-0 w-10 h-10 bg-neutral-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-neutral-900 hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
+            className="flex-shrink-0 w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             aria-label="Accueil"
@@ -147,8 +147,8 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
                     "relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
                     "focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2",
                     isActive
-                      ? "text-neutral-900 dark:text-white bg-white/20 dark:bg-neutral-700/30"
-                      : "text-neutral-700 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-neutral-700/20"
+                      ? "text-gray-900 bg-white/30"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-white/20"
                   )}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -157,7 +157,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
                   {item.label}
                   {isActive && (
                     <motion.div
-                      className="absolute inset-0 bg-white/30 dark:bg-neutral-600/40 rounded-full ring-1 ring-violet-400/50 dark:ring-violet-300/50"
+                      className="absolute inset-0 bg-white/40 rounded-full ring-1 ring-violet-400/50"
                       layoutId="activeNavItem"
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -180,7 +180,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
             {/* Admin Link */}
             <motion.a
               href="/admin"
-              className="text-sm text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
+              className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -190,7 +190,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
             {/* Collaborer CTA */}
             <motion.button
               onClick={() => handleNavigation('contact')}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-full font-medium text-sm hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-full font-medium text-sm hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -201,7 +201,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
             {/* Mobile Menu Button */}
             <motion.button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-neutral-700 dark:text-neutral-200 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
+              className="md:hidden p-2 text-gray-700 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               aria-label="Menu"
@@ -259,8 +259,8 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
                           "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-all duration-300",
                           "focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2",
                           isActive
-                            ? "bg-white/30 dark:bg-neutral-700/30 text-neutral-900 dark:text-white ring-1 ring-violet-400/50 dark:ring-violet-300/50"
-                            : "text-neutral-700 dark:text-neutral-200 hover:bg-white/20 dark:hover:bg-neutral-700/20"
+                            ? "bg-white/40 text-gray-900 ring-1 ring-violet-400/50"
+                            : "text-gray-700 hover:bg-white/30"
                         )}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -281,7 +281,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
                       handleNavigation('contact');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-xl font-medium mt-4 hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white rounded-xl font-medium mt-4 hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}

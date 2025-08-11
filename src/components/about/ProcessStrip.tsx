@@ -1,14 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Lightbulb, Palette, TestTube, Rocket } from 'lucide-react';
-import { GlassCard } from '../ui/liquid-glass';
 
 interface ProcessStepData {
   number: number;
   title: string;
   description: string;
   icon: React.ComponentType<any>;
-  color: string;
 }
 
 interface ProcessStripProps {
@@ -23,35 +21,30 @@ const processSteps: ProcessStepData[] = [
     title: 'Discover',
     description: 'Recherche utilisateur et analyse des besoins',
     icon: Search,
-    color: 'from-blue-500 to-cyan-500'
   },
   {
     number: 2,
     title: 'Define',
     description: 'Définition du problème et des objectifs',
     icon: Lightbulb,
-    color: 'from-yellow-500 to-orange-500'
   },
   {
     number: 3,
     title: 'Design',
     description: 'Conception et prototypage des solutions',
     icon: Palette,
-    color: 'from-purple-500 to-pink-500'
   },
   {
     number: 4,
     title: 'Validate',
     description: 'Tests utilisateur et itérations',
     icon: TestTube,
-    color: 'from-green-500 to-emerald-500'
   },
   {
     number: 5,
     title: 'Ship',
     description: 'Livraison et suivi des performances',
     icon: Rocket,
-    color: 'from-red-500 to-rose-500'
   }
 ];
 
@@ -63,11 +56,11 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
   return (
     <div className={`${className}`}>
       <div className="text-center mb-12">
-        <GlassCard className="inline-block px-6 py-3 mb-4" premium iridescent>
+        <div className="inline-block px-6 py-3 mb-4 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
           <h3 className="text-2xl font-bold text-gray-900">
             {title}
           </h3>
-        </GlassCard>
+        </div>
         <p className="text-gray-600 max-w-2xl mx-auto">
           {subtitle}
         </p>
@@ -75,7 +68,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
 
       <div className="relative">
         {/* Connection Lines */}
-        <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-purple-200 to-red-200 transform -translate-y-1/2" />
+        <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 transform -translate-y-1/2" />
 
         {/* Process Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
@@ -85,51 +78,43 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
             return (
               <motion.div
                 key={index}
-                className="relative text-center magnetic"
+                className="relative text-center"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                {/* Step Icon */}
-                <motion.div
-                  className={`relative mx-auto w-20 h-20 bg-gradient-to-br ${step.color} rounded-full flex items-center justify-center shadow-lg mb-4 z-10 magnetic`}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Icon size={28} className="text-white" />
-                  
-                  {/* Enhanced Step Number with glass effect */}
-                  <GlassCard className="absolute -top-2 -right-2 w-8 h-8 flex items-center justify-content-center text-gray-700 font-bold text-sm" premium>
-                    {step.number}
-                  </GlassCard>
-                </motion.div>
+                {/* Step Card */}
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gradient-to-br hover:from-violet-50 hover:to-fuchsia-50 relative z-10">
+                  {/* Step Icon */}
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm">
+                    <Icon size={24} className="text-white" />
+                    
+                    {/* Step Number */}
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-700 font-bold text-sm shadow-sm">
+                      {step.number}
+                    </div>
+                  </div>
 
-                {/* Step Content */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 + 0.2 }}
-                  viewport={{ once: true }}
-                >
+                  {/* Step Content */}
                   <h4 className="text-lg font-semibold text-gray-900 mb-2">
                     {step.title}
                   </h4>
                   <p className="text-sm text-gray-600 leading-relaxed">
                     {step.description}
                   </p>
-                </motion.div>
+                </div>
 
                 {/* Arrow (for desktop) */}
                 {index < processSteps.length - 1 && (
                   <motion.div
-                    className="hidden lg:block absolute top-10 -right-4 z-20"
+                    className="hidden lg:block absolute top-1/2 -right-4 z-20 transform -translate-y-1/2"
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
                     viewport={{ once: true }}
                   >
-                    <GlassCard className="w-8 h-8 flex items-center justify-center" premium fragments>
+                    <div className="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm">
                       <svg
                         width="16"
                         height="16"
@@ -145,7 +130,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
                           strokeLinejoin="round"
                         />
                       </svg>
-                    </GlassCard>
+                    </div>
                   </motion.div>
                 )}
               </motion.div>
@@ -162,7 +147,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
         transition={{ duration: 0.6, delay: 0.5 }}
         viewport={{ once: true }}
       >
-        <GlassCard className="p-8" premium reflection particles>
+        <div className="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
           <div className="text-center mb-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-2">
               Pourquoi cette approche ?
@@ -171,30 +156,30 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
             <div className="text-center">
-              <GlassCard className="w-12 h-12 flex items-center justify-center mx-auto mb-3" premium iridescent>
+              <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <Search size={20} className="text-blue-600" />
-              </GlassCard>
+              </div>
               <div className="font-medium text-gray-900 mb-1">Centré utilisateur</div>
               <div className="text-gray-600">Décisions basées sur des données réelles et des insights utilisateurs</div>
             </div>
             
             <div className="text-center">
-              <GlassCard className="w-12 h-12 flex items-center justify-center mx-auto mb-3" premium iridescent>
+              <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <TestTube size={20} className="text-purple-600" />
-              </GlassCard>
+              </div>
               <div className="font-medium text-gray-900 mb-1">Itératif</div>
               <div className="text-gray-600">Tests continus et améliorations basées sur les retours</div>
             </div>
             
             <div className="text-center">
-              <GlassCard className="w-12 h-12 flex items-center justify-center mx-auto mb-3" premium iridescent>
+              <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <Rocket size={20} className="text-green-600" />
-              </GlassCard>
+              </div>
               <div className="font-medium text-gray-900 mb-1">Orienté résultats</div>
               <div className="text-gray-600">Focus sur l'impact business et la satisfaction utilisateur</div>
             </div>
           </div>
-        </GlassCard>
+        </div>
       </motion.div>
     </div>
   );
