@@ -92,7 +92,7 @@ export const MobileFabMenu: React.FC<MobileFabMenuProps> = ({
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium shadow-lg transition-all duration-200 min-w-[140px] ${
                     isActive
                       ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white'
-                      : 'bg-white/90 backdrop-blur-md text-gray-700 hover:bg-white'
+                      : 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors'
                   }`}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
