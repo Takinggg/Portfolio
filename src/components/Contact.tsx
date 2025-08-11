@@ -360,7 +360,7 @@ const Contact = memo(() => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
                     <label htmlFor={nameId.current} className="block text-sm font-semibold text-gray-700 mb-2">
-                      Nom complet *
+                      {t('contact.form.name')} *
                     </label>
                     <input
                       type="text"
@@ -424,7 +424,7 @@ const Contact = memo(() => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="group">
                     <label htmlFor="budget" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Budget estimé
+                      {t('contact.form.budget')}
                     </label>
                     <select
                       id="budget"

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Award, Briefcase } from 'lucide-react';
+import { useI18n } from '../../hooks/useI18n';
 
 interface TimelineEvent {
   year: string;
@@ -51,14 +52,16 @@ export const Timeline: React.FC<TimelineProps> = ({
   events,
   className = '',
 }) => {
+  const { t } = useI18n();
+  
   return (
     <div className={`${className}`}>
       <div className="text-center mb-12">
         <h3 className="text-2xl font-bold text-gray-900 mb-4">
-          Parcours Professionnel
+          {t('about.timeline.title')}
         </h3>
         <p className="text-gray-600">
-          Mon évolution de 2019 à aujourd'hui
+          {t('about.timeline.subtitle')}
         </p>
       </div>
 
