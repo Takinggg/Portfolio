@@ -1,8 +1,7 @@
 import React from 'react';
-import { Calendar, Clock, User, Share2, Twitter, Linkedin, Facebook, Tag, Home, ExternalLink, Github, ArrowLeft, Star, Code, Layers } from 'lucide-react';
+import { Calendar, User, Share2, Twitter, Linkedin, Facebook, Home, ExternalLink, Star, Code, Layers } from 'lucide-react';
 import { useProject } from '../hooks/useSQLite';
-import { NormalizedProject } from '../lib/adapters';
-import Navigation from './Navigation';
+import { SimpleHeader } from './ui/SimpleHeader';
 
 interface ProjectDetailProps {
   projectId: string;
@@ -11,7 +10,7 @@ interface ProjectDetailProps {
   onNavigateToBlog: () => void;
 }
 
-const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavigateHome, onNavigateToBlog }) => {
+const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavigateHome }) => {
   // Fetch project using our unified hook
   const { project, loading, error } = useProject(projectId);
 
@@ -92,15 +91,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-        <Navigation 
-          onNavigateToSection={onNavigateHome}
-          onNavigateToBlog={onNavigateToBlog}
-          onNavigateToProjects={onBack}
-          showBackButton={true}
-          onBack={onBack}
-          backLabel="Retour aux projets"
-          currentPage="projects"
-        />
+        <SimpleHeader onBack={onBack} backLabel="Retour aux projets" />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
@@ -115,15 +106,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
   if (error || !project) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-        <Navigation 
-          onNavigateToSection={onNavigateHome}
-          onNavigateToBlog={onNavigateToBlog}
-          onNavigateToProjects={onBack}
-          showBackButton={true}
-          onBack={onBack}
-          backLabel="Retour aux projets"
-          currentPage="projects"
-        />
+        <SimpleHeader onBack={onBack} backLabel="Retour aux projets" />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <p className="text-red-600 mb-4">Projet non trouvé</p>
@@ -141,19 +124,11 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-      {/* Navigation with Back Button */}
-      <Navigation 
-        onNavigateToSection={onNavigateHome}
-        onNavigateToBlog={onNavigateToBlog}
-        onNavigateToProjects={onBack}
-        showBackButton={true}
-        onBack={onBack}
-        backLabel="Retour aux projets"
-        currentPage="projects"
-      />
+      {/* Header with Back Button */}
+      <SimpleHeader onBack={onBack} backLabel="Retour aux projets" />
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12 pt-32 relative overflow-hidden">
+      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-12 pt-24 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" />

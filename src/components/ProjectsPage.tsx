@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { ExternalLink, Github, Eye, Calendar, Code, Layers, Zap, Star, Filter, Search, ArrowRight, Home } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink, Github, Eye, Calendar, Code, Zap, Filter, Search, ArrowRight, Home } from 'lucide-react';
 import { useProjects } from '../hooks/useSQLite';
 import { NormalizedProject } from '../lib/adapters';
-import Navigation from './Navigation';
+import { SimpleHeader } from './ui/SimpleHeader';
 
 // Placeholder images as data URLs
 const getPlaceholderImage = (category: string) => {
@@ -132,15 +132,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-        <Navigation 
-          onNavigateToSection={onNavigateHome}
-          onNavigateToBlog={onNavigateToBlog}
-          onNavigateToProjects={() => {}}
-          showBackButton={true}
-          onBack={onNavigateHome}
-          backLabel="Retour au portfolio"
-          currentPage="projects"
-        />
+        <SimpleHeader onBack={onNavigateHome} backLabel="Retour au portfolio" />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
@@ -155,15 +147,7 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-        <Navigation 
-          onNavigateToSection={onNavigateHome}
-          onNavigateToBlog={onNavigateToBlog}
-          onNavigateToProjects={() => {}}
-          showBackButton={true}
-          onBack={onNavigateHome}
-          backLabel="Retour au portfolio"
-          currentPage="projects"
-        />
+        <SimpleHeader onBack={onNavigateHome} backLabel="Retour au portfolio" />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <p className="text-red-600 mb-4">Erreur lors du chargement des projets</p>
@@ -181,19 +165,11 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onNavigateHome, onNavigateT
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
-      {/* Navigation */}
-      <Navigation 
-        onNavigateToSection={onNavigateHome}
-        onNavigateToBlog={onNavigateToBlog}
-        onNavigateToProjects={() => {}}
-        showBackButton={true}
-        onBack={onNavigateHome}
-        backLabel="Retour au portfolio"
-        currentPage="projects"
-      />
+      {/* Header with Back Button */}
+      <SimpleHeader onBack={onNavigateHome} backLabel="Retour au portfolio" />
 
       {/* Header */}
-      <header className="bg-gradient-to-br from-purple-600 to-pink-600 text-white py-20 pt-32 relative overflow-hidden">
+      <header className="bg-gradient-to-br from-purple-600 to-pink-600 text-white py-20 pt-24 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
