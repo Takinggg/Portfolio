@@ -5,7 +5,7 @@ import ProjectManager from './ProjectManager';
 import MessagesManager from './MessagesManager';
 import Analytics from './Analytics';
 import FileManager from './FileManager';
-import SimpleDashboard from './SimpleDashboard';
+import RealDashboard from './RealDashboard';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -58,7 +58,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       case 'files':
         return <FileManager />;
       default:
-        return <SimpleDashboard />;
+        return <RealDashboard />;
     }
   };
 
