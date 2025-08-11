@@ -20,7 +20,7 @@ const Hero = () => {
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 transition-colors">
       {/* Subtle Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-100/30 rounded-full blur-3xl" />
@@ -36,9 +36,9 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-8"
         >
-          <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur border border-gray-200 rounded-full shadow-sm">
+          <div className="inline-flex items-center px-6 py-3 bg-white/80 dark:bg-gray-800/70 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-full shadow-sm transition-colors">
             <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse" />
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {t('hero.availability')}
             </span>
             <CheckCircle className="ml-2 text-green-500" size={16} />
@@ -52,7 +52,7 @@ const Hero = () => {
           transition={{ duration: 1, delay: 0.4 }}
           className="mb-8"
         >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900 tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900 dark:text-gray-100 tracking-tight transition-colors">
             <span className="block mb-2">
               {t('hero.title')}
             </span>
@@ -69,23 +69,23 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="mb-8 max-w-3xl mx-auto"
         >
-          <p className="text-xl text-gray-600 leading-relaxed mb-8">
+          <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-8 transition-colors">
             {t('hero.description')}
           </p>
           
           {/* Value Props */}
           <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/70 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-full transition-colors">
               <Target className="text-violet-600" size={18} />
-              <span className="text-gray-700 font-medium">{t('hero.value_props.user_centered')}</span>
+              <span className="text-gray-700 dark:text-gray-300 font-medium">{t('hero.value_props.user_centered')}</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/70 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-full transition-colors">
               <Award className="text-indigo-600" size={18} />
-              <span className="text-gray-700 font-medium">{t('hero.value_props.experience')}</span>
+              <span className="text-gray-700 dark:text-gray-300 font-medium">{t('hero.value_props.experience')}</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/70 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-full transition-colors">
               <TrendingUp className="text-violet-600" size={18} />
-              <span className="text-gray-700 font-medium">{t('hero.value_props.roi')}</span>
+              <span className="text-gray-700 dark:text-gray-300 font-medium">{t('hero.value_props.roi')}</span>
             </div>
           </div>
         </motion.div>
@@ -107,7 +107,7 @@ const Hero = () => {
 
           <button
             onClick={scrollToContact}
-            className="flex items-center gap-2 px-8 py-4 bg-white border border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 rounded-full font-semibold transition-all duration-300 shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
+            className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 rounded-full font-semibold transition-all duration-300 shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
           >
             <Calendar size={20} />
             <span>{t('hero.cta_contact')}</span>
@@ -134,13 +134,13 @@ const Hero = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
-                className="bg-white/80 backdrop-blur border border-gray-200 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300"
+                className="bg-white/80 dark:bg-gray-800/70 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-300"
               >
                 <Icon className="w-8 h-8 text-violet-600 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900 mb-1">
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors">
                   {metric.value}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
                   {metric.label}
                 </div>
               </motion.div>

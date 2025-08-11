@@ -87,7 +87,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome }) => 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 transition-colors">
       {/* Header with Back Button */}
       <SimpleHeader onBack={onBack} backLabel="Retour au blog" />
 
@@ -152,12 +152,12 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome }) => 
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-gray-100 mb-6 leading-tight transition-colors">
             {post.title}
           </h1>
 
           {/* Meta Info */}
-          <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-6">
+          <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-400 mb-6 transition-colors">
             <div className="flex items-center gap-2">
               <User size={18} />
               <span className="font-medium">{post.author}</span>
@@ -179,7 +179,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome }) => 
             {post.tags.map((tag, index) => (
               <span 
                 key={index}
-                className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
+                className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700/60 transition-colors duration-200"
               >
                 <Tag size={12} />
                 {tag}
@@ -188,8 +188,8 @@ const BlogPost: React.FC<BlogPostProps> = ({ slug, onBack, onNavigateHome }) => 
           </div>
 
           {/* Share Buttons */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200 shadow-lg">
-            <div className="flex items-center gap-2 text-gray-700 font-medium">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg transition-colors">
+            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 font-medium transition-colors">
               <Share2 size={18} />
               <span>Partager cet article :</span>
             </div>

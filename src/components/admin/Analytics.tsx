@@ -189,8 +189,8 @@ const Analytics: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Analytics</h2>
-          <p className="text-gray-600">Suivez les performances de votre contenu</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors">Analytics</h2>
+          <p className="text-gray-600 dark:text-gray-400 transition-colors">Suivez les performances de votre contenu</p>
         </div>
         
         <select
@@ -210,7 +210,7 @@ const Analytics: React.FC = () => {
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <div key={index} className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
               <div className="flex items-center justify-between mb-4">
                 <div className={`w-12 h-12 bg-${stat.color}-100 rounded-xl flex items-center justify-center`}>
                   <Icon className={`text-${stat.color}-600`} size={24} />
@@ -220,8 +220,8 @@ const Analytics: React.FC = () => {
                 </span>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 transition-colors">{stat.title}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 transition-colors">{stat.value}</p>
               </div>
             </div>
           );
@@ -231,10 +231,10 @@ const Analytics: React.FC = () => {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Views Over Time */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Vues dans le temps</h3>
-            <BarChart3 className="text-gray-400" size={20} />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors">Vues dans le temps</h3>
+            <BarChart3 className="text-gray-400 dark:text-gray-500" size={20} />
           </div>
           
           <div className="h-64 flex items-end justify-between gap-2">
@@ -259,10 +259,10 @@ const Analytics: React.FC = () => {
         </div>
 
         {/* Traffic Sources */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Sources de trafic</h3>
-            <PieChart className="text-gray-400" size={20} />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors">Sources de trafic</h3>
+            <PieChart className="text-gray-400 dark:text-gray-500" size={20} />
           </div>
           
           <div className="space-y-4">
@@ -277,11 +277,11 @@ const Analytics: React.FC = () => {
                       ][index] 
                     }}
                   />
-                  <span className="font-medium text-gray-900">{source.source}</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100 transition-colors">{source.source}</span>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold text-gray-900">{source.percentage}%</div>
-                  <div className="text-sm text-gray-500">{source.visitors.toLocaleString()}</div>
+                  <div className="font-semibold text-gray-900 dark:text-gray-100 transition-colors">{source.percentage}%</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 transition-colors">{source.visitors.toLocaleString()}</div>
                 </div>
               </div>
             ))}

@@ -65,7 +65,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const canSubmit = credentials.username.trim() !== '' && credentials.password !== '' && !isLoading;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-pink-600 dark:from-gray-900 dark:via-gray-950 dark:to-black flex items-center justify-center p-6 transition-colors">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-20 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
@@ -82,10 +82,10 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
           <p className="text-white/80">FOULON Maxence - Portfolio</p>
         </div>
 
-        <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+        <div className="bg-white/95 dark:bg-gray-900/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 dark:border-gray-700/30 transition-colors">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Connexion</h2>
-            <p className="text-gray-600">Accédez à votre espace d'administration</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors">Connexion</h2>
+            <p className="text-gray-600 dark:text-gray-400 transition-colors">Accédez à votre espace d'administration</p>
           </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -113,17 +113,17 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             )}
 
             <div>
-              <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="username" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                 Nom d'utilisateur
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                 <input
                   id="username"
                   name="username"
                   value={credentials.username}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/70"
+                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-100"
                   placeholder="admin"
                   autoComplete="username"
                 />
@@ -131,25 +131,25 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                 Mot de passe
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
                 <input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   value={credentials.password}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/70"
+                  className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-100"
                   placeholder="password"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(p => !p)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 p-1"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 p-1 transition-colors"
                   aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -166,7 +166,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
               {isLoading ? 'Connexion...' : 'Se connecter'}
             </button>
 
-            <p className="text-center text-xs text-gray-500">
+            <p className="text-center text-xs text-gray-500 dark:text-gray-400 transition-colors">
               Identifiants démo: <code className="font-semibold">admin</code> / <code className="font-semibold">password</code>
             </p>
           </form>

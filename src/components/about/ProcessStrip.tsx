@@ -101,12 +101,12 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
   return (
     <div className={`${className}`}>
       <div className="text-center mb-12">
-        <div className="inline-block px-6 py-3 mb-4 bg-white/80 backdrop-blur border border-gray-200 rounded-full">
+        <div className="inline-block px-6 py-3 mb-4 bg-white/80 dark:bg-gray-800/70 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-full transition-colors">
           <h3 className="text-2xl font-bold bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 bg-clip-text text-transparent">
             {title || t('about.process.title')}
           </h3>
         </div>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto transition-colors">
           {subtitle || t('about.process.subtitle')}
         </p>
       </div>
@@ -130,7 +130,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
                 viewport={{ once: true }}
               >
                 {/* Step Card */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gradient-to-br hover:from-violet-50 hover:to-fuchsia-50 relative z-10 overflow-hidden">
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gradient-to-br hover:from-violet-50 hover:to-fuchsia-50 dark:hover:from-gray-800 dark:hover:to-gray-800 relative z-10 overflow-hidden">
                   {/* Subtle gradient accent at bottom */}
                   <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${stepGradients[index]} opacity-60`} />
                   
@@ -139,16 +139,16 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
                     <Icon size={24} className="text-white" />
                     
                     {/* Step Number */}
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-700 font-bold text-sm shadow-sm">
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center text-gray-700 dark:text-gray-300 font-bold text-sm shadow-sm transition-colors">
                       {step.number}
                     </div>
                   </div>
 
                   {/* Step Content */}
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors">
                     {step.title}
                   </h4>
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed transition-colors">
                     {step.description}
                   </p>
                 </div>
@@ -162,7 +162,7 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
                     transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
                     viewport={{ once: true }}
                   >
-                    <div className="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm">
+                    <div className="w-8 h-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center shadow-sm transition-colors">
                       <svg
                         width="16"
                         height="16"
@@ -195,36 +195,36 @@ export const ProcessStrip: React.FC<ProcessStripProps> = ({
         transition={{ duration: 0.6, delay: 0.5 }}
         viewport={{ once: true }}
       >
-        <div className="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
+        <div className="p-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm transition-colors">
           <div className="text-center mb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-2">
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 transition-colors">
               {t('about.process.why_title')}
             </h4>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
             <div className="text-center">
-              <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <div className="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm transition-colors">
                 <Search size={20} className="text-blue-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.user_centered.title')}</div>
-              <div className="text-gray-600">{t('about.process.benefits.user_centered.description')}</div>
+              <div className="font-medium text-gray-900 dark:text-gray-100 mb-1 transition-colors">{t('about.process.benefits.user_centered.title')}</div>
+              <div className="text-gray-600 dark:text-gray-400 transition-colors">{t('about.process.benefits.user_centered.description')}</div>
             </div>
             
             <div className="text-center">
-              <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <div className="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm transition-colors">
                 <TestTube size={20} className="text-purple-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.iterative.title')}</div>
-              <div className="text-gray-600">{t('about.process.benefits.iterative.description')}</div>
+              <div className="font-medium text-gray-900 dark:text-gray-100 mb-1 transition-colors">{t('about.process.benefits.iterative.title')}</div>
+              <div className="text-gray-600 dark:text-gray-400 transition-colors">{t('about.process.benefits.iterative.description')}</div>
             </div>
             
             <div className="text-center">
-              <div className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <div className="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm transition-colors">
                 <Rocket size={20} className="text-green-600" />
               </div>
-              <div className="font-medium text-gray-900 mb-1">{t('about.process.benefits.results_oriented.title')}</div>
-              <div className="text-gray-600">{t('about.process.benefits.results_oriented.description')}</div>
+              <div className="font-medium text-gray-900 dark:text-gray-100 mb-1 transition-colors">{t('about.process.benefits.results_oriented.title')}</div>
+              <div className="text-gray-600 dark:text-gray-400 transition-colors">{t('about.process.benefits.results_oriented.description')}</div>
             </div>
           </div>
         </div>

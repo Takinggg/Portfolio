@@ -180,12 +180,12 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-gray-100 mb-6 leading-tight transition-colors">
             {project.title}
           </h1>
 
           {/* Description */}
-          <p className="text-xl text-gray-600 leading-relaxed mb-8 max-w-4xl">
+          <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-8 max-w-4xl transition-colors">
             {project.description}
           </p>
 
@@ -194,7 +194,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
             <div className="mb-12">
               <div className="flex items-center gap-2 mb-8">
                 <Layers className="text-purple-600" size={24} />
-                <h2 className="text-2xl font-bold text-gray-900">Aperçu du projet</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors">Aperçu du projet</h2>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -222,41 +222,41 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
 
           {/* Meta Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 shadow-lg">
+            <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-lg transition-colors">
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="text-purple-600" size={20} />
-                <span className="font-semibold text-gray-900">Début</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">Début</span>
               </div>
-              <p className="text-gray-600">{project.start_date ? formatDate(project.start_date) : 'Non défini'}</p>
+              <p className="text-gray-600 dark:text-gray-400">{project.start_date ? formatDate(project.start_date) : 'Non défini'}</p>
             </div>
 
             {project.end_date && (
-              <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 shadow-lg">
+              <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-lg transition-colors">
                 <div className="flex items-center gap-3 mb-2">
                   <Calendar className="text-green-600" size={20} />
-                  <span className="font-semibold text-gray-900">Fin</span>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">Fin</span>
                 </div>
-                <p className="text-gray-600">{formatDate(project.end_date)}</p>
+                <p className="text-gray-600 dark:text-gray-400">{formatDate(project.end_date)}</p>
               </div>
             )}
 
             {project.client && (
-              <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 shadow-lg">
+              <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-lg transition-colors">
                 <div className="flex items-center gap-3 mb-2">
                   <User className="text-blue-600" size={20} />
-                  <span className="font-semibold text-gray-900">Client</span>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">Client</span>
                 </div>
-                <p className="text-gray-600">{project.client}</p>
+                <p className="text-gray-600 dark:text-gray-400">{project.client}</p>
               </div>
             )}
 
             {project.budget && (
-              <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 shadow-lg">
+              <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-lg transition-colors">
                 <div className="flex items-center gap-3 mb-2">
                   <Star className="text-yellow-600" size={20} />
-                  <span className="font-semibold text-gray-900">Budget</span>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">Budget</span>
                 </div>
-                <p className="text-gray-600">{project.budget}</p>
+                <p className="text-gray-600 dark:text-gray-400">{project.budget}</p>
               </div>
             )}
           </div>
@@ -265,7 +265,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <Code className="text-purple-600" size={20} />
-              <h3 className="text-lg font-semibold text-gray-900">Technologies utilisées</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors">Technologies utilisées</h3>
             </div>
             <div className="flex flex-wrap gap-3">
               {(project.technologies || []).map((tech, index) => (
@@ -295,8 +295,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId, onBack, onNavi
           </div>
 
           {/* Share Buttons */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200 shadow-lg">
-            <div className="flex items-center gap-2 text-gray-700 font-medium">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-white/80 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg transition-colors">
+            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 font-medium">
               <Share2 size={18} />
               <span>Partager ce projet :</span>
             </div>
