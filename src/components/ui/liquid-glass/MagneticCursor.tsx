@@ -32,10 +32,12 @@ const MagneticCursor: React.FC<MagneticCursorProps> = ({ children, className }) 
       cursor.style.opacity = '0';
     };
 
-    // Handle magnetic elements
-    const handleMagneticHover = (e: MouseEvent) => {
+    const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.classList.contains('magnetic')) {
+      if (!target || !cursor) return;
+
+      // Handle magnetic elements
+      if (target.classList && target.classList.contains('magnetic')) {
         const rect = target.getBoundingClientRect();
         const x = e.clientX - rect.left - rect.width / 2;
         const y = e.clientY - rect.top - rect.height / 2;
@@ -43,54 +45,51 @@ const MagneticCursor: React.FC<MagneticCursorProps> = ({ children, className }) 
         target.style.setProperty('--magnetic-x', `${x * 0.3}px`);
         target.style.setProperty('--magnetic-y', `${y * 0.3}px`);
         
-        // Scale up cursor on magnetic elements
         cursor.style.transform = 'scale(1.5)';
         cursor.style.mixBlendMode = 'difference';
+        return;
       }
-    };
 
-    const handleMagneticLeave = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.classList.contains('magnetic')) {
-        target.style.setProperty('--magnetic-x', '0px');
-        target.style.setProperty('--magnetic-y', '0px');
-        
-        // Reset cursor
-        cursor.style.transform = 'scale(1)';
-        cursor.style.mixBlendMode = 'normal';
-      }
-    };
-
-    // Handle clickable elements
-    const handleClickableHover = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.classList.contains('cursor-pointer')) {
+      // Handle clickable elements (only if not magnetic)
+      if (target.tagName === 'BUTTON' || target.tagName === 'A' || (target.classList && target.classList.contains('cursor-pointer'))) {
         cursor.style.transform = 'scale(1.2)';
         cursor.style.backgroundColor = 'rgba(99, 102, 241, 0.8)';
       }
     };
 
-    const handleClickableLeave = () => {
-      cursor.style.transform = 'scale(1)';
-      cursor.style.backgroundColor = 'rgba(99, 102, 241, 0.5)';
+    const handleMouseOut = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target || !cursor) return;
+
+      // Handle magnetic elements
+      if (target.classList && target.classList.contains('magnetic')) {
+        target.style.setProperty('--magnetic-x', '0px');
+        target.style.setProperty('--magnetic-y', '0px');
+        
+        cursor.style.transform = 'scale(1)';
+        cursor.style.mixBlendMode = 'normal';
+        return;
+      }
+
+      // Handle clickable elements (only if not magnetic)
+      if (target.tagName === 'BUTTON' || target.tagName === 'A' || (target.classList && target.classList.contains('cursor-pointer'))) {
+        cursor.style.transform = 'scale(1)';
+        cursor.style.backgroundColor = 'rgba(99, 102, 241, 0.5)';
+      }
     };
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseenter', handleMouseEnter);
     document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseover', handleMagneticHover);
-    document.addEventListener('mouseout', handleMagneticLeave);
-    document.addEventListener('mouseover', handleClickableHover);
-    document.addEventListener('mouseout', handleClickableLeave);
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('mouseover', handleMagneticHover);
-      document.removeEventListener('mouseout', handleMagneticLeave);
-      document.removeEventListener('mouseover', handleClickableHover);
-      document.removeEventListener('mouseout', handleClickableLeave);
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
     };
   }, [cursorX, cursorY]);
 
