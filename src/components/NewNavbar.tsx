@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Home, User, Briefcase, BookOpen, Mail, ArrowRight } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 interface NewNavbarProps {
   onNavigateToSection: (sectionId: string) => void;
@@ -25,13 +26,18 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [isScrolled, setIsScrolled] = useState(false);
 
+  // Scroll detection for enhanced glass effect
   useEffect(() => {
     const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 32);
+      
       // Only update active section based on scroll position if we're on home page
       if (currentPage === 'home') {
         const sections = ['hero', 'about', 'projects', 'blog', 'contact'];
-        const scrollPosition = window.scrollY + 200;
+        const scrollPosition = scrollY + 200;
         
         for (const section of sections) {
           const element = document.getElementById(section);
@@ -83,19 +89,45 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
     { id: 'contact', label: 'Me contacter', icon: Mail }
   ];
 
+  // Glass effect styling classes
+  const glassNavClass = cn(
+    // Base glass styling
+    "bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md",
+    // Border and ring for depth
+    "border border-white/20 dark:border-neutral-700/30",
+    "ring-1 ring-white/10 dark:ring-neutral-600/20",
+    // Enhanced styles when scrolled
+    isScrolled && "bg-white/80 dark:bg-neutral-900/80 shadow-2xl",
+    // Transition for smooth effect
+    "transition-all duration-300 ease-out"
+  );
+
+  const glassMobileMenuClass = cn(
+    // Base glass styling for mobile menu
+    "bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md",
+    // Border and ring for depth
+    "border border-white/20 dark:border-neutral-700/30",
+    "ring-1 ring-white/10 dark:ring-neutral-600/20"
+  );
+
   return (
     <>
       {/* Sticky Header Container */}
       <header className="fixed top-4 left-0 right-0 z-40 flex justify-center px-4">
-        <nav className="flex items-center gap-8 w-full max-w-6xl bg-neutral-900 text-white rounded-full h-14 px-6 shadow-xl"
+        <nav className={cn(
+          "flex items-center gap-8 w-full max-w-6xl rounded-full h-14 px-6",
+          glassNavClass
+        )}
              style={{
-               boxShadow: '0 8px 28px -10px rgba(0,0,0,0.35), 0 4px 12px -6px rgba(0,0,0,0.25)'
+               boxShadow: isScrolled 
+                 ? '0 12px 40px -10px rgba(0,0,0,0.25), 0 8px 20px -6px rgba(0,0,0,0.15)'
+                 : '0 8px 28px -10px rgba(0,0,0,0.15), 0 4px 12px -6px rgba(0,0,0,0.1)'
              }}>
           
           {/* Left: Logo Button */}
           <motion.button
             onClick={() => handleNavigation('hero')}
-            className="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center text-neutral-900 hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
+            className="flex-shrink-0 w-10 h-10 bg-neutral-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-neutral-900 hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             aria-label="Accueil"
@@ -111,21 +143,31 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
                 <motion.button
                   key={item.id}
                   onClick={() => handleNavigation(item.id)}
-                  className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 ${
+                  className={cn(
+                    "relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
+                    "focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2",
                     isActive
-                      ? 'text-white bg-white/10'
-                      : 'text-neutral-50 hover:text-white hover:underline'
-                  }`}
+                      ? "text-neutral-900 dark:text-white bg-white/20 dark:bg-neutral-700/30"
+                      : "text-neutral-700 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-neutral-700/20"
+                  )}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  layout
                 >
                   {item.label}
                   {isActive && (
                     <motion.div
-                      className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-violet-400 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: 32 }}
-                      transition={{ duration: 0.3 }}
+                      className="absolute inset-0 bg-white/30 dark:bg-neutral-600/40 rounded-full ring-1 ring-violet-400/50 dark:ring-violet-300/50"
+                      layoutId="activeNavItem"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ 
+                        type: "spring", 
+                        stiffness: 500, 
+                        damping: 30,
+                        duration: 0.3 
+                      }}
                     />
                   )}
                 </motion.button>
@@ -138,7 +180,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
             {/* Admin Link */}
             <motion.a
               href="/admin"
-              className="text-sm text-neutral-300 hover:text-white transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
+              className="text-sm text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -148,7 +190,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
             {/* Collaborer CTA */}
             <motion.button
               onClick={() => handleNavigation('contact')}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white text-neutral-900 rounded-full font-medium text-sm hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-full font-medium text-sm hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -159,10 +201,12 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
             {/* Mobile Menu Button */}
             <motion.button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-white focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
+              className="md:hidden p-2 text-neutral-700 dark:text-neutral-200 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               aria-label="Menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -195,13 +239,14 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
             
             {/* Mobile Menu Content */}
             <motion.div
+              id="mobile-menu"
               className="fixed top-20 left-4 right-4 z-40 md:hidden"
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ type: "spring", duration: 0.3 }}
             >
-              <div className="bg-neutral-900 text-white rounded-2xl p-6 shadow-xl">
+              <div className={cn(glassMobileMenuClass, "rounded-2xl p-6 shadow-xl")}>
                 <div className="space-y-3">
                   {navItems.map((item, index) => {
                     const Icon = item.icon;
@@ -210,11 +255,13 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
                       <motion.button
                         key={item.id}
                         onClick={() => handleNavigation(item.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 ${
+                        className={cn(
+                          "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition-all duration-300",
+                          "focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2",
                           isActive
-                            ? 'bg-white/10 text-white'
-                            : 'text-neutral-200 hover:bg-white/5'
-                        }`}
+                            ? "bg-white/30 dark:bg-neutral-700/30 text-neutral-900 dark:text-white ring-1 ring-violet-400/50 dark:ring-violet-300/50"
+                            : "text-neutral-700 dark:text-neutral-200 hover:bg-white/20 dark:hover:bg-neutral-700/20"
+                        )}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
@@ -234,7 +281,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
                       handleNavigation('contact');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-neutral-900 rounded-xl font-medium mt-4 hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-xl font-medium mt-4 hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
