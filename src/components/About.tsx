@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { memo } from 'react';
 import { Target, Lightbulb, Heart, Coffee, Search, Brain, Palette, Code } from 'lucide-react';
 import { CompetencyMatrix } from './about/CompetencyMatrix';
 import { Timeline } from './about/Timeline';
 import { ProcessStrip } from './about/ProcessStrip';
 import { useI18n } from '../hooks/useI18n';
-import { AnimatedCounter } from './ui/AnimatedCounter';
 import { AnimatedBackground } from './ui/AnimatedBackground';
 import { ShimmerText } from './ui/ShimmerText';
 import { PulseButton } from './ui/PulseButton';
@@ -18,26 +17,8 @@ interface AboutProps {
 }
 
 const About = memo(({ onNavigateToSection }: AboutProps) => {
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const { t } = useI18n();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
 
   // Competency Matrix Data
   const competencyCategories = [
