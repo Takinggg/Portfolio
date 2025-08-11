@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AdminLogin from './components/admin/AdminLogin';
+import AdminLogin from './components/admin/SimpleAdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
 import NewNavbar from './components/NewNavbar';
 import Hero from './components/Hero';
