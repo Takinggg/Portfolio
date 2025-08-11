@@ -1,7 +1,9 @@
 import React from 'react';
 import { Heart, Linkedin, Instagram, Dribbble, Github, Twitter, ArrowUp, Sparkles } from 'lucide-react';
+import { useI18n } from '../hooks/useI18n';
 
 const Footer = () => {
+  const { t } = useI18n();
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -15,10 +17,10 @@ const Footer = () => {
   ];
 
   const quickLinks = [
-    { label: "Accueil", href: "#hero" },
-    { label: "À propos", href: "#about" },
-    { label: "Projets", href: "#projects" },
-    { label: "Contact", href: "#contact" }
+    { label: t('nav.home'), href: "#hero" },
+    { label: t('nav.about'), href: "#about" },
+    { label: t('nav.projects'), href: "#projects" },
+    { label: t('nav.contact'), href: "#contact" }
   ];
 
   const services = [
@@ -55,13 +57,12 @@ const Footer = () => {
               </div>
               
               <p className="text-gray-300 leading-relaxed mb-8 max-w-md">
-                Designer passionné par la création d'expériences digitales exceptionnelles. 
-                Je transforme vos idées en interfaces modernes et intuitives qui marquent les esprits.
+                {t('footer.description')}
               </p>
 
               {/* Social Links */}
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-400 mr-2">Suivez-moi :</span>
+                <span className="text-sm text-gray-400 mr-2">{t('footer.social.follow')} :</span>
                 {socialLinks.map((social, index) => {
                   const Icon = social.icon;
                   return (
@@ -82,7 +83,7 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-bold mb-6 flex items-center gap-2">
                 <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full" />
-                Navigation
+                {t('footer.navigation')}
               </h4>
               <div className="space-y-3">
                 {quickLinks.map((link, index) => (
@@ -101,7 +102,7 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-bold mb-6 flex items-center gap-2">
                 <div className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full" />
-                Services
+                {t('footer.services')}
               </h4>
               <div className="space-y-3">
                 {services.map((service, index) => (
@@ -122,22 +123,22 @@ const Footer = () => {
           <div className="max-w-7xl mx-auto px-6 py-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-6 text-sm text-gray-400">
-                <p>© 2024 FOULON Maxence. Tous droits réservés.</p>
+                <p>© 2024 FOULON Maxence. {t('footer.rights')}.</p>
                 <div className="hidden md:flex items-center gap-4">
-                  <a href="#" className="hover:text-white transition-colors duration-200">Mentions légales</a>
-                  <a href="#" className="hover:text-white transition-colors duration-200">Confidentialité</a>
+                  <a href="#" className="hover:text-white transition-colors duration-200">{t('footer.legal')}</a>
+                  <a href="#" className="hover:text-white transition-colors duration-200">{t('footer.privacy')}</a>
                 </div>
               </div>
 
               <div className="flex items-center gap-4">
                 <p className="text-sm text-gray-400 flex items-center gap-2">
-                  Créé avec <Heart size={16} className="text-red-500 animate-pulse" /> et beaucoup de café
+                  {t('footer.created_with')} <Heart size={16} className="text-red-500 animate-pulse" /> {t('footer.and_coffee')}
                 </p>
                 
                 <button
                   onClick={scrollToTop}
                   className="group w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl"
-                  aria-label="Retour en haut"
+                  aria-label={t('footer.back_to_top')}
                 >
                   <ArrowUp size={20} className="group-hover:-translate-y-1 transition-transform duration-300" />
                 </button>

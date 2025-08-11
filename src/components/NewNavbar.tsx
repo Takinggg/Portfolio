@@ -22,7 +22,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
   onNavigateToProjects,
   showBackButton = false,
   onBack,
-  backLabel = t('nav.back'),
+  backLabel,
   currentPage = 'home',
   isAuthenticated = false
 }) => {
@@ -30,6 +30,9 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
   const [activeSection, setActiveSection] = useState('hero');
   const [isScrolled, setIsScrolled] = useState(false);
   const { t } = useI18n();
+  
+  // Use the translation for backLabel if none provided
+  const finalBackLabel = backLabel || t('nav.back');
 
   // Scroll detection for enhanced glass effect
   useEffect(() => {
@@ -200,7 +203,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span>Collaborer</span>
+              <span>{t('nav.collaborate')}</span>
               <ArrowRight size={14} />
             </motion.button>
 
@@ -299,7 +302,7 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <span>Collaborer</span>
+                    <span>{t('nav.collaborate')}</span>
                     <ArrowRight size={16} />
                   </motion.button>
                 </div>

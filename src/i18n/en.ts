@@ -11,6 +11,7 @@ const en: TranslationDictionary = {
     blog: 'Blog',
     contact: 'Contact',
     back: 'Back',
+    collaborate: 'Let\'s work together',
   },
   hero: {
     availability: 'FOULON Maxence • UI/UX Designer',
@@ -49,6 +50,15 @@ const en: TranslationDictionary = {
     case_study: 'Case study',
     demo: 'Live demo',
     source: 'Source code',
+    section: {
+      creative_portfolio: 'Creative portfolio',
+      my_title: 'My',
+      my_subtitle: 'Creations',
+      description: 'Discover a selection of my most innovative projects, combining creativity, technology and user impact',
+      loading: 'Loading projects...',
+      error: 'Error loading projects',
+      retry: 'Retry',
+    },
   },
   blog: {
     title: 'Articles',
@@ -84,6 +94,14 @@ const en: TranslationDictionary = {
     social: {
       follow: 'Follow me',
     },
+    description: 'Designer passionate about creating exceptional digital experiences. I transform your ideas into modern and intuitive interfaces that leave a lasting impression.',
+    navigation: 'Navigation',
+    services: 'Services',
+    legal: 'Legal notice',
+    privacy: 'Privacy',
+    created_with: 'Created with',
+    and_coffee: 'and lots of coffee',
+    back_to_top: 'Back to top',
   },
   theme: {
     toggle_theme: 'Toggle theme',

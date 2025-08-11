@@ -12,6 +12,7 @@ export interface TranslationDictionary {
     blog: string;
     contact: string;
     back: string;
+    collaborate: string;
   };
   hero: {
     availability: string;
@@ -50,6 +51,15 @@ export interface TranslationDictionary {
     case_study: string;
     demo: string;
     source: string;
+    section: {
+      creative_portfolio: string;
+      my_title: string;
+      my_subtitle: string;
+      description: string;
+      loading: string;
+      error: string;
+      retry: string;
+    };
   };
   blog: {
     title: string;
@@ -85,6 +95,14 @@ export interface TranslationDictionary {
     social: {
       follow: string;
     };
+    description: string;
+    navigation: string;
+    services: string;
+    legal: string;
+    privacy: string;
+    created_with: string;
+    and_coffee: string;
+    back_to_top: string;
   };
   theme: {
     toggle_theme: string;
