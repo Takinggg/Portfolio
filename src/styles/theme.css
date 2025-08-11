@@ -1,0 +1,142 @@
+/**
+ * Theme CSS Variables and Transitions
+ * Provides smooth transitions between light and dark themes
+ */
+
+/* CSS Variables for Theme Colors */
+:root {
+  /* Light Theme Variables */
+  --bg-primary: 255, 255, 255;
+  --bg-secondary: 248, 249, 250;
+  --bg-muted: 241, 243, 244;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass-light: rgba(255, 255, 255, 0.95);
+  --bg-glass-dark: rgba(255, 255, 255, 0.75);
+  
+  --text-strong: 15, 23, 42;
+  --text-primary: 30, 41, 59;
+  --text-soft: 51, 65, 85;
+  --text-muted: 100, 116, 139;
+  
+  --border-primary: 226, 232, 240;
+  --border-strong: 203, 213, 225;
+  --border-glass: rgba(255, 255, 255, 0.3);
+  
+  /* Theme transition duration */
+  --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Theme Variables */
+.dark {
+  --bg-primary: 15, 23, 42;
+  --bg-secondary: 30, 41, 59;
+  --bg-muted: 51, 65, 85;
+  --bg-glass: rgba(15, 23, 42, 0.85);
+  --bg-glass-light: rgba(30, 41, 59, 0.95);
+  --bg-glass-dark: rgba(15, 23, 42, 0.95);
+  
+  --text-strong: 248, 250, 252;
+  --text-primary: 226, 232, 240;
+  --text-soft: 203, 213, 225;
+  --text-muted: 148, 163, 184;
+  
+  --border-primary: 51, 65, 85;
+  --border-strong: 71, 85, 105;
+  --border-glass: rgba(255, 255, 255, 0.1);
+}
+
+/* Global Transition for Theme Switching */
+*,
+*::before,
+*::after {
+  transition: var(--theme-transition);
+}
+
+/* Prevent transition on first load */
+.no-transition * {
+  transition: none !important;
+}
+
+/* Custom Theme Classes */
+.theme-surface-primary {
+  background-color: rgb(var(--bg-primary));
+}
+
+.theme-surface-secondary {
+  background-color: rgb(var(--bg-secondary));
+}
+
+.theme-surface-muted {
+  background-color: rgb(var(--bg-muted));
+}
+
+.theme-surface-glass {
+  background-color: var(--bg-glass);
+  backdrop-filter: blur(12px);
+}
+
+.theme-text-strong {
+  color: rgb(var(--text-strong));
+}
+
+.theme-text-primary {
+  color: rgb(var(--text-primary));
+}
+
+.theme-text-soft {
+  color: rgb(var(--text-soft));
+}
+
+.theme-text-muted {
+  color: rgb(var(--text-muted));
+}
+
+.theme-border-primary {
+  border-color: rgb(var(--border-primary));
+}
+
+.theme-border-strong {
+  border-color: rgb(var(--border-strong));
+}
+
+.theme-border-glass {
+  border-color: var(--border-glass);
+}
+
+/* Enhanced Dark Mode Styles */
+.dark .glass-morphism {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+}
+
+.dark .gradient-glass {
+  background: linear-gradient(
+    135deg,
+    var(--bg-glass-light) 0%,
+    var(--bg-glass-dark) 100%
+  );
+}
+
+/* Animation for theme toggle button */
+.theme-toggle-icon {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-icon.rotating {
+  transform: rotate(180deg);
+}
+
+/* Language toggle animation */
+.language-toggle {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.language-toggle:hover {
+  transform: scale(1.05);
+}
+
+/* Focus styles for accessibility */
+.theme-focus:focus-visible {
+  outline: 2px solid rgb(var(--text-primary));
+  outline-offset: 2px;
+}

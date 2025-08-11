@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Eye, Heart, Star, ArrowRight, Filter, Code, Smartphone, Palette } from 'lucide-react';
 import { useProjects } from '../hooks/useSQLite';
+import { useI18n } from '../hooks/useI18n';
 import { GlassCard } from './ui/GlassCard';
 import { TiltCard } from './ui/TiltCard';
 import { ProjectCard } from './projects/ProjectCard';
@@ -28,6 +29,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const { t } = useI18n();
   
   // Use the custom hook to fetch projects
   const { projects: allProjects, loading, error } = useProjects();
@@ -122,7 +124,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Chargement des projets...</p>
+            <p className="mt-4 text-gray-600">{t('projects.section.loading')}</p>
           </div>
         </div>
       </section>
@@ -135,12 +137,12 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
       <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 relative overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <p className="text-red-600">Erreur lors du chargement des projets</p>
+            <p className="text-red-600">{t('projects.section.error')}</p>
             <button 
               onClick={() => window.location.reload()}
               className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
             >
-              Réessayer
+              {t('projects.section.retry')}
             </button>
           </div>
         </div>
@@ -167,7 +169,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
           >
             <GlassCard className="flex items-center gap-2 px-4 py-2">
               <Star className="text-primary-500" size={16} />
-              <span className="text-text-soft">Portfolio créatif</span>
+              <span className="text-text-soft">{t('projects.section.creative_portfolio')}</span>
             </GlassCard>
           </motion.div>
           
@@ -178,7 +180,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              Mes
+              {t('projects.section.my_title')}
             </motion.span>
             <motion.span 
               className="block text-primary-600"
@@ -186,7 +188,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
             >
-              Créations
+              {t('projects.section.my_subtitle')}
             </motion.span>
           </h2>
           
@@ -196,8 +198,7 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            Découvrez une sélection de mes projets les plus innovants, 
-            alliant créativité, technologie et impact utilisateur
+            {t('projects.section.description')}
           </motion.p>
         </motion.div>
 

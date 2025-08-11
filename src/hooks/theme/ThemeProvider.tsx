@@ -1,6 +1,6 @@
 /**
- * Theme Context and Hook
- * Dark/Light mode implementation with system preference detection
+ * Enhanced Theme Context and Hook
+ * Dark/Light mode implementation with smooth transitions and system preference detection
  */
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -11,23 +11,39 @@ interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   actualTheme: 'light' | 'dark';
+  isDark: boolean;
+  isLight: boolean;
+  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+interface ThemeProviderProps {
+  children: React.ReactNode;
+}
+
+export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Get theme from localStorage or default to system
+    // Get theme from localStorage or default to light
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('theme') as Theme) || 'system';
+      return (localStorage.getItem('portfolio-theme') as Theme) || 'light';
     }
-    return 'system';
+    return 'light';
   });
 
   const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Prevent FOUC by applying theme before paint
   useEffect(() => {
     const root = window.document.documentElement;
+    
+    // Remove no-transition class after initialization
+    if (isInitialized) {
+      root.classList.remove('no-transition');
+    } else {
+      root.classList.add('no-transition');
+    }
     
     // Remove existing theme classes
     root.classList.remove('light', 'dark');
@@ -47,8 +63,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setActualTheme(effectiveTheme);
 
     // Save to localStorage
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    localStorage.setItem('portfolio-theme', theme);
+    
+    // Remove no-transition class after a brief delay to enable smooth transitions
+    if (!isInitialized) {
+      setTimeout(() => {
+        root.classList.remove('no-transition');
+        setIsInitialized(true);
+      }, 100);
+    }
+  }, [theme, isInitialized]);
 
   useEffect(() => {
     // Listen for system theme changes
@@ -69,10 +93,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme]);
 
-  const value = {
+  const toggleTheme = () => {
+    setTheme(actualTheme === 'dark' ? 'light' : 'dark');
+  };
+
+  const value: ThemeContextType = {
     theme,
     setTheme,
     actualTheme,
+    isDark: actualTheme === 'dark',
+    isLight: actualTheme === 'light',
+    toggleTheme,
   };
 
   return (
@@ -82,7 +113,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useTheme() {
+export function useTheme(): ThemeContextType {
   const context = useContext(ThemeContext);
   
   if (context === undefined) {
