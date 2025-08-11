@@ -121,11 +121,11 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
   // Show loading state
   if (loading) {
     return (
-      <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 relative overflow-hidden">
+      <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950/30 relative overflow-hidden transition-colors">
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">{t('projects.section.loading')}</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">{t('projects.section.loading')}</p>
           </div>
         </div>
       </section>
@@ -135,13 +135,13 @@ const Projects: React.FC<ProjectsProps> = ({ onNavigateToProject }) => {
   // Show error state
   if (error) {
     return (
-      <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 relative overflow-hidden">
+      <section ref={sectionRef} id="projects" className="py-32 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950/30 relative overflow-hidden transition-colors">
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <p className="text-red-600">{t('projects.section.error')}</p>
+            <p className="text-red-600 dark:text-red-400 transition-colors">{t('projects.section.error')}</p>
             <button 
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 transition-colors"
             >
               {t('projects.section.retry')}
             </button>
