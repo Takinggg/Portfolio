@@ -35,8 +35,8 @@ export class BookingService {
             // Get event type
             const eventType = this.getEventType(request.eventTypeId);
             if (!eventType) {
-                console.warn(`❌ Event type ${request.eventTypeId} not found`);
-                return { success: false, error: 'Event type not found or is not active' };
+                console.warn(`❌ Event type ${request.eventTypeId} not found or is inactive`);
+                return { success: false, error: `Event type with ID ${request.eventTypeId} not found or is inactive` };
             }
             
             console.log(`✅ Event type found: ${eventType.name} (${eventType.duration_minutes} minutes)`);
