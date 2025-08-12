@@ -113,7 +113,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      console.log('Creating booking...'); // Debug log
+      console.log('Creating booking with data:', bookingData); // Debug log
       const response = await schedulingAPI.createBooking(bookingData);
       
       if (response.success && response.booking) {
@@ -129,8 +129,31 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
         throw new Error(response.error || 'Failed to create booking');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create booking';
-      console.error('Booking creation failed:', errorMessage); // Debug log
+      let errorMessage = 'Failed to create booking';
+      
+      // Extract more specific error information
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Log detailed error for debugging
+        console.error('Booking creation failed:', {
+          error: error.message,
+          bookingData,
+          stack: error.stack
+        });
+        
+        // Convert backend validation errors to user-friendly messages
+        if (error.message.includes('Invalid booking request')) {
+          errorMessage = t('scheduling.errors.invalid_request');
+        } else if (error.message.includes('eventTypeId')) {
+          errorMessage = t('scheduling.errors.invalid_event_type');
+        } else if (error.message.includes('email')) {
+          errorMessage = t('scheduling.errors.invalid_email');
+        } else if (error.message.includes('datetime')) {
+          errorMessage = t('scheduling.errors.invalid_time');
+        }
+      }
+      
       setState(prev => ({ 
         ...prev, 
         error: errorMessage,

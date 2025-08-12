@@ -100,16 +100,28 @@ const BookingForm: React.FC<BookingFormProps> = ({
       return;
     }
 
+    // Ensure email passes validation
+    const email = formData.email.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrors({ email: t('scheduling.validation.email_invalid') });
+      return;
+    }
+
     const bookingRequest: BookingRequest = {
       eventTypeId: eventType.id,
       name: formData.name.trim(),
-      email: formData.email.trim(),
+      email: email,
       start: selectedSlot.startUTC,
       end: selectedSlot.endUTC,
       timezone: userTimezone,
-      notes: formData.notes.trim() || undefined,
       consent: formData.consent
     };
+
+    // Only include notes if they exist and are not empty
+    const notes = formData.notes.trim();
+    if (notes) {
+      bookingRequest.notes = notes;
+    }
 
     // Save user info to localStorage for future use
     saveUserInfoToStorage({

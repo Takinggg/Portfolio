@@ -43,6 +43,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     { id: 'messages', label: 'Messages', icon: '💬' },
     { id: 'analytics', label: 'Analytics', icon: '📈' },
     { id: 'files', label: 'Fichiers', icon: '📁' },
+    { id: 'scheduling', label: 'Agenda', icon: '📅', external: true, href: '/admin/scheduling' },
   ];
 
   const renderContent = () => {
@@ -74,28 +75,41 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         <nav className="p-4 flex-1">
           <div className="space-y-2">
             {sidebarItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-medium ${
-                  activeTab === item.id
-                    ? 'bg-blue-100 text-blue-900 border-2 border-blue-300 shadow-md'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 border-2 border-transparent'
-                }`}
-                aria-label={`Naviguer vers ${item.label}`}
-                aria-current={activeTab === item.id ? 'page' : undefined}
-              >
-                <span className="text-lg" role="img" aria-hidden="true">{item.icon}</span>
-                {item.label}
-                {item.id === 'messages' && stats.unreadMessages > 0 && (
-                  <span 
-                    className="bg-red-600 text-white text-xs px-2 py-1 rounded-full ml-auto font-bold"
-                    aria-label={`${stats.unreadMessages} messages non lus`}
-                  >
-                    {stats.unreadMessages}
-                  </span>
-                )}
-              </button>
+              item.external ? (
+                <a
+                  key={item.id}
+                  href={item.href}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 border-2 border-transparent no-underline"
+                  aria-label={`Naviguer vers ${item.label}`}
+                >
+                  <span className="text-lg" role="img" aria-hidden="true">{item.icon}</span>
+                  {item.label}
+                  <span className="ml-auto text-xs text-gray-500">↗</span>
+                </a>
+              ) : (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-medium ${
+                    activeTab === item.id
+                      ? 'bg-blue-100 text-blue-900 border-2 border-blue-300 shadow-md'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 border-2 border-transparent'
+                  }`}
+                  aria-label={`Naviguer vers ${item.label}`}
+                  aria-current={activeTab === item.id ? 'page' : undefined}
+                >
+                  <span className="text-lg" role="img" aria-hidden="true">{item.icon}</span>
+                  {item.label}
+                  {item.id === 'messages' && stats.unreadMessages > 0 && (
+                    <span 
+                      className="bg-red-600 text-white text-xs px-2 py-1 rounded-full ml-auto font-bold"
+                      aria-label={`${stats.unreadMessages} messages non lus`}
+                    >
+                      {stats.unreadMessages}
+                    </span>
+                  )}
+                </button>
+              )
             ))}
           </div>
         </nav>
