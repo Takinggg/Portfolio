@@ -28,7 +28,7 @@ const getAvailabilitySchema = z.object({
     timezone: z.string().optional().default('UTC')
 });
 const bookingRequestSchema = z.object({
-    eventTypeId: z.number().positive(),
+    eventTypeId: z.coerce.number().positive(),
     name: z.string().min(1).max(100),
     email: z.string().email().max(254),
     start: z.string().datetime(),
