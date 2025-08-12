@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { ArrowLeft, User, Mail, MessageSquare, Calendar, Clock } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, User, Mail, MessageSquare, Calendar, Clock, X } from 'lucide-react';
 import { EventType, AvailableSlot, BookingRequest } from '../../types/scheduling';
 import { cn } from '../../lib/utils';
 import { useI18n } from '../../hooks/useI18n';
+import { getPrefillUserInfo, saveUserInfoToStorage, clearUserInfoFromStorage } from '../../utils/userInfoPrefill';
 
 interface BookingFormProps {
   eventType: EventType;
@@ -30,6 +31,31 @@ const BookingForm: React.FC<BookingFormProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isPrefilled, setIsPrefilled] = useState(false);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
+
+  // Initialize form with prefill data
+  useEffect(() => {
+    const prefillInfo = getPrefillUserInfo();
+    if (prefillInfo) {
+      setFormData(prev => ({
+        ...prev,
+        name: prefillInfo.name || '',
+        email: prefillInfo.email || ''
+      }));
+      
+      if (prefillInfo.name || prefillInfo.email) {
+        setIsPrefilled(true);
+        
+        // Focus notes field if name/email are prefilled
+        setTimeout(() => {
+          if (notesRef.current) {
+            notesRef.current.focus();
+          }
+        }, 100);
+      }
+    }
+  }, []);
 
   // Format time for display with localization
   const formatTimeForDisplay = (isoString: string) => {
@@ -85,6 +111,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
       consent: formData.consent
     };
 
+    // Save user info to localStorage for future use
+    saveUserInfoToStorage({
+      name: formData.name.trim(),
+      email: formData.email.trim()
+    });
+
     onSubmit(bookingRequest);
   };
 
@@ -95,6 +127,17 @@ const BookingForm: React.FC<BookingFormProps> = ({
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  // Handle clear prefilled data
+  const handleClearPrefilled = () => {
+    setFormData(prev => ({
+      ...prev,
+      name: '',
+      email: ''
+    }));
+    setIsPrefilled(false);
+    clearUserInfoFromStorage();
   };
 
   return (
@@ -145,24 +188,40 @@ const BookingForm: React.FC<BookingFormProps> = ({
               <span>{t('scheduling.form.name')} *</span>
             </div>
           </label>
-          <input
-            type="text"
-            id="name"
-            value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
-            className={cn(
-              'w-full px-3 py-2 rounded-lg shadow-sm transition-colors',
-              'bg-white text-gray-900 placeholder-gray-400 border border-gray-300',
-              'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
-              'dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-500',
-              errors.name ? 'border-red-300 dark:border-red-700' : ''
+          <div className="relative">
+            <input
+              type="text"
+              id="name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              autoComplete="name"
+              className={cn(
+                'w-full px-3 py-2 rounded-lg shadow-sm transition-colors',
+                'bg-white text-gray-900 placeholder-gray-400 border border-gray-300',
+                'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
+                'dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-500',
+                errors.name ? 'border-red-300 dark:border-red-700' : '',
+                isPrefilled && formData.name ? 'pr-10' : ''
+              )}
+              placeholder={t('scheduling.form.name')}
+              disabled={isLoading}
+              required
+              aria-invalid={!!errors.name}
+            />
+            {isPrefilled && formData.name && (
+              <button
+                type="button"
+                onClick={handleClearPrefilled}
+                className="absolute right-2 top-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                title={t('scheduling.form.clear_prefilled')}
+                aria-label={t('scheduling.form.clear_prefilled')}
+              >
+                <X className="w-4 h-4" />
+              </button>
             )}
-            placeholder={t('scheduling.form.name')}
-            disabled={isLoading}
-            required
-          />
+          </div>
           {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+            <p className="mt-1 text-sm text-red-600" role="alert">{errors.name}</p>
           )}
         </div>
 
@@ -174,24 +233,40 @@ const BookingForm: React.FC<BookingFormProps> = ({
               <span>{t('scheduling.form.email')} *</span>
             </div>
           </label>
-          <input
-            type="email"
-            id="email"
-            value={formData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            className={cn(
-              'w-full px-3 py-2 rounded-lg shadow-sm transition-colors',
-              'bg-white text-gray-900 placeholder-gray-400 border border-gray-300',
-              'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
-              'dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-500',
-              errors.email ? 'border-red-300 dark:border-red-700' : ''
+          <div className="relative">
+            <input
+              type="email"
+              id="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              autoComplete="email"
+              className={cn(
+                'w-full px-3 py-2 rounded-lg shadow-sm transition-colors',
+                'bg-white text-gray-900 placeholder-gray-400 border border-gray-300',
+                'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
+                'dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-500',
+                errors.email ? 'border-red-300 dark:border-red-700' : '',
+                isPrefilled && formData.email ? 'pr-10' : ''
+              )}
+              placeholder={t('scheduling.form.email')}
+              disabled={isLoading}
+              required
+              aria-invalid={!!errors.email}
+            />
+            {isPrefilled && formData.email && !formData.name && (
+              <button
+                type="button"
+                onClick={handleClearPrefilled}
+                className="absolute right-2 top-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                title={t('scheduling.form.clear_prefilled')}
+                aria-label={t('scheduling.form.clear_prefilled')}
+              >
+                <X className="w-4 h-4" />
+              </button>
             )}
-            placeholder={t('scheduling.form.email')}
-            disabled={isLoading}
-            required
-          />
+          </div>
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+            <p className="mt-1 text-sm text-red-600" role="alert">{errors.email}</p>
           )}
         </div>
 
@@ -204,6 +279,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
             </div>
           </label>
           <textarea
+            ref={notesRef}
             id="notes"
             value={formData.notes}
             onChange={(e) => handleInputChange('notes', e.target.value)}
@@ -237,7 +313,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
             </span>
           </label>
           {errors.consent && (
-            <p className="mt-1 text-sm text-red-600">{errors.consent}</p>
+            <p className="mt-1 text-sm text-red-600" role="alert">{errors.consent}</p>
           )}
         </div>
 

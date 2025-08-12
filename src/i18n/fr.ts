@@ -290,6 +290,7 @@ const fr: TranslationDictionary = {
       consent_label: 'J\'accepte de recevoir les confirmations de réservation et les mises à jour par email. Vous pouvez vous désabonner à tout moment.',
       submit: 'Planifier la réunion',
       booking: 'Réservation...',
+      clear_prefilled: 'Effacer',
     },
     common: {
       back: 'Retour',
@@ -314,6 +315,13 @@ const fr: TranslationDictionary = {
       no_slots_available: 'Aucun créneau disponible pour cette date.',
       select_time: 'Sélectionnez une heure',
       times_shown_in: 'Heures affichées en',
+    },
+    errors: {
+      network: 'Erreur de connexion au service de planification. Vérifiez votre connexion internet.',
+      not_found: 'Service de planification non trouvé. Contactez le support technique.',
+      server_error: 'Erreur serveur du service de planification. Réessayez plus tard.',
+      invalid_json: 'Le service de planification est indisponible (réponse non-JSON) — vérifiez la configuration.',
+      generic: 'Le service de planification est temporairement indisponible',
     },
     time: {
       minutes: 'minutes',

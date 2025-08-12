@@ -290,6 +290,7 @@ const en: TranslationDictionary = {
       consent_label: 'I agree to receive booking confirmations and updates via email. You can unsubscribe at any time.',
       submit: 'Schedule Meeting',
       booking: 'Booking...',
+      clear_prefilled: 'Clear',
     },
     common: {
       back: 'Back',
@@ -314,6 +315,13 @@ const en: TranslationDictionary = {
       no_slots_available: 'No available times for this date.',
       select_time: 'Select a time',
       times_shown_in: 'Times shown in',
+    },
+    errors: {
+      network: 'Connection error to scheduling service. Please check your internet connection.',
+      not_found: 'Scheduling service not found. Please contact technical support.',
+      server_error: 'Scheduling service server error. Please try again later.',
+      invalid_json: 'Scheduling service is unavailable (non-JSON response) — check configuration.',
+      generic: 'Scheduling service is temporarily unavailable',
     },
     time: {
       minutes: 'minutes',
