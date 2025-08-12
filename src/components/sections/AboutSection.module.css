@@ -65,23 +65,39 @@
 }
 
 .titleFirstWord {
+  /* Fallback color for browsers that don't support gradient text */
+  color: #3b82f6;
   background: linear-gradient(135deg, #374151 0%, #3b82f6 50%, #8b5cf6 100%);
-  background-clip: text;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-fill-color: transparent;
-  /* Ensure Safari compatibility */
-  color: transparent;
+}
+
+/* Fallback for unsupported browsers */
+@supports not (-webkit-background-clip: text) {
+  .titleFirstWord {
+    color: #3b82f6 !important;
+    -webkit-text-fill-color: initial !important;
+  }
 }
 
 .titleSecondPart {
+  /* Fallback color for browsers that don't support gradient text */
+  color: #8b5cf6;
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  background-clip: text;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-fill-color: transparent;
-  /* Ensure Safari compatibility */
-  color: transparent;
+}
+
+/* Fallback for unsupported browsers */
+@supports not (-webkit-background-clip: text) {
+  .titleSecondPart {
+    color: #8b5cf6 !important;
+    -webkit-text-fill-color: initial !important;
+  }
 }
 
 .subtitle {
