@@ -24,7 +24,7 @@ function resolveApiUrl(url: string): string {
     if (!base) return url;
     if (/^https?:\/\//i.test(url)) return url;
 
-    const normalizedBase = base.replace(/\/$/,'');
+    const normalizedBase = base.replace(/\/$/, '');
     const normalizedPath = url.startsWith('/') ? url : `/${url}`;
     return `${normalizedBase}${normalizedPath}`;
   } catch {
@@ -124,25 +124,19 @@ export async function safeJson(response: Response, url?: string): Promise<unknow
 }
 
 /**
- * Get admin authentication header only if both env vars are present
- * Returns empty object if either is missing to avoid "Basic undefined:undefined"
+ * DEPRECATED: getAdminAuthHeader
+ * We no longer inject Basic Auth credentials from VITE_* into frontend requests,
+ * because anything prefixed with VITE_ is bundled client-side. The admin now
+ * authenticates via login flow and relies on cookie-based session (credentials: 'include').
+ * This function remains for backward compatibility and returns an empty object.
  */
 export function getAdminAuthHeader(): Record<string, string> {
-  const username = import.meta.env.VITE_ADMIN_USERNAME;
-  const password = import.meta.env.VITE_ADMIN_PASSWORD;
-
-  if (username && password && username.trim() && password.trim()) {
-    return {
-      'Authorization': `Basic ${btoa(`${username}:${password}`)}`
-    };
-  }
-
   return {};
 }
 
 /**
- * Fetch JSON with proper headers, authentication, and comprehensive error handling
- * Automatically adds Accept header, credentials, and admin auth if available
+ * Fetch JSON with proper headers and comprehensive error handling
+ * Automatically adds Accept header and credentials for session handling
  */
 export async function fetchJSON(url: string, init: RequestInit = {}): Promise<unknown> {
   const finalUrl = resolveApiUrl(url);
@@ -153,6 +147,7 @@ export async function fetchJSON(url: string, init: RequestInit = {}): Promise<un
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        // getAdminAuthHeader() intentionally returns {} now
         ...getAdminAuthHeader(),
         ...init.headers,
       },
