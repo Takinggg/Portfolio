@@ -42,11 +42,11 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Animated gradient orbs */}
+      {/* Animated gradient orbs - reduced opacity to prevent visual interference */}
       <motion.div 
         className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl"
         style={{
-          background: 'linear-gradient(135deg, rgba(103, 126, 234, 0.1), rgba(118, 75, 162, 0.1))'
+          background: 'linear-gradient(135deg, rgba(103, 126, 234, 0.05), rgba(118, 75, 162, 0.05))'
         }}
         animate={{
           x: [0, 100, 0],
@@ -64,7 +64,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       <motion.div 
         className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full blur-3xl"
         style={{
-          background: 'linear-gradient(45deg, rgba(240, 147, 251, 0.08), rgba(79, 172, 254, 0.08))'
+          background: 'linear-gradient(45deg, rgba(240, 147, 251, 0.04), rgba(79, 172, 254, 0.04))'
         }}
         animate={{
           x: [0, -80, 0],
@@ -82,7 +82,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       <motion.div 
         className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full blur-3xl"
         style={{
-          background: 'linear-gradient(315deg, rgba(103, 126, 234, 0.06), rgba(240, 147, 251, 0.06))'
+          background: 'linear-gradient(315deg, rgba(103, 126, 234, 0.03), rgba(240, 147, 251, 0.03))'
         }}
         animate={{
           x: [0, -40, 40, 0],
