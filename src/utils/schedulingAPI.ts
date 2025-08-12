@@ -63,12 +63,21 @@ class SchedulingAPI {
    */
   async createBooking(request: BookingRequest): Promise<BookingResponse> {
     const url = `${API_BASE}/book`;
+
+    // Defensive normalization to avoid backend VALIDATION_ERRORs
+    const payload: any = {
+      ...request,
+      eventTypeId: Number((request as any).eventTypeId),
+      start: new Date(request.start).toISOString(),
+      end: new Date(request.end).toISOString(),
+    };
+
     return fetchJson(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(payload),
     });
   }
 
