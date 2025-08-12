@@ -75,6 +75,24 @@ export function initializeSchedulingRoutes(
   const bookingService = new BookingService(db, actionTokenSecret);
   const emailService = new EmailNotificationService(db);
 
+  // Initialize new notification service
+  const initializeNotificationService = async () => {
+    try {
+      const { NotificationService } = await import('../notifications/notifier.js');
+      const notificationService = new NotificationService(db);
+      
+      // Connect notification service to booking service
+      bookingService.setNotificationService(notificationService);
+      
+      console.log('✅ Notification service connected to booking service');
+    } catch (error) {
+      console.error('❌ Failed to initialize notification service in routes:', error);
+    }
+  };
+  
+  // Initialize notifications asynchronously
+  initializeNotificationService();
+
   // Apply rate limiting to all scheduling routes
   router.use(generalRateLimit);
 

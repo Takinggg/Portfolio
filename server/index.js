@@ -1025,6 +1025,30 @@ try {
   // Don't exit - admin panel is optional
 }
 
+// Initialize notification system
+try {
+  const { NotificationService } = await import('./notifications/notifier.js');
+  const { ReminderScheduler } = await import('./notifications/reminderScheduler.js');
+  const { BookingService } = await import('./scheduling/booking-service.js');
+  
+  // Create notification service
+  const notificationService = new NotificationService(db);
+  
+  // Create reminder scheduler
+  const reminderScheduler = new ReminderScheduler(db, notificationService);
+  
+  // Integrate notification service with booking service
+  // This would require updating the booking service initialization in routing
+  
+  // Start reminder scheduler
+  reminderScheduler.start();
+  
+  console.log('✅ Notification system initialized successfully');
+} catch (error) {
+  console.error('❌ Failed to initialize notification system:', error);
+  // Don't exit - notifications are optional
+}
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   const allowedOrigins = getAllowedOrigins();

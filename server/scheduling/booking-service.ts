@@ -23,6 +23,7 @@ export class BookingService {
   private slotEngine: SlotEngine;
   private actionTokenSecret: string;
   private actionTokenTTL: number;
+  private notificationService?: any; // Will be injected to avoid circular dependency
 
   constructor(
     db: Database.Database, 
@@ -33,6 +34,13 @@ export class BookingService {
     this.slotEngine = new SlotEngine(db);
     this.actionTokenSecret = actionTokenSecret;
     this.actionTokenTTL = actionTokenTTLHours;
+  }
+
+  /**
+   * Set notification service (to avoid circular dependencies)
+   */
+  setNotificationService(notificationService: any): void {
+    this.notificationService = notificationService;
   }
 
   /**
@@ -123,6 +131,21 @@ export class BookingService {
         return { success: false, error: 'Failed to retrieve booking details' };
       }
 
+      // Send notification emails asynchronously
+      if (this.notificationService) {
+        try {
+          // Schedule reminders
+          this.notificationService.scheduleReminders(bookingId);
+          
+          // Send confirmation email (don't await to avoid blocking)
+          this.notificationService.sendBookingConfirmation(bookingUuid, rescheduleToken, cancelToken)
+            .catch((error: any) => console.error('Error sending booking confirmation:', error));
+        } catch (error) {
+          console.error('Error handling notifications:', error);
+          // Don't fail the booking if notifications fail
+        }
+      }
+
       // Convert times to user timezone for response
       const userTimezone = request.timezone || 'UTC';
       const startInUserTz = startTime.setZone(userTimezone);
@@ -195,12 +218,37 @@ export class BookingService {
         return { success: false, message: 'Selected time slot is not available' };
       }
 
+      // Store old start time for notification
+      const oldStartTime = booking.start_time;
+
       // Update booking
       this.db.prepare(`
         UPDATE bookings 
         SET start_time = ?, end_time = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `).run(newStart.toISO(), newEnd.toISO(), booking.id);
+
+      // Send reschedule notification asynchronously
+      if (this.notificationService) {
+        try {
+          // Reschedule reminders for new time
+          this.notificationService.scheduleReminders(booking.id);
+          
+          // Generate new tokens
+          const rescheduleToken = this.generateActionToken(tokenPayload.bookingUuid, 'reschedule');
+          const cancelToken = this.generateActionToken(tokenPayload.bookingUuid, 'cancel');
+          
+          // Send reschedule notification (don't await to avoid blocking)
+          this.notificationService.sendRescheduleNotification(
+            tokenPayload.bookingUuid, 
+            oldStartTime, 
+            rescheduleToken, 
+            cancelToken
+          ).catch((error: any) => console.error('Error sending reschedule notification:', error));
+        } catch (error) {
+          console.error('Error handling reschedule notifications:', error);
+        }
+      }
 
       return { 
         success: true, 
@@ -244,6 +292,22 @@ export class BookingService {
             updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `).run(request.reason || null, booking.id);
+
+      // Send cancellation notification asynchronously
+      if (this.notificationService) {
+        try {
+          // Cancel scheduled reminders
+          this.db.prepare('DELETE FROM reminders WHERE booking_id = ? AND sent_at IS NULL').run(booking.id);
+          
+          // Send cancellation notification (don't await to avoid blocking)
+          this.notificationService.sendCancellationNotification(
+            tokenPayload.bookingUuid, 
+            request.reason
+          ).catch((error: any) => console.error('Error sending cancellation notification:', error));
+        } catch (error) {
+          console.error('Error handling cancellation notifications:', error);
+        }
+      }
 
       return { 
         success: true, 
@@ -455,6 +519,22 @@ export class BookingService {
 
       stmt.run(reason || 'Cancelled by admin', bookingUuid);
 
+      // Send cancellation notification asynchronously
+      if (this.notificationService) {
+        try {
+          // Cancel scheduled reminders
+          this.db.prepare('DELETE FROM reminders WHERE booking_id = ? AND sent_at IS NULL').run(booking.id);
+          
+          // Send cancellation notification (don't await to avoid blocking)
+          this.notificationService.sendCancellationNotification(
+            bookingUuid, 
+            reason || 'Cancelled by admin'
+          ).catch((error: any) => console.error('Error sending admin cancellation notification:', error));
+        } catch (error) {
+          console.error('Error handling admin cancellation notifications:', error);
+        }
+      }
+
       return {
         success: true,
         message: 'Booking cancelled successfully',
@@ -510,6 +590,9 @@ export class BookingService {
         return { success: false, message: 'Selected time slot is not available' };
       }
 
+      // Store old start time for notification
+      const oldStartTime = booking.start_time;
+
       // Update booking
       const stmt = this.db.prepare(`
         UPDATE bookings 
@@ -521,6 +604,28 @@ export class BookingService {
       `);
 
       stmt.run(newStart, newEnd, bookingUuid);
+
+      // Send reschedule notification asynchronously
+      if (this.notificationService) {
+        try {
+          // Reschedule reminders for new time
+          this.notificationService.scheduleReminders(booking.id);
+          
+          // Generate new tokens
+          const rescheduleToken = this.generateActionToken(bookingUuid, 'reschedule');
+          const cancelToken = this.generateActionToken(bookingUuid, 'cancel');
+          
+          // Send reschedule notification (don't await to avoid blocking)
+          this.notificationService.sendRescheduleNotification(
+            bookingUuid, 
+            oldStartTime, 
+            rescheduleToken, 
+            cancelToken
+          ).catch((error: any) => console.error('Error sending admin reschedule notification:', error));
+        } catch (error) {
+          console.error('Error handling admin reschedule notifications:', error);
+        }
+      }
 
       return {
         success: true,
