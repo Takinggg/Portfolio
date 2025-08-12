@@ -65,23 +65,75 @@
 }
 
 .titleFirstWord {
+  /* Safari-compatible gradient text with fallback */
   background: linear-gradient(135deg, #374151 0%, #3b82f6 50%, #8b5cf6 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-fill-color: transparent;
-  /* Ensure Safari compatibility */
-  color: transparent;
+  /* Fallback color for better browser support */
+  color: #374151;
+  /* Ensure gradient works properly */
+  display: inline-block;
+  /* Safari-specific fixes */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  /* Ensure text is visible */
+  position: relative;
+  z-index: 10;
+}
+
+/* Progressive enhancement - better gradient support */
+@supports (background-clip: text) and (-webkit-background-clip: text) {
+  .titleFirstWord {
+    color: transparent;
+    background-size: 100% 100%;
+  }
+}
+
+/* Safari fallback - show regular text if gradient fails */
+@supports not (background-clip: text) or not (-webkit-background-clip: text) {
+  .titleFirstWord {
+    background: none;
+    color: #374151;
+    -webkit-text-fill-color: #374151;
+  }
 }
 
 .titleSecondPart {
+  /* Safari-compatible gradient text with fallback */
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-fill-color: transparent;
-  /* Ensure Safari compatibility */
-  color: transparent;
+  /* Fallback color for better browser support */
+  color: #3b82f6;
+  /* Ensure gradient works properly */
+  display: inline-block;
+  /* Safari-specific fixes */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  /* Ensure text is visible */
+  position: relative;
+  z-index: 10;
+}
+
+/* Progressive enhancement - better gradient support */
+@supports (background-clip: text) and (-webkit-background-clip: text) {
+  .titleSecondPart {
+    color: transparent;
+    background-size: 100% 100%;
+  }
+}
+
+/* Safari fallback - show regular text if gradient fails */
+@supports not (background-clip: text) or not (-webkit-background-clip: text) {
+  .titleSecondPart {
+    background: none;
+    color: #3b82f6;
+    -webkit-text-fill-color: #3b82f6;
+  }
 }
 
 .subtitle {
