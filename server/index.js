@@ -177,6 +177,7 @@ const initializeDatabase = () => {
       message TEXT NOT NULL,
       budget TEXT,
       timeline TEXT,
+      booking_uuid TEXT,
       is_read BOOLEAN DEFAULT FALSE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -196,6 +197,7 @@ const initializeDatabase = () => {
     
     CREATE INDEX IF NOT EXISTS idx_contact_messages_is_read ON contact_messages(is_read);
     CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(created_at);
+    CREATE INDEX IF NOT EXISTS idx_contact_messages_booking_uuid ON contact_messages(booking_uuid);
     
     CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
   `);
@@ -218,6 +220,21 @@ const initializeDatabase = () => {
   }
 
   console.log('Database initialized successfully');
+  
+  // Migration: Add booking_uuid column if it doesn't exist
+  try {
+    const tableInfo = db.prepare("PRAGMA table_info(contact_messages)").all();
+    const hasBookingUuid = tableInfo.some(column => column.name === 'booking_uuid');
+    
+    if (!hasBookingUuid) {
+      console.log('Adding booking_uuid column to contact_messages table...');
+      db.prepare('ALTER TABLE contact_messages ADD COLUMN booking_uuid TEXT').run();
+      db.prepare('CREATE INDEX IF NOT EXISTS idx_contact_messages_booking_uuid ON contact_messages(booking_uuid)').run();
+      console.log('Migration completed: booking_uuid column added');
+    }
+  } catch (error) {
+    console.error('Migration error:', error);
+  }
 };
 
 const insertSampleData = () => {
@@ -962,15 +979,42 @@ app.get('/api/contact/messages', authenticateToken, (req, res) => {
 app.put('/api/contact/messages/:id', authenticateToken, (req, res) => {
   try {
     const { id } = req.params;
-    const { is_read } = req.body;
+    const { is_read, booking_uuid } = req.body;
 
-    db.prepare(`
-      UPDATE contact_messages 
-      SET is_read = ?, updated_at = CURRENT_TIMESTAMP 
-      WHERE id = ?
-    `).run(is_read ? 1 : 0, id);
+    // Build update query dynamically based on provided fields
+    const updates = [];
+    const params = [];
+    
+    if (is_read !== undefined) {
+      updates.push('is_read = ?');
+      params.push(is_read ? 1 : 0);
+    }
+    
+    if (booking_uuid !== undefined) {
+      updates.push('booking_uuid = ?');
+      params.push(booking_uuid);
+    }
+    
+    if (updates.length === 0) {
+      return res.status(400).json({ error: { message: 'No fields to update' } });
+    }
+    
+    updates.push('updated_at = CURRENT_TIMESTAMP');
+    params.push(id);
+
+    const query = `UPDATE contact_messages SET ${updates.join(', ')} WHERE id = ?`;
+    const result = db.prepare(query).run(...params);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: { message: 'Message not found' } });
+    }
 
     const updatedMessage = db.prepare('SELECT * FROM contact_messages WHERE id = ?').get(id);
+    
+    // Log booking liaison for audit trail
+    if (booking_uuid !== undefined) {
+      console.log(`Contact message ${id} ${booking_uuid ? 'linked to' : 'unlinked from'} booking ${booking_uuid || 'null'}`);
+    }
     
     res.json({ 
       data: {
@@ -979,6 +1023,7 @@ app.put('/api/contact/messages/:id', authenticateToken, (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Error updating contact message:', error);
     res.status(500).json({ error: { message: error.message } });
   }
 });

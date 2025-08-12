@@ -70,6 +70,7 @@ export interface SchedulingWidgetProps {
   triggerClassName?: string;
   triggerText?: string;
   defaultEventTypeId?: number;
+  autoOpen?: boolean; // New prop to auto-open the widget
   onBookingComplete?: (booking: BookingResponse['booking']) => void;
   onError?: (error: string) => void;
 }
