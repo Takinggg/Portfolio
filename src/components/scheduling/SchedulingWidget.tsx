@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, X } from 'lucide-react';
-import { SchedulingWidgetProps, SchedulingState, SchedulingStep } from '../../types/scheduling';
+import { SchedulingWidgetProps, SchedulingState } from '../../types/scheduling';
 import { schedulingAPI } from '../../utils/schedulingAPI';
 import { cn } from '../../lib/utils';
 import { useI18n } from '../../hooks/useI18n';
@@ -109,19 +109,58 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
     }));
   };
 
+  // Preflight validation helper functions
+  const validateBookingData = (bookingData: Parameters<typeof schedulingAPI.createBooking>[0]): string | null => {
+    // Validate eventTypeId
+    const eventTypeId = Number(bookingData.eventTypeId);
+    if (!Number.isFinite(eventTypeId) || eventTypeId <= 0) {
+      return t('scheduling.errors.invalid_event_type');
+    }
+
+    // Validate start date
+    const startDate = new Date(bookingData.start);
+    if (isNaN(startDate.getTime())) {
+      return t('scheduling.errors.invalid_start_time');
+    }
+
+    // Validate end date
+    const endDate = new Date(bookingData.end);
+    if (isNaN(endDate.getTime())) {
+      return t('scheduling.errors.invalid_end_time');
+    }
+
+    // Validate that end is after start
+    if (endDate <= startDate) {
+      return t('scheduling.errors.end_before_start');
+    }
+
+    return null; // No validation errors
+  };
+
   const handleBookingSubmit = async (bookingData: Parameters<typeof schedulingAPI.createBooking>[0]) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
+    // Preflight validation - check data before API call
+    const validationError = validateBookingData(bookingData);
+    if (validationError) {
+      setState(prev => ({ 
+        ...prev, 
+        error: validationError,
+        isLoading: false 
+      }));
+      return;
+    }
+    
     // Normalize payload to avoid backend VALIDATION_ERROR
-    const normalized = {
+    const normalized: Parameters<typeof schedulingAPI.createBooking>[0] = {
       ...bookingData,
-      eventTypeId: Number((bookingData as any).eventTypeId),
+      eventTypeId: Number(bookingData.eventTypeId),
       start: new Date(bookingData.start).toISOString(),
       end: new Date(bookingData.end).toISOString(),
     };
     
     try {
-      console.log('Creating booking with data:', normalized); // Debug log
+      console.log('Creating booking with normalized data:', normalized); // Debug log
       const response = await schedulingAPI.createBooking(normalized);
       
       if (response.success && response.booking) {
@@ -143,7 +182,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
       if (error instanceof Error) {
         errorMessage = error.message;
         
-        // Log detailed error for debugging
+        // Log detailed error for debugging including backend validation details
         console.error('Booking creation failed:', {
           error: error.message,
           bookingData: normalized,
@@ -222,7 +261,6 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
   };
 
   const canProceedToSlots = state.selectedEventType !== null;
-  const canProceedToForm = state.selectedSlot !== null;
 
   return (
     <>

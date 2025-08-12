@@ -362,6 +362,9 @@ const fr: TranslationDictionary = {
       invalid_event_type: 'Type d\'événement invalide. Veuillez sélectionner un type d\'événement valide.',
       invalid_email: 'Adresse email invalide. Veuillez saisir une adresse email valide.',
       invalid_time: 'Créneau horaire invalide. Veuillez sélectionner un nouveau créneau.',
+      invalid_start_time: 'Heure de début invalide. Veuillez sélectionner une heure de début valide.',
+      invalid_end_time: 'Heure de fin invalide. Veuillez sélectionner une heure de fin valide.',
+      end_before_start: 'L\'heure de fin doit être après l\'heure de début. Veuillez vérifier votre sélection.',
     },
     time: {
       minutes: 'minutes',
