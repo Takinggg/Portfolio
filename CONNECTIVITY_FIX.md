@@ -120,3 +120,37 @@ Environment variables automatically configured:
 - `JWT_SECRET` (auto-generated)
 
 The application now successfully handles both development and production environments with proper fallbacks and clear error messaging.
+
+## Scheduling API Configuration
+
+### Important Note for Netlify Deployments
+When deploying the frontend on Netlify with a catch-all redirect (which is common for SPAs), **do NOT call same-origin `/api/scheduling` from the frontend**. Instead, always use the `VITE_API_BASE_URL` environment variable to point to your actual backend server.
+
+**Correct Configuration:**
+```
+VITE_API_BASE_URL = "https://back.maxence.design/api"
+```
+
+This ensures scheduling API calls go to: `https://back.maxence.design/api/scheduling/event-types`
+
+**Avoid:** Relying on same-origin `/api/scheduling` calls, which would incorrectly try to hit `netlify-domain/api/scheduling`.
+
+### Scheduling API Health Check
+To verify your scheduling API is accessible:
+
+```bash
+curl https://back.maxence.design/api/scheduling/health
+# Expected response: {"ok":true,"ts":1234567890}
+
+curl https://back.maxence.design/api/scheduling/event-types
+# Expected response: {"eventTypes":[...]} with Content-Type: application/json
+```
+
+### Error Handling
+The scheduling widget now provides user-friendly French error messages:
+- **Non-JSON responses**: "Le service de planification est indisponible (réponse non-JSON)"
+- **Network errors**: "Erreur de connexion au service de planification"
+- **404 errors**: "Service de planification non trouvé"
+- **500 errors**: "Erreur serveur du service de planification"
+
+Technical errors are logged to the console with full diagnostic information including target URLs.

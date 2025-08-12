@@ -1,18 +1,41 @@
 // Scheduling API client for frontend
 import { EventType, GetAvailabilityResponse, BookingRequest, BookingResponse } from '../types/scheduling';
+import { API_CONFIG } from '../config';
 
-const API_BASE = '/api/scheduling';
+const API_BASE = `${API_CONFIG.baseUrl.replace(/\/$/, '')}/scheduling`;
+
+/**
+ * Helper function to fetch JSON with content-type validation
+ */
+async function fetchJson(url: string, init?: RequestInit): Promise<any> {
+  const response = await fetch(url, init);
+  
+  const contentType = response.headers.get('content-type') || '';
+  
+  if (!contentType.includes('application/json')) {
+    const textContent = await response.text();
+    const snippet = textContent.substring(0, 100);
+    const errorMessage = `Scheduling API expected JSON but received: ${contentType}. First 100 chars: ${snippet}`;
+    console.error('Scheduling API error:', { url, contentType, snippet, status: response.status });
+    throw new Error(errorMessage);
+  }
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    console.error('Scheduling API error:', { url, status: response.status, error });
+    throw new Error(error.error || `HTTP ${response.status}: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
 
 class SchedulingAPI {
   /**
    * Get all available event types
    */
   async getEventTypes(): Promise<{ eventTypes: EventType[] }> {
-    const response = await fetch(`${API_BASE}/event-types`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch event types: ${response.statusText}`);
-    }
-    return response.json();
+    const url = `${API_BASE}/event-types`;
+    return fetchJson(url);
   }
 
   /**
@@ -31,45 +54,30 @@ class SchedulingAPI {
       timezone
     });
 
-    const response = await fetch(`${API_BASE}/availability?${params}`);
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }));
-      throw new Error(error.error || `Failed to fetch availability: ${response.statusText}`);
-    }
-    return response.json();
+    const url = `${API_BASE}/availability?${params}`;
+    return fetchJson(url);
   }
 
   /**
    * Create a new booking
    */
   async createBooking(request: BookingRequest): Promise<BookingResponse> {
-    const response = await fetch(`${API_BASE}/book`, {
+    const url = `${API_BASE}/book`;
+    return fetchJson(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
-
-    const result = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(result.error || `Failed to create booking: ${response.statusText}`);
-    }
-
-    return result;
   }
 
   /**
    * Get booking details by UUID
    */
   async getBooking(uuid: string): Promise<any> {
-    const response = await fetch(`${API_BASE}/booking/${uuid}`);
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }));
-      throw new Error(error.error || `Failed to fetch booking: ${response.statusText}`);
-    }
-    return response.json();
+    const url = `${API_BASE}/booking/${uuid}`;
+    return fetchJson(url);
   }
 
   /**
@@ -88,7 +96,8 @@ class SchedulingAPI {
     newStart: string,
     newEnd: string
   ): Promise<any> {
-    const response = await fetch(`${API_BASE}/reschedule`, {
+    const url = `${API_BASE}/reschedule`;
+    return fetchJson(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -100,14 +109,6 @@ class SchedulingAPI {
         newEnd,
       }),
     });
-
-    const result = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(result.error || `Failed to reschedule booking: ${response.statusText}`);
-    }
-
-    return result;
   }
 
   /**
@@ -118,7 +119,8 @@ class SchedulingAPI {
     token: string,
     reason?: string
   ): Promise<any> {
-    const response = await fetch(`${API_BASE}/cancel`, {
+    const url = `${API_BASE}/cancel`;
+    return fetchJson(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -129,14 +131,6 @@ class SchedulingAPI {
         reason,
       }),
     });
-
-    const result = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(result.error || `Failed to cancel booking: ${response.statusText}`);
-    }
-
-    return result;
   }
 }
 

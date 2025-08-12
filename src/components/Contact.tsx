@@ -165,7 +165,21 @@ const Contact = memo(() => {
 
   const handleSchedulingError = useCallback((error: string) => {
     console.error('Scheduling error:', error);
-    setErrorMessage(`Scheduling error: ${error}`);
+    
+    // Convert technical errors to French user-friendly messages
+    let friendlyMessage = 'Le service de planification est temporairement indisponible';
+    
+    if (error.includes('expected JSON but received')) {
+      friendlyMessage = 'Le service de planification est indisponible (réponse non-JSON) — vérifiez la configuration VITE_API_BASE_URL';
+    } else if (error.includes('Failed to fetch') || error.includes('Network')) {
+      friendlyMessage = 'Erreur de connexion au service de planification. Vérifiez votre connexion internet.';
+    } else if (error.includes('HTTP 404')) {
+      friendlyMessage = 'Service de planification non trouvé. Contactez le support technique.';
+    } else if (error.includes('HTTP 500')) {
+      friendlyMessage = 'Erreur serveur du service de planification. Réessayez plus tard.';
+    }
+    
+    setErrorMessage(friendlyMessage);
     setSubmitStatus('error');
   }, []);
 
