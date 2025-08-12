@@ -144,8 +144,22 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create rule');
+        // Try to parse error as JSON, but handle cases where server returns HTML
+        let errorMessage;
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.error || `HTTP ${response.status}`;
+          } else {
+            // Server returned non-JSON (likely HTML error page)
+            errorMessage = `Server error (${response.status})`;
+          }
+        } catch (parseError) {
+          // JSON parsing failed - server likely returned HTML
+          errorMessage = `Server error (${response.status})`;
+        }
+        throw new Error(errorMessage);
       }
 
       setShowRuleForm(false);
@@ -181,8 +195,22 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create exception');
+        // Try to parse error as JSON, but handle cases where server returns HTML
+        let errorMessage;
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.error || `HTTP ${response.status}`;
+          } else {
+            // Server returned non-JSON (likely HTML error page)
+            errorMessage = `Server error (${response.status})`;
+          }
+        } catch (parseError) {
+          // JSON parsing failed - server likely returned HTML
+          errorMessage = `Server error (${response.status})`;
+        }
+        throw new Error(errorMessage);
       }
 
       setShowExceptionForm(false);
@@ -214,8 +242,22 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete rule');
+        // Try to parse error as JSON, but handle cases where server returns HTML
+        let errorMessage;
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.error || `HTTP ${response.status}`;
+          } else {
+            // Server returned non-JSON (likely HTML error page)
+            errorMessage = `Server error (${response.status})`;
+          }
+        } catch (parseError) {
+          // JSON parsing failed - server likely returned HTML
+          errorMessage = `Server error (${response.status})`;
+        }
+        throw new Error(errorMessage);
       }
 
       await fetchData();
@@ -237,8 +279,22 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete exception');
+        // Try to parse error as JSON, but handle cases where server returns HTML
+        let errorMessage;
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.error || `HTTP ${response.status}`;
+          } else {
+            // Server returned non-JSON (likely HTML error page)
+            errorMessage = `Server error (${response.status})`;
+          }
+        } catch (parseError) {
+          // JSON parsing failed - server likely returned HTML
+          errorMessage = `Server error (${response.status})`;
+        }
+        throw new Error(errorMessage);
       }
 
       await fetchData();

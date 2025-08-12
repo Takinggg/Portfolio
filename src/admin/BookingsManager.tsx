@@ -153,8 +153,22 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to cancel booking');
+        // Try to parse error as JSON, but handle cases where server returns HTML
+        let errorMessage;
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.error || `HTTP ${response.status}`;
+          } else {
+            // Server returned non-JSON (likely HTML error page)
+            errorMessage = `Server error (${response.status})`;
+          }
+        } catch (parseError) {
+          // JSON parsing failed - server likely returned HTML
+          errorMessage = `Server error (${response.status})`;
+        }
+        throw new Error(errorMessage);
       }
 
       setShowCancelModal(false);
@@ -181,8 +195,22 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to reschedule booking');
+        // Try to parse error as JSON, but handle cases where server returns HTML
+        let errorMessage;
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            errorMessage = errorData.error || `HTTP ${response.status}`;
+          } else {
+            // Server returned non-JSON (likely HTML error page)
+            errorMessage = `Server error (${response.status})`;
+          }
+        } catch (parseError) {
+          // JSON parsing failed - server likely returned HTML
+          errorMessage = `Server error (${response.status})`;
+        }
+        throw new Error(errorMessage);
       }
 
       setShowRescheduleModal(false);

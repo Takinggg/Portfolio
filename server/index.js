@@ -1090,6 +1090,45 @@ app.delete('/api/projects/:id', authenticateToken, (req, res) => {
   }
 });
 
+// Analytics routes
+app.post('/api/analytics/performance', (req, res) => {
+  try {
+    const { metric, value, timestamp, url, userAgent } = req.body;
+    
+    // Validate basic structure
+    if (!metric || typeof value !== 'number') {
+      return res.status(400).json({
+        error: { message: 'Invalid metric data: metric and numeric value required' }
+      });
+    }
+    
+    // Log performance data in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`📊 Performance Metric - ${metric}:`, {
+        value: Math.round(value),
+        url: url || 'unknown',
+        timestamp: timestamp || Date.now()
+      });
+    }
+    
+    // In production, you might want to:
+    // - Store in database for analysis
+    // - Send to external analytics service
+    // - Aggregate metrics for monitoring
+    
+    // For now, just acknowledge receipt
+    res.status(200).json({ 
+      success: true,
+      message: 'Performance metric received'
+    });
+  } catch (error) {
+    console.error('Analytics endpoint error:', error);
+    res.status(500).json({
+      error: { message: 'Failed to process performance metric' }
+    });
+  }
+});
+
 // Contact routes
 app.post('/api/contact', async (req, res) => {
   try {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, Clock, Users, MapPin } from 'lucide-react';
+import { handleApiError, safeJsonParse } from '../lib/api-utils';
 
 interface EventType {
   id: number;
@@ -55,10 +56,10 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        await handleApiError(response, 'Failed to fetch event types');
       }
 
-      const result = await response.json();
+      const result = await safeJsonParse(response);
       setEventTypes(result.eventTypes || []);
       setError(null);
     } catch (err) {
@@ -90,8 +91,7 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+        await handleApiError(response, 'Failed to save event type');
       }
 
       await fetchEventTypes();
@@ -127,8 +127,7 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+        await handleApiError(response, 'Failed to delete event type');
       }
 
       await fetchEventTypes();
