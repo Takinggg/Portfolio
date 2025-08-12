@@ -187,16 +187,16 @@ class ApiClient {
     return result;
   }
 
-  async updateMessageStatus(id: string, is_read: boolean) {
+  async updateMessageStatus(id: string, updates: { is_read?: boolean; booking_uuid?: string | null }) {
     const result = await this.request(`/contact/messages/${id}`, {
       method: 'PUT',
-      body: JSON.stringify({ is_read })
+      body: JSON.stringify(updates)
     });
     if (isNetworkError(result.error)) {
       const list = loadLocalMessages();
       const idx = list.findIndex(m => m.id === id);
       if (idx !== -1) {
-        list[idx] = { ...list[idx], is_read, updated_at: new Date().toISOString() };
+        list[idx] = { ...list[idx], ...updates, updated_at: new Date().toISOString() };
         saveLocalMessages(list);
         return { data: list[idx], error: null };
       }
@@ -259,7 +259,8 @@ export const projectService = {
 export const contactService = {
   submitMessage: (messageData: any) => apiClient.submitMessage(messageData),
   getAllMessages: (filters?: any) => apiClient.getAllMessages(filters),
-  updateMessageStatus: (id: string, is_read: boolean) => apiClient.updateMessageStatus(id, is_read),
+  updateMessageStatus: (id: string, updates: { is_read?: boolean; booking_uuid?: string | null }) => apiClient.updateMessageStatus(id, updates),
+  updateMessage: (id: string, updates: { is_read?: boolean; booking_uuid?: string | null }) => apiClient.updateMessageStatus(id, updates),
   deleteMessage: (id: string) => apiClient.deleteMessage(id),
   getUnreadCount: () => apiClient.getUnreadCount()
 };

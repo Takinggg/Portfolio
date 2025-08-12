@@ -4,6 +4,7 @@ import { SchedulingWidgetProps, SchedulingState, SchedulingStep } from '../../ty
 import { schedulingAPI } from '../../utils/schedulingAPI';
 import { cn } from '../../lib/utils';
 import { useI18n } from '../../hooks/useI18n';
+import { Portal } from '../../lib/portal';
 import EventTypeCard from './EventTypeCard';
 import SlotSelector from './SlotSelector';
 import BookingForm from './BookingForm';
@@ -14,6 +15,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
   triggerClassName = '',
   triggerText,
   defaultEventTypeId,
+  autoOpen = false,
   onBookingComplete,
   onError
 }) => {
@@ -31,6 +33,13 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
     error: null,
     userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
   });
+
+  // Auto-open if autoOpen prop is true
+  useEffect(() => {
+    if (autoOpen) {
+      setIsOpen(true);
+    }
+  }, [autoOpen]);
 
   // Load event types when widget opens
   useEffect(() => {
@@ -186,49 +195,54 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
 
   return (
     <>
-      {/* Trigger button */}
-      <button
-        onClick={(e) => {
-          e.preventDefault(); // Prevent any default behavior
-          e.stopPropagation(); // Prevent event bubbling
-          setIsOpen(true);
-        }}
-        className={cn(
-          'inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg',
-          'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-          'transition-colors duration-200',
-          triggerClassName
-        )}
-      >
-        <Calendar className="w-5 h-5" />
-        <span>{triggerText || t('scheduling.trigger.schedule_meeting')}</span>
-      </button>
-
-      {/* Modal */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 z-50 overflow-y-auto"
-          style={{ overflowAnchor: 'none' }} // Prevent scroll anchoring
+      {/* Trigger button - hidden when autoOpen is true */}
+      {!autoOpen && (
+        <button
+          type="button" // Explicitly set button type
+          onClick={(e) => {
+            e.preventDefault(); // Prevent any default behavior
+            e.stopPropagation(); // Prevent event bubbling
+            setIsOpen(true);
+          }}
+          className={cn(
+            'inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg',
+            'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+            'transition-colors duration-200',
+            triggerClassName
+          )}
         >
-          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            {/* Backdrop */}
-            <div
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClose();
-              }}
-            />
+          <Calendar className="w-5 h-5" />
+          <span>{triggerText || t('scheduling.trigger.schedule_meeting')}</span>
+        </button>
+      )}
 
-            {/* Modal content */}
-            <div 
-              className={cn(
-                'inline-block w-full max-w-2xl my-8 overflow-hidden text-left align-middle transition-all transform',
-                'bg-white shadow-xl rounded-lg',
-                className
-              )}
-              onClick={(e) => e.stopPropagation()} // Prevent clicks from bubbling to backdrop
-            >
+      {/* Modal rendered in Portal */}
+      {isOpen && (
+        <Portal>
+          <div 
+            className="fixed inset-0 z-50 overflow-y-auto"
+            style={{ overflowAnchor: 'none' }} // Prevent scroll anchoring
+          >
+            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClose();
+                }}
+              />
+
+              {/* Modal content */}
+              <div 
+                className={cn(
+                  'inline-block w-full max-w-2xl my-8 overflow-hidden text-left align-middle transition-all transform',
+                  'bg-white shadow-xl rounded-lg',
+                  className
+                )}
+                onClick={(e) => e.stopPropagation()} // Prevent clicks from bubbling to backdrop
+                onMouseDown={(e) => e.stopPropagation()} // Stop propagation on mouse down as well
+              >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -367,7 +381,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
               )}
             </div>
           </div>
-        </div>
+        </Portal>
       )}
     </>
   );
