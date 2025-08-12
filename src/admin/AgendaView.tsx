@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin, User, Mail } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, User } from 'lucide-react';
+import { useI18n } from '../context/I18nProvider';
+import * as adminApi from '../utils/adminApi';
 
 interface Booking {
   id: number;
@@ -27,6 +29,7 @@ interface AgendaViewProps {
 }
 
 const AgendaView: React.FC<AgendaViewProps> = ({ isAuthenticated }) => {
+  const { t } = useI18n();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +69,6 @@ const AgendaView: React.FC<AgendaViewProps> = ({ isAuthenticated }) => {
   function getMonthDays(date: Date): Date[] {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const days = [];
     
@@ -102,18 +104,8 @@ const AgendaView: React.FC<AgendaViewProps> = ({ isAuthenticated }) => {
           end_date: formatDateForAPI(endDate),
         });
 
-        const response = await fetch(`/api/admin/scheduling/bookings?${queryParams}`, {
-          headers: {
-            'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        let fetchedBookings = result.bookings || [];
+        const result = await adminApi.fetchJSON(`/api/admin/scheduling/bookings?${queryParams}`);
+        const fetchedBookings = result.bookings || [];
 
         // Sort bookings by start time
         fetchedBookings.sort((a: Booking, b: Booking) => 
@@ -123,7 +115,11 @@ const AgendaView: React.FC<AgendaViewProps> = ({ isAuthenticated }) => {
         setBookings(fetchedBookings);
       } catch (err) {
         console.error('Error fetching bookings:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch bookings');
+        // Use i18n key if it's one of our error keys, otherwise use generic message
+        const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
+          ? t(err.message) 
+          : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
