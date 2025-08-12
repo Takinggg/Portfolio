@@ -17,6 +17,58 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
+// Environment configuration validation
+const validateEnvironment = () => {
+  const warnings = [];
+  const errors = [];
+  
+  // Critical environment variables
+  if (!process.env.ACTION_TOKEN_SECRET) {
+    if (process.env.NODE_ENV === 'production') {
+      errors.push('ACTION_TOKEN_SECRET is required in production');
+    } else {
+      warnings.push('ACTION_TOKEN_SECRET not set, using default (not secure for production)');
+    }
+  }
+  
+  if (process.env.NODE_ENV === 'production' && JWT_SECRET === 'your-secret-key-change-in-production') {
+    errors.push('JWT_SECRET must be changed in production');
+  }
+  
+  // Optional but recommended environment variables
+  if (!process.env.SMTP_HOST && process.env.NODE_ENV === 'production') {
+    warnings.push('SMTP_HOST not configured, emails will be logged only');
+  }
+  
+  if (!process.env.FRONTEND_URL) {
+    warnings.push('FRONTEND_URL not set, using default for email links');
+  }
+  
+  // Log warnings
+  warnings.forEach(warning => {
+    console.warn(`⚠️  ${warning}`);
+  });
+  
+  // Handle errors
+  if (errors.length > 0) {
+    console.error('❌ Environment configuration errors:');
+    errors.forEach(error => {
+      console.error(`   - ${error}`);
+    });
+    if (process.env.NODE_ENV === 'production') {
+      console.error('Refusing to start in production with configuration errors');
+      process.exit(1);
+    } else {
+      console.warn('⚠️  Continuing in development mode with configuration errors');
+    }
+  }
+  
+  return { warnings, errors };
+};
+
+// Validate environment on startup
+const envValidation = validateEnvironment();
+
 // Helper function to read package.json version
 const getVersion = () => {
   try {
@@ -80,11 +132,42 @@ app.use((req, res, next) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Global error handler:', err);
-  res.status(err.status || 500).json({
+  // Log detailed error information
+  console.error('Global error handler:', {
+    error: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+    body: req.body,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Determine appropriate error message
+  let errorMessage = 'Internal server error';
+  let statusCode = err.status || 500;
+  
+  // Provide more specific error messages based on error type
+  if (err.code === 'SQLITE_CONSTRAINT') {
+    errorMessage = 'Database constraint violation';
+    statusCode = 400;
+  } else if (err.code === 'SQLITE_BUSY') {
+    errorMessage = 'Database is temporarily busy, please try again';
+    statusCode = 503;
+  } else if (err.code === 'ENOTFOUND' || err.code === 'ECONNREFUSED') {
+    errorMessage = 'External service unavailable';
+    statusCode = 503;
+  } else if (err.message && process.env.NODE_ENV === 'development') {
+    errorMessage = err.message;
+  }
+  
+  res.status(statusCode).json({
     error: { 
-      message: err.message || 'Internal server error',
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+      message: errorMessage,
+      code: err.code,
+      ...(process.env.NODE_ENV === 'development' && { 
+        stack: err.stack,
+        originalMessage: err.message 
+      })
     }
   });
 });
@@ -103,12 +186,47 @@ const getDatabasePath = () => {
   return path.join(__dirname, 'portfolio.db');
 };
 
+// Database health check function
+const checkDatabaseHealth = (db) => {
+  try {
+    // Test basic database connectivity
+    const result = db.prepare('SELECT 1 as test').get();
+    if (result.test !== 1) {
+      throw new Error('Database connectivity test failed');
+    }
+    
+    // Check if critical tables exist
+    const tables = db.prepare(`
+      SELECT name FROM sqlite_master 
+      WHERE type='table' AND name IN ('users', 'contact_messages', 'bookings', 'event_types')
+    `).all();
+    
+    const expectedTables = ['users', 'contact_messages'];
+    const missingTables = expectedTables.filter(table => 
+      !tables.some(t => t.name === table)
+    );
+    
+    if (missingTables.length > 0) {
+      console.warn(`⚠️  Missing tables: ${missingTables.join(', ')}`);
+    }
+    
+    console.log('✅ Database health check passed');
+    return { healthy: true, tables: tables.length };
+  } catch (error) {
+    console.error('❌ Database health check failed:', error.message);
+    return { healthy: false, error: error.message };
+  }
+};
+
 const dbPath = getDatabasePath();
 console.log(`Using database path: ${dbPath}`);
 const db = new Database(dbPath);
 
 // Enable foreign keys
 db.pragma('foreign_keys = ON');
+
+// Perform database health check
+const dbHealth = checkDatabaseHealth(db);
 
 // Initialize database schema
 const initializeDatabase = () => {
@@ -403,9 +521,79 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Health endpoint
+// Health endpoint with comprehensive status
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true, ts: Date.now() });
+  try {
+    const health = {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: getVersion(),
+      environment: process.env.NODE_ENV || 'development',
+      services: {}
+    };
+    
+    // Database health
+    const dbStatus = checkDatabaseHealth(db);
+    health.services.database = {
+      status: dbStatus.healthy ? 'healthy' : 'unhealthy',
+      details: dbStatus.healthy ? 
+        { tables: dbStatus.tables } : 
+        { error: dbStatus.error }
+    };
+    
+    // Scheduling service health
+    try {
+      const eventTypes = db.prepare('SELECT COUNT(*) as count FROM event_types WHERE is_active = 1').get();
+      health.services.scheduling = {
+        status: 'healthy',
+        details: { active_event_types: eventTypes.count }
+      };
+    } catch (error) {
+      health.services.scheduling = {
+        status: 'unhealthy',
+        details: { error: error.message }
+      };
+    }
+    
+    // Email service health
+    const smtpConfigured = !!process.env.SMTP_HOST;
+    health.services.email = {
+      status: smtpConfigured ? 'configured' : 'development_only',
+      details: { 
+        smtp_configured: smtpConfigured,
+        mode: smtpConfigured ? 'production' : 'logging_only'
+      }
+    };
+    
+    // Environment configuration status
+    health.services.configuration = {
+      status: envValidation.errors.length === 0 ? 'healthy' : 'warnings',
+      details: {
+        warnings: envValidation.warnings.length,
+        errors: envValidation.errors.length
+      }
+    };
+    
+    // Overall status
+    const hasUnhealthyServices = Object.values(health.services).some(
+      service => service.status === 'unhealthy'
+    );
+    
+    if (hasUnhealthyServices) {
+      health.status = 'degraded';
+      res.status(503);
+    }
+    
+    res.json(health);
+  } catch (error) {
+    console.error('Health check error:', error);
+    res.status(500).json({
+      status: 'error',
+      timestamp: new Date().toISOString(),
+      error: error.message
+    });
+  }
 });
 
 // Auth routes
@@ -903,34 +1091,84 @@ app.delete('/api/projects/:id', authenticateToken, (req, res) => {
 });
 
 // Contact routes
-app.post('/api/contact', (req, res) => {
+app.post('/api/contact', async (req, res) => {
   try {
     const messageData = req.body;
+    
+    // Validate required fields
+    if (!messageData.name || !messageData.email || !messageData.subject || !messageData.message) {
+      return res.status(400).json({
+        error: { 
+          message: 'Name, email, subject, and message are required',
+          code: 'MISSING_REQUIRED_FIELDS'
+        }
+      });
+    }
 
     // Generate a UUID for the message
     const messageId = randomUUID();
-
-    const result = db.prepare(`
-      INSERT INTO contact_messages (id, name, email, subject, message, budget, timeline)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      messageId, messageData.name, messageData.email, messageData.subject,
-      messageData.message, messageData.budget, messageData.timeline
-    );
-
-    // Get the newly created message by its ID (not rowid)
-    const newMessage = db.prepare('SELECT * FROM contact_messages WHERE id = ?').get(messageId);
     
-    if (!newMessage) {
-      console.error('Failed to retrieve created message with id:', messageId);
-      return res.status(500).json({ 
-        error: { message: 'Failed to retrieve created message' } 
+    // Log contact attempt
+    console.log(`📝 Contact form submission from ${messageData.email} (${messageData.name})`);
+
+    try {
+      const result = db.prepare(`
+        INSERT INTO contact_messages (id, name, email, subject, message, budget, timeline)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        messageId, messageData.name, messageData.email, messageData.subject,
+        messageData.message, messageData.budget, messageData.timeline
+      );
+
+      // Get the newly created message by its ID (not rowid)
+      const newMessage = db.prepare('SELECT * FROM contact_messages WHERE id = ?').get(messageId);
+      
+      if (!newMessage) {
+        console.error('Failed to retrieve created contact message with id:', messageId);
+        return res.status(500).json({ 
+          error: { 
+            message: 'Message was saved but could not be retrieved',
+            code: 'RETRIEVAL_ERROR'
+          }
+        });
+      }
+      
+      console.log(`✅ Contact message saved successfully: ${messageId}`);
+      res.json({ data: newMessage });
+      
+    } catch (dbError) {
+      console.error('Database error saving contact message:', dbError);
+      
+      // Provide specific error messages for common database issues
+      let errorMessage = 'Failed to save contact message';
+      let errorCode = 'DATABASE_ERROR';
+      
+      if (dbError.code === 'SQLITE_CONSTRAINT') {
+        errorMessage = 'Invalid data provided';
+        errorCode = 'CONSTRAINT_VIOLATION';
+      } else if (dbError.code === 'SQLITE_BUSY') {
+        errorMessage = 'System is temporarily busy, please try again';
+        errorCode = 'SYSTEM_BUSY';
+      }
+      
+      return res.status(500).json({
+        error: { 
+          message: errorMessage,
+          code: errorCode,
+          ...(process.env.NODE_ENV === 'development' && { details: dbError.message })
+        }
       });
     }
     
-    res.json({ data: newMessage });
   } catch (error) {
-    res.status(500).json({ error: { message: error.message } });
+    console.error('Unexpected error in contact form:', error);
+    res.status(500).json({ 
+      error: { 
+        message: 'An unexpected error occurred while processing your message',
+        code: 'UNEXPECTED_ERROR',
+        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      }
+    });
   }
 });
 
@@ -1051,30 +1289,38 @@ app.get('/api/contact/unread-count', authenticateToken, (req, res) => {
 initializeDatabase();
 
 // Initialize scheduling system
+let schedulingHealthy = false;
 try {
   initializeSchedulingSchema(db);
   initializeSchedulingRoutes(app, db);
+  schedulingHealthy = true;
   console.log('✅ Scheduling system initialized successfully');
 } catch (error) {
   console.error('❌ Failed to initialize scheduling system:', error);
-  process.exit(1);
+  console.error('This is a critical error, scheduling features will be unavailable');
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
 }
 
-// Initialize admin scheduling system
+// Initialize admin scheduling system (optional)
+let adminSchedulingHealthy = false;
 try {
   const { initializeAdminSchedulingRoutes } = await import('./admin/routes.js');
   initializeAdminSchedulingRoutes(app, db);
+  adminSchedulingHealthy = true;
   console.log('✅ Admin scheduling system initialized successfully');
 } catch (error) {
   console.error('❌ Failed to initialize admin scheduling system:', error);
+  console.warn('Admin scheduling panel will not be available');
   // Don't exit - admin panel is optional
 }
 
-// Initialize notification system
+// Initialize notification system (optional)
+let notificationServiceHealthy = false;
 try {
   const { NotificationService } = await import('./notifications/notifier.js');
   const { ReminderScheduler } = await import('./notifications/reminderScheduler.js');
-  const { BookingService } = await import('./scheduling/booking-service.js');
   
   // Create notification service
   const notificationService = new NotificationService(db);
@@ -1082,17 +1328,24 @@ try {
   // Create reminder scheduler
   const reminderScheduler = new ReminderScheduler(db, notificationService);
   
-  // Integrate notification service with booking service
-  // This would require updating the booking service initialization in routing
-  
   // Start reminder scheduler
   reminderScheduler.start();
   
+  notificationServiceHealthy = true;
   console.log('✅ Notification system initialized successfully');
 } catch (error) {
   console.error('❌ Failed to initialize notification system:', error);
-  // Don't exit - notifications are optional
+  console.warn('Notification services will not be available, but booking will still work');
+  // Don't exit - notifications are optional, bookings should still work
 }
+
+// Add service status to global scope for health checks
+global.serviceStatus = {
+  scheduling: schedulingHealthy,
+  adminScheduling: adminSchedulingHealthy,
+  notifications: notificationServiceHealthy,
+  database: dbHealth.healthy
+};
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

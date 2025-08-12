@@ -91,13 +91,16 @@ export function initializeSchedulingRoutes(app, db) {
       const validation = getAvailabilitySchema.safeParse(req.query);
       
       if (!validation.success) {
+        console.warn('Invalid availability request:', validation.error.errors);
         return res.status(400).json({
           error: 'Invalid request parameters',
+          code: 'VALIDATION_ERROR',
           details: validation.error.errors
         });
       }
 
       const { eventTypeId, start, end, timezone } = validation.data;
+      console.log(`🔍 Getting availability for event type ${eventTypeId} from ${start} to ${end}`);
 
       // Validate date range
       const startDate = DateTime.fromISO(start);
@@ -105,38 +108,74 @@ export function initializeSchedulingRoutes(app, db) {
       
       if (endDate <= startDate) {
         return res.status(400).json({
-          error: 'End date must be after start date'
+          error: 'End date must be after start date',
+          code: 'INVALID_DATE_RANGE'
         });
       }
 
       const daysDiff = endDate.diff(startDate, 'days').days;
       if (daysDiff > 90) {
         return res.status(400).json({
-          error: 'Date range cannot exceed 90 days'
+          error: 'Date range cannot exceed 90 days',
+          code: 'DATE_RANGE_TOO_LARGE'
         });
       }
 
       // Get event type
       const eventType = db.prepare('SELECT * FROM event_types WHERE id = ? AND is_active = 1').get(eventTypeId);
       if (!eventType) {
+        console.warn(`Event type ${eventTypeId} not found or inactive`);
         return res.status(404).json({
-          error: 'Event type not found'
+          error: 'Event type not found or inactive',
+          code: 'EVENT_TYPE_NOT_FOUND'
         });
       }
 
-      // Get available slots
-      const availableSlots = await slotEngine.getAvailableSlots(eventTypeId, start, end, timezone);
+      // Get available slots with error handling
+      let availableSlots = [];
+      try {
+        availableSlots = await slotEngine.getAvailableSlots(eventTypeId, start, end, timezone);
+        console.log(`📅 Found ${availableSlots.length} available slots for event type ${eventTypeId}`);
+        
+        // Add debugging info in development
+        if (process.env.NODE_ENV === 'development' && availableSlots.length === 0) {
+          console.warn('⚠️  No available slots found. This could be due to:');
+          console.warn('   - No availability rules configured');
+          console.warn('   - All slots are booked');
+          console.warn('   - Date range is outside allowed booking window');
+          console.warn('   - Event type configuration issues');
+        }
+      } catch (slotError) {
+        console.error('Error getting available slots:', slotError);
+        throw new Error('Failed to calculate available time slots');
+      }
 
       res.json({
         eventType,
         availableSlots,
-        timezone
+        timezone,
+        debug: process.env.NODE_ENV === 'development' ? {
+          eventTypeId,
+          dateRange: { start, end },
+          daysDiff,
+          slotsFound: availableSlots.length
+        } : undefined
       });
 
     } catch (error) {
-      console.error('Error getting availability:', error);
+      console.error('Error getting availability:', {
+        error: error.message,
+        stack: error.stack,
+        query: req.query
+      });
+      
       res.status(500).json({
-        error: 'Internal server error'
+        error: 'Availability service is temporarily unavailable',
+        code: 'AVAILABILITY_SERVICE_ERROR',
+        timestamp: new Date().toISOString(),
+        ...(process.env.NODE_ENV === 'development' && { 
+          details: error.message 
+        })
       });
     }
   });
@@ -172,17 +211,23 @@ export function initializeSchedulingRoutes(app, db) {
       const validation = bookingRequestSchema.safeParse(req.body);
       
       if (!validation.success) {
+        console.warn('Invalid booking request:', validation.error.errors);
         return res.status(400).json({
           error: 'Invalid booking request',
+          code: 'VALIDATION_ERROR',
           details: validation.error.errors
         });
       }
 
       const bookingRequest = validation.data;
+      console.log(`📅 Creating booking for ${bookingRequest.email} - ${bookingRequest.name}`);
+      
       const result = await bookingService.createBooking(bookingRequest);
 
       if (result.success) {
-        // Send confirmation email asynchronously
+        console.log(`✅ Booking created successfully: ${result.booking?.uuid}`);
+        
+        // Send confirmation email asynchronously (with fallback)
         if (result.booking) {
           const booking = getBookingWithDetails(db, result.booking.uuid);
           if (booking) {
@@ -193,28 +238,58 @@ export function initializeSchedulingRoutes(app, db) {
               result.booking.rescheduleToken,
               result.booking.cancelToken
             ).catch(error => {
-              console.error('Error sending booking confirmation email:', error);
+              console.error('❌ Error sending booking confirmation email:', error);
+              console.warn('⚠️  Booking was created successfully but email notification failed');
+              // Don't fail the booking if email fails
             });
           }
         }
 
         res.status(201).json(result);
       } else {
-        // Determine appropriate status code based on error
+        console.warn(`❌ Booking creation failed: ${result.error}`);
+        
+        // Determine appropriate status code and provide more specific error information
         let statusCode = 400;
-        if (result.error?.includes('no longer available')) {
+        let errorCode = 'BOOKING_ERROR';
+        
+        if (result.error?.includes('no longer available') || result.error?.includes('not available')) {
           statusCode = 409; // Conflict
+          errorCode = 'SLOT_UNAVAILABLE';
         } else if (result.error?.includes('not found')) {
           statusCode = 404;
+          errorCode = 'RESOURCE_NOT_FOUND';
+        } else if (result.error?.includes('Invalid') || result.error?.includes('required')) {
+          statusCode = 400;
+          errorCode = 'INVALID_REQUEST';
+        } else if (result.error?.includes('server error') || result.error?.includes('database')) {
+          statusCode = 500;
+          errorCode = 'INTERNAL_ERROR';
         }
 
-        res.status(statusCode).json(result);
+        res.status(statusCode).json({
+          ...result,
+          code: errorCode,
+          timestamp: new Date().toISOString()
+        });
       }
 
     } catch (error) {
-      console.error('Error creating booking:', error);
+      console.error('Unexpected error creating booking:', {
+        error: error.message,
+        stack: error.stack,
+        request: req.body
+      });
+      
       res.status(500).json({
-        error: 'Internal server error'
+        success: false,
+        error: 'Scheduling service is temporarily unavailable. Please try again in a few minutes.',
+        code: 'SERVICE_UNAVAILABLE',
+        timestamp: new Date().toISOString(),
+        ...(process.env.NODE_ENV === 'development' && { 
+          details: error.message,
+          stack: error.stack 
+        })
       });
     }
   });

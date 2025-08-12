@@ -23,72 +23,129 @@ export class BookingService {
      */
     async createBooking(request) {
         try {
+            console.log(`📅 BookingService: Creating booking for ${request.email}`);
+            
             // Validate the booking request
             const validation = this.validateBookingRequest(request);
             if (!validation.valid) {
+                console.warn(`❌ Booking validation failed: ${validation.error}`);
                 return { success: false, error: validation.error };
             }
+            
             // Get event type
             const eventType = this.getEventType(request.eventTypeId);
             if (!eventType) {
-                return { success: false, error: 'Event type not found' };
+                console.warn(`❌ Event type ${request.eventTypeId} not found`);
+                return { success: false, error: 'Event type not found or is not active' };
             }
+            
+            console.log(`✅ Event type found: ${eventType.name} (${eventType.duration_minutes} minutes)`);
+            
             // Parse and validate times
             const startTime = DateTime.fromISO(request.start);
             const endTime = DateTime.fromISO(request.end);
             if (!startTime.isValid || !endTime.isValid) {
-                return { success: false, error: 'Invalid start or end time' };
+                console.warn(`❌ Invalid date format - start: ${request.start}, end: ${request.end}`);
+                return { success: false, error: 'Invalid start or end time format. Please use ISO 8601 format.' };
             }
+            
             // Validate duration matches event type
             const duration = endTime.diff(startTime, 'minutes').minutes;
             if (duration !== eventType.duration_minutes) {
-                return { success: false, error: 'Duration does not match event type' };
+                console.warn(`❌ Duration mismatch - requested: ${duration} minutes, required: ${eventType.duration_minutes} minutes`);
+                return { success: false, error: `Duration must be exactly ${eventType.duration_minutes} minutes for this event type` };
             }
+            
+            // Validate booking is not in the past
+            const now = DateTime.now();
+            if (startTime <= now) {
+                console.warn(`❌ Booking time is in the past: ${startTime.toISO()}`);
+                return { success: false, error: 'Cannot book appointments in the past' };
+            }
+            
+            // Check minimum lead time
+            const leadTimeHours = startTime.diff(now, 'hours').hours;
+            if (leadTimeHours < eventType.min_lead_time_hours) {
+                console.warn(`❌ Insufficient lead time: ${leadTimeHours} hours, required: ${eventType.min_lead_time_hours} hours`);
+                return { success: false, error: `This event type requires at least ${eventType.min_lead_time_hours} hours advance notice` };
+            }
+            
+            // Check maximum advance booking
+            const advanceDays = startTime.diff(now, 'days').days;
+            if (advanceDays > eventType.max_advance_days) {
+                console.warn(`❌ Too far in advance: ${advanceDays} days, maximum: ${eventType.max_advance_days} days`);
+                return { success: false, error: `Cannot book more than ${eventType.max_advance_days} days in advance` };
+            }
+            
+            console.log(`🔍 Checking slot availability for ${startTime.toISO()} - ${endTime.toISO()}`);
+            
             // Check if slot is still available (anti-double-booking)
             const isAvailable = await this.isSlotAvailable(request.eventTypeId, startTime.toJSDate(), endTime.toJSDate());
             if (!isAvailable) {
-                return { success: false, error: 'Selected time slot is no longer available' };
+                console.warn(`❌ Time slot no longer available: ${startTime.toISO()}`);
+                return { success: false, error: 'Selected time slot is no longer available. Please choose a different time.' };
             }
+            
+            console.log(`✅ Slot is available, creating booking...`);
+            
             // Generate booking UUID
             const bookingUuid = crypto.randomUUID();
+            
             // Start transaction
             const transaction = this.db.transaction(() => {
-                // Insert booking
-                const bookingResult = this.db.prepare(`
-          INSERT INTO bookings (uuid, event_type_id, start_time, end_time, status)
-          VALUES (?, ?, ?, ?, 'confirmed')
-        `).run(bookingUuid, request.eventTypeId, startTime.toISO(), endTime.toISO());
-                const bookingId = bookingResult.lastInsertRowid;
-                // Insert invitee
-                this.db.prepare(`
-          INSERT INTO invitees (booking_id, name, email, timezone, notes)
-          VALUES (?, ?, ?, ?, ?)
-        `).run(bookingId, request.name, request.email, request.timezone || 'UTC', request.notes || null);
-                // Insert question answers if provided
-                if (request.answers && request.answers.length > 0) {
-                    const answerStmt = this.db.prepare(`
-            INSERT INTO question_answers (booking_id, question_id, answer_text)
-            VALUES (?, ?, ?)
-          `);
-                    for (const answer of request.answers) {
-                        answerStmt.run(bookingId, answer.questionId, answer.answer);
+                try {
+                    // Insert booking
+                    const bookingResult = this.db.prepare(`
+                      INSERT INTO bookings (uuid, event_type_id, start_time, end_time, status)
+                      VALUES (?, ?, ?, ?, 'confirmed')
+                    `).run(bookingUuid, request.eventTypeId, startTime.toISO(), endTime.toISO());
+                    const bookingId = bookingResult.lastInsertRowid;
+                    
+                    // Insert invitee
+                    this.db.prepare(`
+                      INSERT INTO invitees (booking_id, name, email, timezone, notes)
+                      VALUES (?, ?, ?, ?, ?)
+                    `).run(bookingId, request.name, request.email, request.timezone || 'UTC', request.notes || null);
+                    
+                    // Insert question answers if provided
+                    if (request.answers && request.answers.length > 0) {
+                        const answerStmt = this.db.prepare(`
+                          INSERT INTO question_answers (booking_id, question_id, answer_text)
+                          VALUES (?, ?, ?)
+                        `);
+                        for (const answer of request.answers) {
+                            answerStmt.run(bookingId, answer.questionId, answer.answer);
+                        }
                     }
+                    
+                    return bookingId;
+                } catch (dbError) {
+                    console.error('Database error during booking creation:', dbError);
+                    throw dbError;
                 }
-                return bookingId;
             });
+            
             const bookingId = transaction();
+            console.log(`✅ Booking created in database with ID: ${bookingId}`);
+            
             // Generate action tokens
             const rescheduleToken = this.generateActionToken(bookingUuid, 'reschedule');
             const cancelToken = this.generateActionToken(bookingUuid, 'cancel');
+            
             // Get booking details for response
             const booking = this.getBookingDetails(bookingUuid);
             if (!booking) {
-                return { success: false, error: 'Failed to retrieve booking details' };
+                console.error(`❌ Failed to retrieve booking details for UUID: ${bookingUuid}`);
+                return { success: false, error: 'Booking was created but details could not be retrieved' };
             }
+            
             // Convert times to user timezone for response
             const userTimezone = request.timezone || 'UTC';
             const startInUserTz = startTime.setZone(userTimezone);
             const endInUserTz = endTime.setZone(userTimezone);
+            
+            console.log(`✅ Booking completed successfully: ${bookingUuid}`);
+            
             return {
                 success: true,
                 booking: {
@@ -110,8 +167,29 @@ export class BookingService {
             };
         }
         catch (error) {
-            console.error('Error creating booking:', error);
-            return { success: false, error: 'Internal server error' };
+            console.error('Unexpected error creating booking:', {
+                error: error.message,
+                stack: error.stack,
+                request: { 
+                    eventTypeId: request.eventTypeId,
+                    email: request.email,
+                    start: request.start,
+                    end: request.end
+                }
+            });
+            
+            // Provide more specific error messages based on error type
+            let errorMessage = 'Failed to create booking due to a system error';
+            
+            if (error.code === 'SQLITE_CONSTRAINT') {
+                errorMessage = 'Booking conflicts with existing data';
+            } else if (error.code === 'SQLITE_BUSY') {
+                errorMessage = 'System is temporarily busy, please try again';
+            } else if (error.message?.includes('FOREIGN KEY')) {
+                errorMessage = 'Invalid event type or booking configuration';
+            }
+            
+            return { success: false, error: errorMessage };
         }
     }
     /**
