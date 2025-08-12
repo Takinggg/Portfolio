@@ -11,6 +11,7 @@ interface ContactMessage {
   message: string;
   budget?: string;
   timeline?: string;
+  booking_uuid?: string | null;
   is_read: boolean;
   created_at: string;
   updated_at: string;
@@ -26,6 +27,8 @@ const MessagesManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewingMessage, setViewingMessage] = useState<ContactMessage | null>(null);
+  const [bookingDetails, setBookingDetails] = useState<any | null>(null);
+  const [loadingBooking, setLoadingBooking] = useState(false);
 
   useEffect(() => {
     fetchMessages();
@@ -134,6 +137,41 @@ const MessagesManager: React.FC = () => {
     });
   };
 
+  const fetchBookingDetails = async (bookingUuid: string) => {
+    setLoadingBooking(true);
+    try {
+      // Fetch booking details from the scheduling API
+      const response = await fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001/api'}/admin/scheduling/bookings/${bookingUuid}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setBookingDetails(data.data || data);
+      } else {
+        console.error('Failed to fetch booking details:', response.status);
+        setBookingDetails(null);
+      }
+    } catch (error) {
+      console.error('Error fetching booking details:', error);
+      setBookingDetails(null);
+    } finally {
+      setLoadingBooking(false);
+    }
+  };
+
+  // Effect to fetch booking details when viewing a message with booking
+  useEffect(() => {
+    if (viewingMessage && viewingMessage.booking_uuid) {
+      fetchBookingDetails(viewingMessage.booking_uuid);
+    } else {
+      setBookingDetails(null);
+    }
+  }, [viewingMessage]);
+
   const unreadCount = messages.filter(msg => !msg.is_read).length;
 
   if (loading) {
@@ -186,6 +224,12 @@ const MessagesManager: React.FC = () => {
                 }`}>
                   {viewingMessage.is_read ? 'Lu' : 'Non lu'}
                 </span>
+                {viewingMessage.booking_uuid && (
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium flex items-center gap-1">
+                    <Calendar size={12} />
+                    RDV pris
+                  </span>
+                )}
               </div>
               
               <div className="flex items-center gap-4 text-sm text-gray-600">
@@ -242,6 +286,101 @@ const MessagesManager: React.FC = () => {
                 <div>
                   <span className="text-sm font-semibold text-gray-700">Timeline :</span>
                   <p className="text-gray-900">{viewingMessage.timeline}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Booking Details */}
+          {viewingMessage.booking_uuid && (
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Calendar size={18} className="text-green-600" />
+                Rendez-vous programmé
+              </h4>
+              {loadingBooking ? (
+                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                    <span className="text-blue-700">Chargement des détails du rendez-vous...</span>
+                  </div>
+                </div>
+              ) : bookingDetails ? (
+                <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-sm font-semibold text-gray-700">Type de réunion :</span>
+                      <p className="text-gray-900">{bookingDetails.event_type?.name || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-semibold text-gray-700">Durée :</span>
+                      <p className="text-gray-900">{bookingDetails.event_type?.duration_minutes || 'N/A'} minutes</p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-semibold text-gray-700">Date et heure :</span>
+                      <p className="text-gray-900">{formatDate(bookingDetails.start_time)}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-semibold text-gray-700">Statut :</span>
+                      <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                        bookingDetails.status === 'confirmed' 
+                          ? 'bg-green-100 text-green-800' 
+                          : bookingDetails.status === 'cancelled'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {bookingDetails.status === 'confirmed' ? 'Confirmé' : 
+                         bookingDetails.status === 'cancelled' ? 'Annulé' : 
+                         bookingDetails.status || 'En attente'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-sm font-semibold text-gray-700">Localisation :</span>
+                      <p className="text-gray-900">
+                        {bookingDetails.event_type?.location_type === 'visio' ? 'Visioconférence' :
+                         bookingDetails.event_type?.location_type === 'telephone' ? 'Téléphone' :
+                         bookingDetails.event_type?.location_type === 'physique' ? 'En personne' : 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-semibold text-gray-700">Référence :</span>
+                      <p className="text-gray-900 font-mono text-sm">{viewingMessage.booking_uuid}</p>
+                    </div>
+                  </div>
+                  {bookingDetails.notes && (
+                    <div className="mt-4 pt-4 border-t border-green-200">
+                      <span className="text-sm font-semibold text-gray-700">Notes du participant :</span>
+                      <p className="text-gray-900 mt-1">{bookingDetails.notes}</p>
+                    </div>
+                  )}
+                  <div className="mt-4 pt-4 border-t border-green-200 flex gap-3">
+                    <a 
+                      href={`/admin#agenda&booking=${viewingMessage.booking_uuid}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Calendar size={16} />
+                      Voir dans l'agenda
+                    </a>
+                    <a 
+                      href={`mailto:${viewingMessage.email}?subject=Concernant votre rendez-vous du ${new Date(bookingDetails.start_time).toLocaleDateString('fr-FR')}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      <Mail size={16} />
+                      Envoyer un email concernant le RDV
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle size={18} className="text-yellow-600" />
+                    <div>
+                      <p className="text-yellow-800 font-medium">Rendez-vous lié mais détails non disponibles</p>
+                      <p className="text-yellow-700 text-sm">Référence : {viewingMessage.booking_uuid}</p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -379,6 +518,12 @@ const MessagesManager: React.FC = () => {
                         </h3>
                         {!message.is_read && (
                           <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        )}
+                        {message.booking_uuid && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                            <Calendar size={12} />
+                            RDV pris
+                          </span>
                         )}
                       </div>
                       

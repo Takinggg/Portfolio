@@ -379,6 +379,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
                   </div>
                 </div>
               )}
+              </div>
             </div>
           </div>
         </Portal>
