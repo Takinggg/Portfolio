@@ -22,7 +22,7 @@ function resolveApiUrl(url: string): string {
   try {
     const base = import.meta.env.VITE_API_BASE_URL as string | undefined;
     if (!base) return url;
-    if (/^https?:\/\/i.test(url)) return url;
+    if (/^https?:\/\//i.test(url)) return url;
 
     const normalizedBase = base.replace(/\/$/,'');
     const normalizedPath = url.startsWith('/') ? url : `/${url}`;
