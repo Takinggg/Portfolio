@@ -65,23 +65,57 @@
 }
 
 .titleFirstWord {
+  /* Strong fallback color for browsers that don't support gradient text */
+  color: #3b82f6 !important;
+  /* Gradient text effect with proper Safari support */
   background: linear-gradient(135deg, #374151 0%, #3b82f6 50%, #8b5cf6 100%);
   background-clip: text;
   -webkit-background-clip: text;
+  /* Only apply transparent fill if background-clip is supported */
   -webkit-text-fill-color: transparent;
+  /* Ensure visibility on unsupported browsers */
   text-fill-color: transparent;
-  /* Ensure Safari compatibility */
-  color: transparent;
+}
+
+/* Safari and Firefox specific fallback using feature detection */
+@supports not (-webkit-background-clip: text) {
+  .titleFirstWord {
+    color: #3b82f6 !important;
+    background: none !important;
+    -webkit-text-fill-color: inherit !important;
+    text-fill-color: inherit !important;
+  }
+  
+  .titleSecondPart {
+    color: #8b5cf6 !important;
+    background: none !important;
+    -webkit-text-fill-color: inherit !important;
+    text-fill-color: inherit !important;
+  }
+}
+
+/* Additional fallback for older browsers */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .titleFirstWord {
+    color: #3b82f6 !important;
+  }
+  
+  .titleSecondPart {
+    color: #8b5cf6 !important;
+  }
 }
 
 .titleSecondPart {
+  /* Strong fallback color for browsers that don't support gradient text */
+  color: #8b5cf6 !important;
+  /* Gradient text effect with proper Safari support */
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   background-clip: text;
   -webkit-background-clip: text;
+  /* Only apply transparent fill if background-clip is supported */
   -webkit-text-fill-color: transparent;
+  /* Ensure visibility on unsupported browsers */
   text-fill-color: transparent;
-  /* Ensure Safari compatibility */
-  color: transparent;
 }
 
 .subtitle {

@@ -79,22 +79,7 @@ export const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         }}
       />
 
-      <motion.div 
-        className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full blur-3xl"
-        style={{
-          background: 'linear-gradient(315deg, rgba(103, 126, 234, 0.06), rgba(240, 147, 251, 0.06))'
-        }}
-        animate={{
-          x: [0, -40, 40, 0],
-          y: [0, 30, -30, 0],
-          scale: [1, 1.1, 0.9, 1],
-        }}
-        transition={{
-          duration: 30,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+      {/* Removed the center orb that was appearing near the photo area */}
     </div>
   );
 };
