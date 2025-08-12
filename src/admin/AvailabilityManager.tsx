@@ -124,7 +124,6 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       alert(message);
     }
   };
-  };
 
   const handleCreateException = async () => {
     try {
@@ -224,8 +223,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                 activeTab === 'rules'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
+              }`}>
               Recurring Rules
             </button>
             <button
@@ -234,8 +232,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                 activeTab === 'exceptions'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
+              }`}>
               Exceptions
             </button>
           </nav>
@@ -249,8 +246,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
             <h2 className="text-xl font-semibold">Weekly Availability Rules</h2>
             <button
               onClick={() => setShowRuleForm(true)}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
+              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               <Plus className="w-4 h-4 mr-2" />
               Add Rule
             </button>
@@ -269,8 +265,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                   <select
                     value={ruleForm.event_type_id}
                     onChange={(e) => setRuleForm({ ...ruleForm, event_type_id: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="">Select Event Type</option>
                     {eventTypes.map((et) => (
                       <option key={et.id} value={et.id}>{et.name}</option>
@@ -285,8 +280,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                   <select
                     value={ruleForm.day_of_week}
                     onChange={(e) => setRuleForm({ ...ruleForm, day_of_week: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     {dayNames.map((day, index) => (
                       <option key={index} value={index}>{day}</option>
                     ))}
@@ -301,8 +295,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                     type="time"
                     value={ruleForm.start_time}
                     onChange={(e) => setRuleForm({ ...ruleForm, start_time: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
                 </div>
 
                 <div>
@@ -313,23 +306,20 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                     type="time"
                     value={ruleForm.end_time}
                     onChange={(e) => setRuleForm({ ...ruleForm, end_time: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
                 </div>
               </div>
 
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   onClick={() => setShowRuleForm(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                >
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                   Cancel
                 </button>
                 <button
                   onClick={handleCreateRule}
                   disabled={!ruleForm.event_type_id}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-                >
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
                   Create Rule
                 </button>
               </div>
@@ -412,8 +402,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
             <h2 className="text-xl font-semibold">Availability Exceptions</h2>
             <button
               onClick={() => setShowExceptionForm(true)}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
+              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               <Plus className="w-4 h-4 mr-2" />
               Add Exception
             </button>
@@ -432,8 +421,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                   <select
                     value={exceptionForm.event_type_id}
                     onChange={(e) => setExceptionForm({ ...exceptionForm, event_type_id: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="">Select Event Type</option>
                     {eventTypes.map((et) => (
                       <option key={et.id} value={et.id}>{et.name}</option>
@@ -449,8 +437,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                     type="date"
                     value={exceptionForm.exception_date}
                     onChange={(e) => setExceptionForm({ ...exceptionForm, exception_date: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
                 </div>
 
                 <div>
@@ -460,8 +447,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                   <select
                     value={exceptionForm.exception_type}
                     onChange={(e) => setExceptionForm({ ...exceptionForm, exception_type: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="unavailable">Unavailable</option>
                     <option value="custom_hours">Custom Hours</option>
                   </select>
@@ -476,8 +462,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                     value={exceptionForm.reason}
                     onChange={(e) => setExceptionForm({ ...exceptionForm, reason: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., Holiday, Vacation"
-                  />
+                    placeholder="e.g., Holiday, Vacation"/>
                 </div>
 
                 {exceptionForm.exception_type === 'custom_hours' && (
@@ -490,8 +475,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                         type="time"
                         value={exceptionForm.start_time}
                         onChange={(e) => setExceptionForm({ ...exceptionForm, start_time: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
                     </div>
 
                     <div>
@@ -502,8 +486,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
                         type="time"
                         value={exceptionForm.end_time}
                         onChange={(e) => setExceptionForm({ ...exceptionForm, end_time: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"/>
                     </div>
                   </>
                 )}
@@ -512,15 +495,13 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   onClick={() => setShowExceptionForm(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                >
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                   Cancel
                 </button>
                 <button
                   onClick={handleCreateException}
                   disabled={!exceptionForm.event_type_id || !exceptionForm.exception_date}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-                >
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
                   Create Exception
                 </button>
               </div>
