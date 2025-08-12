@@ -392,7 +392,8 @@ export class BookingService {
             // Get event type
             const eventType = this.getEventType(booking.event_type_id);
             if (!eventType) {
-                return { success: false, message: 'Event type not found' };
+                console.warn(`❌ Event type ${booking.event_type_id} not found or is inactive`);
+                return { success: false, message: `Event type with ID ${booking.event_type_id} not found or is inactive` };
             }
             // Check if new slot is available (excluding current booking)
             const isSlotAvailable = await this.slotEngine.isSlotAvailable(booking.event_type_id, newStart, newEnd, bookingUuid // Exclude current booking from overlap check

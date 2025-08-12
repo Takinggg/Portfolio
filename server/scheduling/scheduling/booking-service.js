@@ -28,13 +28,20 @@ export class BookingService {
             // Validate the booking request
             const validation = this.validateBookingRequest(request);
             if (!validation.valid) {
+                console.warn(`❌ Booking validation failed: ${validation.error}`);
                 return { success: false, error: validation.error };
             }
+            
+            console.log(`📅 BookingService: Creating booking for ${request.email}`);
+            
             // Get event type
             const eventType = this.getEventType(request.eventTypeId);
             if (!eventType) {
-                return { success: false, error: 'Event type not found' };
+                console.warn(`❌ Event type ${request.eventTypeId} not found or is inactive`);
+                return { success: false, error: `Event type with ID ${request.eventTypeId} not found or is inactive` };
             }
+            
+            console.log(`✅ Event type found: ${eventType.name} (${eventType.duration_minutes} minutes)`);
             // Parse and validate times
             const startTime = DateTime.fromISO(request.start);
             const endTime = DateTime.fromISO(request.end);
@@ -79,6 +86,8 @@ export class BookingService {
                 return bookingId;
             });
             const bookingId = transaction();
+            console.log(`✅ Booking created in database with ID: ${bookingId}`);
+            
             // Generate action tokens
             const rescheduleToken = this.generateActionToken(bookingUuid, 'reschedule');
             const cancelToken = this.generateActionToken(bookingUuid, 'cancel');
@@ -105,6 +114,9 @@ export class BookingService {
             const userTimezone = request.timezone || 'UTC';
             const startInUserTz = startTime.setZone(userTimezone);
             const endInUserTz = endTime.setZone(userTimezone);
+            
+            console.log(`✅ Booking completed successfully: ${bookingUuid}`);
+            
             return {
                 success: true,
                 booking: {
@@ -126,8 +138,29 @@ export class BookingService {
             };
         }
         catch (error) {
-            console.error('Error creating booking:', error);
-            return { success: false, error: 'Internal server error' };
+            console.error('Unexpected error creating booking:', {
+                error: error.message,
+                stack: error.stack,
+                request: { 
+                    eventTypeId: request.eventTypeId,
+                    email: request.email,
+                    start: request.start,
+                    end: request.end
+                }
+            });
+            
+            // Provide more specific error messages based on error type
+            let errorMessage = 'Failed to create booking due to a system error';
+            
+            if (error.code === 'SQLITE_CONSTRAINT') {
+                errorMessage = 'Booking conflicts with existing data';
+            } else if (error.code === 'SQLITE_BUSY') {
+                errorMessage = 'System is temporarily busy, please try again';
+            } else if (error.message?.includes('FOREIGN KEY')) {
+                errorMessage = 'Invalid event type or booking configuration';
+            }
+            
+            return { success: false, error: errorMessage };
         }
     }
     /**
