@@ -10,8 +10,9 @@ export const translationLoaders: Record<Language, TranslationLoader> = {
 
 /**
  * Get translation value by key path (e.g., 'nav.home')
+ * Returns the actual value (string, array, or object) or the key as fallback
  */
-export function getTranslation(dictionary: TranslationDictionary, key: string): string {
+export function getTranslation(dictionary: TranslationDictionary, key: string): any {
   const keys = key.split('.');
   let current: any = dictionary;
   
@@ -24,7 +25,8 @@ export function getTranslation(dictionary: TranslationDictionary, key: string): 
     }
   }
   
-  return typeof current === 'string' ? current : key;
+  // Return the actual value (string, array, object) or key as fallback
+  return current !== undefined && current !== null ? current : key;
 }
 
 /**

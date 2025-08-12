@@ -57,7 +57,7 @@ export function I18nProvider({ children }: I18nProviderProps) {
   };
 
   // Translation function
-  const t = (key: string): string => {
+  const t = (key: string): any => {
     if (!dictionary) {
       return key; // Return key as fallback while loading
     }
