@@ -236,7 +236,43 @@ const fr: TranslationDictionary = {
       remote_missions: 'Missions à distance',
       statistics: 'Statistiques',
       satisfaction: 'Satisfaction client',
-      response_time_stat: 'Temps de réponse'
+      response_time_stat: 'Temps de réponse',
+      // Contact method titles
+      email_title: 'Email',
+      phone_title: 'Téléphone',
+      location_title: 'Localisation',
+      // Form placeholders and labels
+      name_placeholder: 'Votre nom',
+      project_placeholder: 'Parlez-moi de votre vision, vos objectifs, votre audience cible...',
+      select_budget: 'Sélectionnez un budget',
+      select_timeline: 'Sélectionnez une timeline',
+      // Success/Error messages
+      success_message: 'Message envoyé avec succès !',
+      success_detail: 'Je vous répondrai dans les plus brefs délais.',
+      error_title: 'Erreur lors de l\'envoi',
+      scheduling_message: 'Votre message sera envoyé puis le widget de planification s\'ouvrira automatiquement pour choisir votre créneau.',
+      // Validation messages
+      validation_error: 'Veuillez corriger les erreurs dans le formulaire',
+      validation_data_error: 'Erreur de validation des données',
+      general_error: 'Une erreur est survenue',
+      // File upload
+      file_size_error: 'Le fichier ne doit pas dépasser 10MB',
+      file_type_error: 'Format de fichier non supporté. Utilisez PDF, DOC, DOCX ou TXT',
+      file_remove: 'Supprimer le fichier',
+      // Contact method actions
+      contact_by: 'Contacter par',
+      or: 'ou',
+      // Budget ranges
+      budget_5k: '< 5k €',
+      budget_5_15k: '5k - 15k €',
+      budget_15_30k: '15k - 30k €',
+      budget_30_50k: '30k - 50k €',
+      budget_50k_plus: '50k+ €',
+      // Timeline options
+      timeline_urgent: 'Urgent (< 1 mois)',
+      timeline_short: 'Court terme (1-3 mois)',
+      timeline_medium: 'Moyen terme (3-6 mois)',
+      timeline_long: 'Long terme (6+ mois)'
     }
   },
   footer: {

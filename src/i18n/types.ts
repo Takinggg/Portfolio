@@ -220,6 +220,42 @@ export interface TranslationDictionary {
       statistics: string;
       satisfaction: string;
       response_time_stat: string;
+      // Contact method titles
+      email_title: string;
+      phone_title: string;
+      location_title: string;
+      // Form placeholders and labels
+      name_placeholder: string;
+      project_placeholder: string;
+      select_budget: string;
+      select_timeline: string;
+      // Success/Error messages
+      success_message: string;
+      success_detail: string;
+      error_title: string;
+      scheduling_message: string;
+      // Validation messages
+      validation_error: string;
+      validation_data_error: string;
+      general_error: string;
+      // File upload
+      file_size_error: string;
+      file_type_error: string;
+      file_remove: string;
+      // Contact method actions
+      contact_by: string;
+      or: string;
+      // Budget ranges
+      budget_5k: string;
+      budget_5_15k: string;
+      budget_15_30k: string;
+      budget_30_50k: string;
+      budget_50k_plus: string;
+      // Timeline options
+      timeline_urgent: string;
+      timeline_short: string;
+      timeline_medium: string;
+      timeline_long: string;
     };
   };
   footer: {
