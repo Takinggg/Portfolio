@@ -106,3 +106,124 @@ test.describe('Scheduling Widget', () => {
     expect(errorText?.toLowerCase()).toMatch(/connexion|indisponible|erreur/);
   });
 });
+
+test.describe('Scheduling Widget i18n', () => {
+  test('should display French text when French is selected', async ({ page }) => {
+    // Go to the contact page
+    await page.goto('/#contact');
+    await page.waitForLoadState('networkidle');
+    
+    // Ensure French is selected (should be default)
+    const languageToggle = page.locator('[data-testid="language-toggle"], button:has-text("FR"), button:has-text("English")');
+    if (await languageToggle.count() > 0) {
+      const currentLang = await languageToggle.textContent();
+      if (currentLang?.includes('EN') || currentLang?.includes('English')) {
+        await languageToggle.click();
+      }
+    }
+    
+    // Click the scheduling button
+    const scheduleButton = page.locator('text=Planifier').or(page.locator('button:has-text("Planifier")'));
+    await expect(scheduleButton).toBeVisible();
+    await scheduleButton.click();
+    
+    // Wait for modal to appear
+    await page.waitForSelector('h2, [role="dialog"] h2, .modal h2', { timeout: 10000 });
+    
+    // Check for French text in the modal
+    const modalTitle = page.locator('h2:has-text("Sélectionner le type"), h2:has-text("Type de réunion"), text="Sélectionner le type de réunion"');
+    
+    // Give some time for translations to load
+    await page.waitForTimeout(1000);
+    
+    // Should find French text
+    const hasFrenchTitle = await modalTitle.count() > 0;
+    if (!hasFrenchTitle) {
+      // Log what we found instead
+      const allHeadings = await page.locator('h1, h2, h3').all();
+      for (const heading of allHeadings) {
+        const text = await heading.textContent();
+        console.log('Found heading:', text);
+      }
+    }
+    
+    expect(hasFrenchTitle).toBe(true);
+  });
+
+  test('should display English text when English is selected', async ({ page }) => {
+    // Go to the contact page
+    await page.goto('/#contact');
+    await page.waitForLoadState('networkidle');
+    
+    // Switch to English
+    const languageToggle = page.locator('[data-testid="language-toggle"], button:has-text("FR"), button:has-text("Français")');
+    if (await languageToggle.count() > 0) {
+      await languageToggle.click();
+    }
+    
+    // Wait for language switch
+    await page.waitForTimeout(1000);
+    
+    // Click the scheduling button (should now be in English)
+    const scheduleButton = page.locator('text="Schedule"').or(page.locator('button:has-text("Schedule")'));
+    await expect(scheduleButton).toBeVisible();
+    await scheduleButton.click();
+    
+    // Wait for modal
+    await page.waitForSelector('h2, [role="dialog"] h2', { timeout: 10000 });
+    
+    // Check for English text
+    const modalTitle = page.locator('h2:has-text("Select Meeting Type")');
+    await expect(modalTitle).toBeVisible({ timeout: 5000 });
+  });
+});
+
+test.describe('Scheduling Widget UX', () => {
+  test('should not scroll to top when opening modal', async ({ page }) => {
+    // Go to contact page and scroll down
+    await page.goto('/#contact');
+    await page.waitForLoadState('networkidle');
+    
+    // Scroll down so we can detect if it scrolls back up
+    await page.evaluate(() => window.scrollTo(0, 500));
+    
+    // Wait a moment for scroll to settle
+    await page.waitForTimeout(500);
+    
+    // Get initial scroll position
+    const initialScrollY = await page.evaluate(() => window.scrollY);
+    expect(initialScrollY).toBeGreaterThan(400); // Ensure we're scrolled down
+    
+    // Click scheduling button
+    const scheduleButton = page.locator('text=Planifier').or(page.locator('button:has-text("Planifier")'));
+    await scheduleButton.click();
+    
+    // Wait for modal to appear
+    await page.waitForSelector('[role="dialog"], .modal', { timeout: 10000 });
+    
+    // Check scroll position hasn't changed significantly
+    const finalScrollY = await page.evaluate(() => window.scrollY);
+    
+    // Should not have scrolled to top (allowing some small variation)
+    expect(finalScrollY).toBeGreaterThan(300);
+  });
+
+  test('should close modal when clicking outside', async ({ page }) => {
+    await page.goto('/#contact');
+    await page.waitForLoadState('networkidle');
+    
+    // Open modal
+    const scheduleButton = page.locator('text=Planifier').or(page.locator('button:has-text("Planifier")'));
+    await scheduleButton.click();
+    
+    // Wait for modal
+    const modal = page.locator('[role="dialog"], .modal').first();
+    await expect(modal).toBeVisible();
+    
+    // Click on backdrop (outside modal content)
+    await page.locator('.bg-gray-500').click();
+    
+    // Modal should close
+    await expect(modal).not.toBeVisible({ timeout: 5000 });
+  });
+});

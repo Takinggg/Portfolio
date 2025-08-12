@@ -154,3 +154,74 @@ The scheduling widget now provides user-friendly French error messages:
 - **500 errors**: "Erreur serveur du service de planification"
 
 Technical errors are logged to the console with full diagnostic information including target URLs.
+
+## Scheduling i18n & Theming
+
+### Internationalization (i18n) Support
+The scheduling widget now fully supports French and English localization:
+
+#### Translation Keys Structure
+```typescript
+scheduling: {
+  form: {
+    title: 'Enter your details' | 'Saisissez vos informations',
+    name: 'Full Name' | 'Nom complet',
+    email: 'Email Address' | 'Adresse email',
+    notes_optional: 'Additional Notes (Optional)' | 'Notes supplémentaires (facultatif)',
+    consent_label: 'I agree to receive...' | 'J\'accepte de recevoir...',
+    submit: 'Schedule Meeting' | 'Planifier la réunion',
+    booking: 'Booking...' | 'Réservation...'
+  },
+  validation: {
+    name_required: 'Name is required' | 'Le nom est requis',
+    email_required: 'Email is required' | 'L\'email est requis',
+    email_invalid: 'Please enter a valid email' | 'Veuillez saisir une adresse email valide',
+    consent_required: 'Please agree to terms' | 'Veuillez accepter les conditions'
+  },
+  steps: {
+    event_type: 'Select Meeting Type' | 'Sélectionner le type de réunion',
+    slots: 'Choose Time' | 'Choisir l\'heure',
+    form: 'Your Information' | 'Vos informations',
+    confirmation: 'Confirmed!' | 'Confirmé !'
+  }
+  // ... additional keys
+}
+```
+
+#### Date and Time Localization
+The widget automatically formats dates and times based on the selected language:
+- **French (fr)**: Uses `fr-FR` locale formatting
+- **English (en)**: Uses `en-US` locale formatting
+
+```typescript
+const locale = language === 'fr' ? 'fr-FR' : 'en-US';
+date.toLocaleString(locale, {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit'
+});
+```
+
+### Light/Dark Mode Theming
+All form inputs and components now support consistent theming:
+
+#### Input Styling Classes
+```css
+/* Base styling for inputs/textarea */
+bg-white text-gray-900 placeholder-gray-400 border border-gray-300 rounded-lg
+
+/* Focus states */
+focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+
+/* Dark mode variants */
+dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-500
+```
+
+#### Usage Note
+The styling uses **indigo-500** as the primary focus color to maintain consistency with the design system. All form elements in the scheduling widget follow this pattern for:
+- Input fields (text, email)
+- Textarea elements
+- Submit buttons
+- Focus states and error states

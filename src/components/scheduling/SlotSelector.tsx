@@ -3,6 +3,7 @@ import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { EventType, AvailableSlot } from '../../types/scheduling';
 import { schedulingAPI } from '../../utils/schedulingAPI';
 import { cn } from '../../lib/utils';
+import { useI18n } from '../../hooks/useI18n';
 
 interface SlotSelectorProps {
   eventType: EventType;
@@ -21,6 +22,7 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
   onSlotSelect,
   userTimezone
 }) => {
+  const { t, language } = useI18n();
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(getStartOfWeek(new Date()));
@@ -39,9 +41,10 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
     return date.toISOString().split('T')[0] + 'T00:00:00.000Z';
   }
 
-  // Format time for display
+  // Format time for display with localization
   function formatTimeForDisplay(isoString: string): string {
-    return new Date(isoString).toLocaleTimeString([], { 
+    const locale = language === 'fr' ? 'fr-FR' : 'en-US';
+    return new Date(isoString).toLocaleTimeString(locale, { 
       hour: '2-digit', 
       minute: '2-digit',
       timeZoneName: 'short'
@@ -125,10 +128,10 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Select a time</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{t('scheduling.messages.select_time')}</h3>
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Clock className="w-4 h-4" />
-          <span>Times shown in {userTimezone}</span>
+          <span>{t('scheduling.messages.times_shown_in')} {userTimezone}</span>
         </div>
       </div>
 
@@ -138,13 +141,13 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
           onClick={goToPreviousWeek}
           disabled={isLoading}
           className="p-2 rounded-md hover:bg-gray-200 disabled:opacity-50 transition-colors"
-          aria-label="Previous week"
+          aria-label={t('scheduling.calendar.previous_week')}
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
         
         <div className="font-medium text-gray-900">
-          {currentWeekStart.toLocaleDateString([], { 
+          {currentWeekStart.toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', { 
             month: 'long', 
             year: 'numeric' 
           })}
@@ -154,7 +157,7 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
           onClick={goToNextWeek}
           disabled={isLoading}
           className="p-2 rounded-md hover:bg-gray-200 disabled:opacity-50 transition-colors"
-          aria-label="Next week"
+          aria-label={t('scheduling.calendar.next_week')}
         >
           <ChevronRight className="w-5 h-5" />
         </button>
@@ -170,7 +173,10 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
       {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-2">
         {/* Day headers */}
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+        {(language === 'fr' 
+          ? ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+          : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        ).map((day, index) => (
           <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
             {day}
           </div>
@@ -207,7 +213,7 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
               </div>
               {hasSlots && !isPast && (
                 <div className="text-xs mt-1">
-                  {daySlots.length} slot{daySlots.length !== 1 ? 's' : ''}
+                  {daySlots.length} {daySlots.length === 1 ? t('scheduling.calendar.slot_available') : t('scheduling.calendar.slots_available')}
                 </div>
               )}
             </button>
@@ -219,7 +225,7 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
       {selectedDate && (
         <div className="border-t pt-6">
           <h4 className="font-medium text-gray-900 mb-4">
-            Available times for {selectedDate.toLocaleDateString([], { 
+            {t('scheduling.messages.select_time')} {selectedDate.toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', { 
               weekday: 'long', 
               month: 'long', 
               day: 'numeric' 
@@ -251,7 +257,7 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({
           
           {!isLoading && getSlotsForDate(selectedDate).length === 0 && (
             <p className="text-center text-gray-500 py-8">
-              No available times for this date.
+              {t('scheduling.messages.no_slots_available')}
             </p>
           )}
         </div>

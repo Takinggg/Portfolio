@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Users, Settings, LogOut, BarChart3, Mail } from 'lucide-react';
+import { Calendar, Clock, Users, Settings, LogOut, BarChart3, Mail, CalendarDays } from 'lucide-react';
 import AdminOverview from './AdminOverview';
 import EventTypesManager from './EventTypesManager';
 import AvailabilityManager from './AvailabilityManager';
 import BookingsManager from './BookingsManager';
 import { NotificationsManager } from './NotificationsManager';
+import AgendaView from './AgendaView';
 
-type AdminPage = 'overview' | 'event-types' | 'availability' | 'bookings' | 'notifications';
+type AdminPage = 'overview' | 'event-types' | 'availability' | 'bookings' | 'agenda' | 'notifications';
 
 interface AdminSchedulingLayoutProps {
   onLogout: () => void;
@@ -43,6 +44,12 @@ const AdminSchedulingLayout: React.FC<AdminSchedulingLayoutProps> = ({ onLogout 
       description: 'Dashboard and statistics'
     },
     {
+      id: 'agenda' as AdminPage,
+      name: 'Agenda',
+      icon: CalendarDays,
+      description: 'Calendar view'
+    },
+    {
       id: 'event-types' as AdminPage,
       name: 'Event Types',
       icon: Calendar,
@@ -72,6 +79,8 @@ const AdminSchedulingLayout: React.FC<AdminSchedulingLayoutProps> = ({ onLogout 
     switch (currentPage) {
       case 'overview':
         return <AdminOverview isAuthenticated={isAuthenticated} />;
+      case 'agenda':
+        return <AgendaView isAuthenticated={isAuthenticated} />;
       case 'event-types':
         return <EventTypesManager isAuthenticated={isAuthenticated} />;
       case 'availability':

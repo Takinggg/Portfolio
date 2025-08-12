@@ -3,6 +3,7 @@ import { Calendar, X } from 'lucide-react';
 import { SchedulingWidgetProps, SchedulingState, SchedulingStep } from '../../types/scheduling';
 import { schedulingAPI } from '../../utils/schedulingAPI';
 import { cn } from '../../lib/utils';
+import { useI18n } from '../../hooks/useI18n';
 import EventTypeCard from './EventTypeCard';
 import SlotSelector from './SlotSelector';
 import BookingForm from './BookingForm';
@@ -11,11 +12,12 @@ import BookingConfirmation from './BookingConfirmation';
 const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
   className = '',
   triggerClassName = '',
-  triggerText = 'Schedule a Meeting',
+  triggerText,
   defaultEventTypeId,
   onBookingComplete,
   onError
 }) => {
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState<SchedulingState>({
     step: 'event-type',
@@ -102,9 +104,11 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
+      console.log('Creating booking...'); // Debug log
       const response = await schedulingAPI.createBooking(bookingData);
       
       if (response.success && response.booking) {
+        console.log('Booking created successfully, transitioning to confirmation'); // Debug log
         setState(prev => ({
           ...prev,
           booking: response.booking,
@@ -117,6 +121,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create booking';
+      console.error('Booking creation failed:', errorMessage); // Debug log
       setState(prev => ({ 
         ...prev, 
         error: errorMessage,
@@ -164,15 +169,15 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
   const getStepTitle = (): string => {
     switch (state.step) {
       case 'event-type':
-        return 'Select Meeting Type';
+        return t('scheduling.steps.event_type');
       case 'slots':
-        return 'Choose Time';
+        return t('scheduling.steps.slots');
       case 'form':
-        return 'Your Information';
+        return t('scheduling.steps.form');
       case 'confirmation':
-        return 'Confirmed!';
+        return t('scheduling.steps.confirmation');
       default:
-        return 'Schedule Meeting';
+        return t('scheduling.trigger.schedule_meeting');
     }
   };
 
@@ -183,7 +188,11 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
     <>
       {/* Trigger button */}
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={(e) => {
+          e.preventDefault(); // Prevent any default behavior
+          e.stopPropagation(); // Prevent event bubbling
+          setIsOpen(true);
+        }}
         className={cn(
           'inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg',
           'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
@@ -192,25 +201,34 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
         )}
       >
         <Calendar className="w-5 h-5" />
-        <span>{triggerText}</span>
+        <span>{triggerText || t('scheduling.trigger.schedule_meeting')}</span>
       </button>
 
       {/* Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div 
+          className="fixed inset-0 z-50 overflow-y-auto"
+          style={{ overflowAnchor: 'none' }} // Prevent scroll anchoring
+        >
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             {/* Backdrop */}
             <div
               className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-              onClick={handleClose}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClose();
+              }}
             />
 
             {/* Modal content */}
-            <div className={cn(
-              'inline-block w-full max-w-2xl my-8 overflow-hidden text-left align-middle transition-all transform',
-              'bg-white shadow-xl rounded-lg',
-              className
-            )}>
+            <div 
+              className={cn(
+                'inline-block w-full max-w-2xl my-8 overflow-hidden text-left align-middle transition-all transform',
+                'bg-white shadow-xl rounded-lg',
+                className
+              )}
+              onClick={(e) => e.stopPropagation()} // Prevent clicks from bubbling to backdrop
+            >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -257,7 +275,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
                         
                         {state.eventTypes.length === 0 && !state.isLoading && (
                           <p className="text-center text-gray-500 py-8">
-                            No meeting types available at the moment.
+                            {t('scheduling.messages.no_event_types')}
                           </p>
                         )}
                       </div>
@@ -328,7 +346,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
                           'disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
                         )}
                       >
-                        Back
+                        {t('scheduling.common.back')}
                       </button>
                     )}
 
@@ -341,7 +359,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
                           'transition-colors'
                         )}
                       >
-                        Continue
+                        {t('scheduling.common.continue')}
                       </button>
                     )}
                   </div>
