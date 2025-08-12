@@ -1,8 +1,5 @@
 import nodemailer from 'nodemailer';
 import { z } from 'zod';
-/**
- * Email provider configuration schemas
- */
 const SMTPConfigSchema = z.object({
     host: z.string(),
     port: z.number(),
@@ -16,10 +13,10 @@ const ResendConfigSchema = z.object({
 const PostmarkConfigSchema = z.object({
     token: z.string()
 });
-/**
- * SMTP Email Provider using Nodemailer
- */
 class SMTPProvider {
+    transporter;
+    fromEmail;
+    fromName;
     constructor(config, fromEmail, fromName) {
         this.fromEmail = fromEmail;
         this.fromName = fromName;
@@ -42,7 +39,6 @@ class SMTPProvider {
             html: data.html,
             headers: data.headers
         };
-        // Add ICS attachment if provided
         if (data.icsAttachment) {
             mailOptions.attachments = [{
                     filename: data.icsAttachment.filename,
@@ -60,10 +56,10 @@ class SMTPProvider {
         }
     }
 }
-/**
- * Resend Email Provider
- */
 class ResendProvider {
+    apiKey;
+    fromEmail;
+    fromName;
     constructor(config, fromEmail, fromName) {
         this.apiKey = config.apiKey;
         this.fromEmail = fromEmail;
@@ -78,7 +74,6 @@ class ResendProvider {
             html: data.html,
             headers: data.headers
         };
-        // Add ICS attachment if provided
         if (data.icsAttachment) {
             payload.attachments = [{
                     filename: data.icsAttachment.filename,
@@ -108,10 +103,10 @@ class ResendProvider {
         }
     }
 }
-/**
- * Postmark Email Provider
- */
 class PostmarkProvider {
+    token;
+    fromEmail;
+    fromName;
     constructor(config, fromEmail, fromName) {
         this.token = config.token;
         this.fromEmail = fromEmail;
@@ -126,7 +121,6 @@ class PostmarkProvider {
             HtmlBody: data.html,
             Headers: data.headers ? Object.entries(data.headers).map(([Name, Value]) => ({ Name, Value })) : []
         };
-        // Add ICS attachment if provided
         if (data.icsAttachment) {
             payload.Attachments = [{
                     Name: data.icsAttachment.filename,
@@ -157,9 +151,6 @@ class PostmarkProvider {
         }
     }
 }
-/**
- * Development/Log-only Email Provider
- */
 class LogProvider {
     async sendEmail(data) {
         console.log('\n📧 EMAIL NOTIFICATION (DEV MODE)');
@@ -183,16 +174,14 @@ class LogProvider {
         console.log('=====================================\n');
     }
 }
-/**
- * Email Service Factory
- */
 export class EmailService {
+    provider;
+    isEnabled;
     constructor() {
         const emailProvider = process.env.EMAIL_PROVIDER;
         const fromEmail = process.env.FROM_EMAIL || 'noreply@maxence.design';
         const fromName = process.env.FROM_NAME || 'Maxence FOULON';
         this.isEnabled = process.env.ENABLE_NOTIFICATIONS === 'true';
-        // Create provider based on configuration
         switch (emailProvider) {
             case 'smtp':
                 this.provider = this.createSMTPProvider(fromEmail, fromName);
@@ -204,7 +193,6 @@ export class EmailService {
                 this.provider = this.createPostmarkProvider(fromEmail, fromName);
                 break;
             default:
-                // Development mode or no provider configured
                 this.provider = new LogProvider();
                 console.log('📧 Email service initialized in LOG-ONLY mode');
                 break;
@@ -253,9 +241,6 @@ export class EmailService {
         }
         return new PostmarkProvider(validation.data, fromEmail, fromName);
     }
-    /**
-     * Send an email using the configured provider
-     */
     async sendEmail(data) {
         if (!this.isEnabled) {
             console.log('📧 Email notifications disabled - would have sent:', data.subject);
@@ -271,9 +256,6 @@ export class EmailService {
             return { success: false, error: errorMessage };
         }
     }
-    /**
-     * Test email sending with the current configuration
-     */
     async sendTestEmail(to) {
         const testData = {
             to,

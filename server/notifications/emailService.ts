@@ -54,7 +54,7 @@ class SMTPProvider implements EmailProvider {
     this.fromEmail = fromEmail;
     this.fromName = fromName;
     
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       host: config.host,
       port: config.port,
       secure: config.secure,

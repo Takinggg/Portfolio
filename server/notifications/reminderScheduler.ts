@@ -1,4 +1,4 @@
-import cron from 'node-cron';
+import * as cron from 'node-cron';
 import Database from 'better-sqlite3';
 import { NotificationService } from './notifier.js';
 
@@ -41,7 +41,7 @@ export class ReminderScheduler {
       }
     }, {
       scheduled: false // Don't start immediately
-    });
+    } as any);
 
     this.cronJob.start();
     this.isRunning = true;
