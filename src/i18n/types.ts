@@ -381,6 +381,6 @@ export type TranslationLoader = () => Promise<{ default: TranslationDictionary }
 export interface I18nContextType {
   language: Language;
   setLanguage: (language: Language) => void;
-  t: (key: string) => string;
+  t: (key: string) => any;
   loading: boolean;
 }

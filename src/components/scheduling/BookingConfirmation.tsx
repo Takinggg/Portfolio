@@ -147,9 +147,18 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onCl
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
         <h5 className="font-medium text-blue-900 mb-2">{t('scheduling.confirmation.whats_next')}</h5>
         <ul className="text-sm text-blue-800 space-y-1">
-          {t('scheduling.confirmation.next_steps').map((step: string, index: number) => (
-            <li key={index}>• {step}</li>
-          ))}
+          {(() => {
+            const nextStepsRaw = t('scheduling.confirmation.next_steps');
+            const nextSteps = Array.isArray(nextStepsRaw) 
+              ? nextStepsRaw 
+              : typeof nextStepsRaw === 'string' 
+                ? [nextStepsRaw] 
+                : [];
+                
+            return nextSteps.map((step: string, index: number) => (
+              <li key={index}>• {step}</li>
+            ));
+          })()}
         </ul>
       </div>
 
