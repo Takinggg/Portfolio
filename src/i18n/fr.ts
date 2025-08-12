@@ -322,6 +322,10 @@ const fr: TranslationDictionary = {
       server_error: 'Erreur serveur du service de planification. Réessayez plus tard.',
       invalid_json: 'Le service de planification est indisponible (réponse non-JSON) — vérifiez la configuration.',
       generic: 'Le service de planification est temporairement indisponible',
+      invalid_request: 'Données de réservation invalides. Veuillez vérifier les informations saisies.',
+      invalid_event_type: 'Type d\'événement invalide. Veuillez sélectionner un type d\'événement valide.',
+      invalid_email: 'Adresse email invalide. Veuillez saisir une adresse email valide.',
+      invalid_time: 'Créneau horaire invalide. Veuillez sélectionner un nouveau créneau.',
     },
     time: {
       minutes: 'minutes',

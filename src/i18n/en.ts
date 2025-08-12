@@ -322,6 +322,10 @@ const en: TranslationDictionary = {
       server_error: 'Scheduling service server error. Please try again later.',
       invalid_json: 'Scheduling service is unavailable (non-JSON response) — check configuration.',
       generic: 'Scheduling service is temporarily unavailable',
+      invalid_request: 'Invalid booking data. Please check the information you entered.',
+      invalid_event_type: 'Invalid event type. Please select a valid event type.',
+      invalid_email: 'Invalid email address. Please enter a valid email address.',
+      invalid_time: 'Invalid time slot. Please select a new time slot.',
     },
     time: {
       minutes: 'minutes',

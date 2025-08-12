@@ -692,21 +692,7 @@ const Contact = memo(() => {
                   </div>
                 </div>
 
-                {/* Scheduling CTA */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">Préférez-vous un appel ?</h4>
-                      <p className="text-sm text-gray-600">Planifiez un créneau qui vous convient</p>
-                    </div>
-                    <SchedulingWidget
-                      triggerText="Planifier"
-                      triggerClassName="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
-                      onBookingComplete={handleBookingComplete}
-                      onError={handleSchedulingError}
-                    />
-                  </div>
-                </div>
+
 
                 {/* RGPD Consent */}
                 <div className="space-y-3">
