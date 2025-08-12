@@ -14,6 +14,25 @@ export interface ApiError {
 }
 
 /**
+ * Resolve absolute API URL using VITE_API_BASE_URL when provided.
+ * - If url is absolute (http/https), keep as-is
+ * - If base is set and url is relative, prefix with base
+ */
+function resolveApiUrl(url: string): string {
+  try {
+    const base = import.meta.env.VITE_API_BASE_URL as string | undefined;
+    if (!base) return url;
+    if (/^https?:\/\/i.test(url)) return url;
+
+    const normalizedBase = base.replace(/\/$/,'');
+    const normalizedPath = url.startsWith('/') ? url : `/${url}`;
+    return `${normalizedBase}${normalizedPath}`;
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Safe JSON parsing with enhanced error handling and debugging info
  * Maps common HTTP status codes to user-friendly messages
  */
@@ -39,7 +58,7 @@ export async function safeJson(response: Response, url?: string): Promise<unknow
     
     try {
       if (contentType.includes('application/json')) {
-        const errorData = await response.json();
+        const errorData = await response.json() as any;
         errorMessage = errorData.error || errorData.message || errorMessage;
       } else {
         // Server returned HTML or other non-JSON content
@@ -126,8 +145,9 @@ export function getAdminAuthHeader(): Record<string, string> {
  * Automatically adds Accept header, credentials, and admin auth if available
  */
 export async function fetchJSON(url: string, init: RequestInit = {}): Promise<unknown> {
+  const finalUrl = resolveApiUrl(url);
   try {
-    const response = await fetch(url, {
+    const response = await fetch(finalUrl, {
       credentials: 'include', // Always include credentials for session handling
       ...init,
       headers: {
@@ -138,10 +158,10 @@ export async function fetchJSON(url: string, init: RequestInit = {}): Promise<un
       },
     });
 
-    return await safeJson(response, url);
+    return await safeJson(response, finalUrl);
   } catch (error) {
     // Check if it's already our enhanced ApiError
-    if (error && typeof error === 'object' && 'isAuthError' in error) {
+    if (error && typeof error === 'object' && 'isAuthError' in (error as any)) {
       throw error;
     }
     
@@ -149,7 +169,7 @@ export async function fetchJSON(url: string, init: RequestInit = {}): Promise<un
     if (error instanceof TypeError || (error instanceof Error && error.message.includes('fetch'))) {
       const networkError: ApiError = {
         message: 'Erreur de connexion. Vérifiez votre connexion internet.',
-        url,
+        url: finalUrl,
         isNetworkError: true
       };
       throw networkError;
@@ -158,7 +178,7 @@ export async function fetchJSON(url: string, init: RequestInit = {}): Promise<un
     // Re-throw other errors as ApiError
     const apiError: ApiError = {
       message: error instanceof Error ? error.message : 'Erreur inconnue',
-      url
+      url: finalUrl
     };
     throw apiError;
   }
