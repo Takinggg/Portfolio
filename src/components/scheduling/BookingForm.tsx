@@ -113,8 +113,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
       email: email,
       start: selectedSlot.startUTC,
       end: selectedSlot.endUTC,
-      timezone: userTimezone,
-      consent: formData.consent
+      timezone: userTimezone
     };
 
     // Only include notes if they exist and are not empty
