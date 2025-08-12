@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Download, Calendar, Mail, Phone, X, Check, Edit, MapPin } from 'lucide-react';
+import { Search, Download, Calendar, Mail, X, Edit, MapPin } from 'lucide-react';
+import { useI18n } from '../context/I18nProvider';
+import * as adminApi from '../utils/adminApi';
 
 interface Booking {
   id: number;
@@ -32,6 +34,7 @@ interface BookingsManagerProps {
 }
 
 const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) => {
+  const { t } = useI18n();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,17 +72,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       if (filters.status) queryParams.append('status', filters.status);
       if (filters.event_type_id) queryParams.append('event_type_id', filters.event_type_id);
 
-      const response = await fetch(`/api/admin/scheduling/bookings?${queryParams}`, {
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const result = await response.json();
+      const result = await adminApi.fetchJSON(`/api/admin/scheduling/bookings?${queryParams}`);
       let fetchedBookings = result.bookings || [];
 
       // Client-side search filter
@@ -95,7 +88,10 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       setBookings(fetchedBookings);
     } catch (err) {
       console.error('Error fetching bookings:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch bookings');
+      const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
+        ? t(err.message) 
+        : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -105,17 +101,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
     if (!isAuthenticated) return;
 
     try {
-      const response = await fetch('/api/admin/scheduling/event-types', {
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch event types');
-      }
-
-      const result = await response.json();
+      const result = await adminApi.fetchJSON('/api/admin/scheduling/event-types');
       setEventTypes(result.eventTypes || []);
     } catch (err) {
       console.error('Error fetching event types:', err);
@@ -143,33 +129,9 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
     if (!selectedBooking) return;
 
     try {
-      const response = await fetch(`/api/admin/scheduling/bookings/${selectedBooking.uuid}/cancel`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        },
-        body: JSON.stringify({ reason: cancelReason })
+      await adminApi.postJSON(`/api/admin/scheduling/bookings/${selectedBooking.uuid}/cancel`, {
+        reason: cancelReason
       });
-
-      if (!response.ok) {
-        // Try to parse error as JSON, but handle cases where server returns HTML
-        let errorMessage;
-        try {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json();
-            errorMessage = errorData.error || `HTTP ${response.status}`;
-          } else {
-            // Server returned non-JSON (likely HTML error page)
-            errorMessage = `Server error (${response.status})`;
-          }
-        } catch (parseError) {
-          // JSON parsing failed - server likely returned HTML
-          errorMessage = `Server error (${response.status})`;
-        }
-        throw new Error(errorMessage);
-      }
 
       setShowCancelModal(false);
       setSelectedBooking(null);
@@ -177,7 +139,10 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       await fetchBookings();
     } catch (err) {
       console.error('Error cancelling booking:', err);
-      alert(err instanceof Error ? err.message : 'Failed to cancel booking');
+      const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
+        ? t(err.message) 
+        : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
+      alert(errorMessage);
     }
   };
 
@@ -185,33 +150,9 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
     if (!selectedBooking) return;
 
     try {
-      const response = await fetch(`/api/admin/scheduling/bookings/${selectedBooking.uuid}/reschedule`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        },
-        body: JSON.stringify(rescheduleData)
-      });
-
-      if (!response.ok) {
-        // Try to parse error as JSON, but handle cases where server returns HTML
-        let errorMessage;
-        try {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json();
-            errorMessage = errorData.error || `HTTP ${response.status}`;
-          } else {
-            // Server returned non-JSON (likely HTML error page)
-            errorMessage = `Server error (${response.status})`;
-          }
-        } catch (parseError) {
-          // JSON parsing failed - server likely returned HTML
-          errorMessage = `Server error (${response.status})`;
-        }
-        throw new Error(errorMessage);
-      }
+      await adminApi.postJSON(`/api/admin/scheduling/bookings/${selectedBooking.uuid}/reschedule`, 
+        rescheduleData
+      );
 
       setShowRescheduleModal(false);
       setSelectedBooking(null);
@@ -219,7 +160,10 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       await fetchBookings();
     } catch (err) {
       console.error('Error rescheduling booking:', err);
-      alert(err instanceof Error ? err.message : 'Failed to reschedule booking');
+      const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
+        ? t(err.message) 
+        : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
+      alert(errorMessage);
     }
   };
 
@@ -231,14 +175,16 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       if (filters.status) queryParams.append('status', filters.status);
       if (filters.event_type_id) queryParams.append('event_type_id', filters.event_type_id);
 
+      // For CSV export, we need to handle blob response differently
       const response = await fetch(`/api/admin/scheduling/bookings.csv?${queryParams}`, {
         headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
+          'Accept': 'text/csv',
+          ...adminApi.getAdminAuthHeader(),
         }
       });
 
       if (!response.ok) {
-        throw new Error('Failed to export bookings');
+        throw new Error(t('scheduling.errors.server_error'));
       }
 
       const blob = await response.blob();
@@ -252,7 +198,10 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       document.body.removeChild(a);
     } catch (err) {
       console.error('Error exporting CSV:', err);
-      alert(err instanceof Error ? err.message : 'Failed to export bookings');
+      const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
+        ? t(err.message) 
+        : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
+      alert(errorMessage);
     }
   };
 
