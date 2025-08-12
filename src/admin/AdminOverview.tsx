@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Users, Clock, Activity, TrendingUp, TrendingDown } from 'lucide-react';
+import { handleApiError, safeJsonParse } from '../lib/api-utils';
 
 interface DashboardStats {
   eventTypes: { count: number };
@@ -44,10 +45,10 @@ const AdminOverview: React.FC<AdminOverviewProps> = ({ isAuthenticated }) => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        await handleApiError(response, 'Failed to fetch overview');
       }
 
-      const result = await response.json();
+      const result = await safeJsonParse(response);
       setData(result);
       setError(null);
     } catch (err) {

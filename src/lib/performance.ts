@@ -244,7 +244,8 @@ class PerformanceMonitor {
    */
   private sendToAnalytics(name: string, value: number) {
     // Example implementation for Google Analytics
-    if (typeof gtag !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
+      const gtag = (window as any).gtag;
       gtag('event', name, {
         event_category: 'Web Vitals',
         value: Math.round(value),
@@ -264,8 +265,12 @@ class PerformanceMonitor {
           url: window.location.href,
           userAgent: navigator.userAgent
         })
-      }).catch(() => {
+      }).catch((error) => {
         // Silently fail - performance monitoring shouldn't break the app
+        // Only log in development to avoid console spam in production
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Performance analytics failed for ${name}:`, error.message);
+        }
       });
     }
   }
