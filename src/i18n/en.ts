@@ -276,6 +276,70 @@ const en: TranslationDictionary = {
     toggle_language: 'Change language',
     toggle_theme: 'Toggle theme',
   },
+  scheduling: {
+    form: {
+      title: 'Enter your details',
+      name: 'Full Name',
+      email: 'Email Address',
+      notes_optional: 'Additional Notes (Optional)',
+      consent_label: 'I agree to receive booking confirmations and updates via email. You can unsubscribe at any time.',
+      submit: 'Schedule Meeting',
+      booking: 'Booking...',
+    },
+    common: {
+      back: 'Back',
+      continue: 'Continue',
+      close: 'Close',
+    },
+    validation: {
+      name_required: 'Name is required',
+      email_required: 'Email is required',
+      email_invalid: 'Please enter a valid email address',
+      consent_required: 'Please agree to the terms to proceed',
+    },
+    steps: {
+      event_type: 'Select Meeting Type',
+      slots: 'Choose Time',
+      form: 'Your Information',
+      confirmation: 'Confirmed!',
+    },
+    messages: {
+      booking_created: 'Your booking has been created successfully',
+      no_event_types: 'No meeting types available at the moment.',
+      no_slots_available: 'No available times for this date.',
+      select_time: 'Select a time',
+      times_shown_in: 'Times shown in',
+    },
+    time: {
+      minutes: 'minutes',
+      duration_minutes: 'minutes',
+    },
+    calendar: {
+      previous_week: 'Previous week',
+      next_week: 'Next week',
+      today: 'Today',
+      slots_available: 'slots available',
+      slot_available: 'slot available',
+    },
+    trigger: {
+      schedule_meeting: 'Schedule a Meeting',
+    },
+    confirmation: {
+      title: 'You\'re all set!',
+      subtitle: 'Your meeting has been successfully scheduled. You\'ll receive a confirmation email shortly.',
+      add_to_calendar: 'Add to your calendar:',
+      google_calendar: 'Google Calendar',
+      download_ics: 'Download .ics',
+      whats_next: 'What\'s next?',
+      next_steps: [
+        'You\'ll receive a confirmation email with all the details',
+        'Meeting details and access information will be provided',
+        'You can reschedule or cancel using the links in your email'
+      ],
+      booking_reference: 'Booking reference',
+      notes_label: 'Notes:',
+    },
+  },
 };
 
 export default en;

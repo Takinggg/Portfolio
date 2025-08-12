@@ -259,6 +259,66 @@ export interface TranslationDictionary {
     toggle_language: string;
     toggle_theme: string;
   };
+  scheduling: {
+    form: {
+      title: string;
+      name: string;
+      email: string;
+      notes_optional: string;
+      consent_label: string;
+      submit: string;
+      booking: string;
+    };
+    common: {
+      back: string;
+      continue: string;
+      close: string;
+    };
+    validation: {
+      name_required: string;
+      email_required: string;
+      email_invalid: string;
+      consent_required: string;
+    };
+    steps: {
+      event_type: string;
+      slots: string;
+      form: string;
+      confirmation: string;
+    };
+    messages: {
+      booking_created: string;
+      no_event_types: string;
+      no_slots_available: string;
+      select_time: string;
+      times_shown_in: string;
+    };
+    time: {
+      minutes: string;
+      duration_minutes: string;
+    };
+    calendar: {
+      previous_week: string;
+      next_week: string;
+      today: string;
+      slots_available: string;
+      slot_available: string;
+    };
+    trigger: {
+      schedule_meeting: string;
+    };
+    confirmation: {
+      title: string;
+      subtitle: string;
+      add_to_calendar: string;
+      google_calendar: string;
+      download_ics: string;
+      whats_next: string;
+      next_steps: string[];
+      booking_reference: string;
+      notes_label: string;
+    };
+  };
 }
 
 /**

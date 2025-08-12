@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, User, Mail, MessageSquare, Calendar, Clock } from 'lucide-react';
 import { EventType, AvailableSlot, BookingRequest } from '../../types/scheduling';
 import { cn } from '../../lib/utils';
+import { useI18n } from '../../hooks/useI18n';
 
 interface BookingFormProps {
   eventType: EventType;
@@ -20,6 +21,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   onBack,
   isLoading
 }) => {
+  const { t, language } = useI18n();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,9 +31,10 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Format time for display
+  // Format time for display with localization
   const formatTimeForDisplay = (isoString: string) => {
-    return new Date(isoString).toLocaleString([], {
+    const locale = language === 'fr' ? 'fr-FR' : 'en-US';
+    return new Date(isoString).toLocaleString(locale, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -46,17 +49,17 @@ const BookingForm: React.FC<BookingFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = t('scheduling.validation.name_required');
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('scheduling.validation.email_required');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('scheduling.validation.email_invalid');
     }
 
     if (!formData.consent) {
-      newErrors.consent = 'Please agree to the terms to proceed';
+      newErrors.consent = t('scheduling.validation.consent_required');
     }
 
     setErrors(newErrors);
@@ -106,7 +109,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-        <h3 className="text-lg font-semibold text-gray-900">Enter your details</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{t('scheduling.form.title')}</h3>
       </div>
 
       {/* Booking summary */}
@@ -125,7 +128,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span>{eventType.duration_minutes} minutes</span>
+                <span>{eventType.duration_minutes} {t('scheduling.time.minutes')}</span>
               </div>
             </div>
           </div>
@@ -139,7 +142,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              <span>Full Name *</span>
+              <span>{t('scheduling.form.name')} *</span>
             </div>
           </label>
           <input
@@ -148,10 +151,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             className={cn(
-              'w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-              errors.name ? 'border-red-300' : 'border-gray-300'
+              'w-full px-3 py-2 rounded-lg shadow-sm transition-colors',
+              'bg-white text-gray-900 placeholder-gray-400 border border-gray-300',
+              'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
+              'dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-500',
+              errors.name ? 'border-red-300 dark:border-red-700' : ''
             )}
-            placeholder="Enter your full name"
+            placeholder={t('scheduling.form.name')}
             disabled={isLoading}
             required
           />
@@ -165,7 +171,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
             <div className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
-              <span>Email Address *</span>
+              <span>{t('scheduling.form.email')} *</span>
             </div>
           </label>
           <input
@@ -174,10 +180,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             className={cn(
-              'w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-              errors.email ? 'border-red-300' : 'border-gray-300'
+              'w-full px-3 py-2 rounded-lg shadow-sm transition-colors',
+              'bg-white text-gray-900 placeholder-gray-400 border border-gray-300',
+              'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
+              'dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-500',
+              errors.email ? 'border-red-300 dark:border-red-700' : ''
             )}
-            placeholder="Enter your email address"
+            placeholder={t('scheduling.form.email')}
             disabled={isLoading}
             required
           />
@@ -191,7 +200,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
           <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
             <div className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              <span>Additional Notes (Optional)</span>
+              <span>{t('scheduling.form.notes_optional')}</span>
             </div>
           </label>
           <textarea
@@ -199,8 +208,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
             value={formData.notes}
             onChange={(e) => handleInputChange('notes', e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Any additional information or questions..."
+            className={cn(
+              'w-full px-3 py-2 rounded-lg shadow-sm transition-colors',
+              'bg-white text-gray-900 placeholder-gray-400 border border-gray-300',
+              'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
+              'dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:placeholder-gray-500'
+            )}
+            placeholder={t('scheduling.form.notes_optional')}
             disabled={isLoading}
           />
         </div>
@@ -219,8 +233,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               disabled={isLoading}
             />
             <span className="text-sm text-gray-700">
-              I agree to receive booking confirmations and updates via email. 
-              You can unsubscribe at any time. *
+              {t('scheduling.form.consent_label')} *
             </span>
           </label>
           {errors.consent && (
@@ -242,10 +255,10 @@ const BookingForm: React.FC<BookingFormProps> = ({
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Booking...</span>
+                <span>{t('scheduling.form.booking')}</span>
               </div>
             ) : (
-              'Schedule Meeting'
+              t('scheduling.form.submit')
             )}
           </button>
         </div>

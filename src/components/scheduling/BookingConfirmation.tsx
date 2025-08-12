@@ -3,6 +3,7 @@ import { CheckCircle, Calendar, Clock, Download, ExternalLink, X } from 'lucide-
 import { BookingResponse } from '../../types/scheduling';
 import { schedulingAPI } from '../../utils/schedulingAPI';
 import { cn } from '../../lib/utils';
+import { useI18n } from '../../hooks/useI18n';
 
 interface BookingConfirmationProps {
   booking: BookingResponse['booking'];
@@ -10,11 +11,14 @@ interface BookingConfirmationProps {
 }
 
 const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onClose }) => {
+  const { t, language } = useI18n();
+  
   if (!booking) return null;
 
-  // Format time for display
+  // Format time for display with localization
   const formatTimeForDisplay = (isoString: string) => {
-    return new Date(isoString).toLocaleString([], {
+    const locale = language === 'fr' ? 'fr-FR' : 'en-US';
+    return new Date(isoString).toLocaleString(locale, {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -54,10 +58,10 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onCl
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">
-          You're all set!
+          {t('scheduling.confirmation.title')}
         </h3>
         <p className="text-gray-600">
-          Your meeting has been successfully scheduled. You'll receive a confirmation email shortly.
+          {t('scheduling.confirmation.subtitle')}
         </p>
       </div>
 
@@ -79,7 +83,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onCl
               
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span>{booking.eventType.duration_minutes} minutes</span>
+                <span>{booking.eventType.duration_minutes} {t('scheduling.time.minutes')}</span>
               </div>
               
               <div className="flex items-start gap-2">
@@ -98,7 +102,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onCl
                     📝
                   </div>
                   <div className="text-gray-700">
-                    <span className="font-medium">Notes: </span>
+                    <span className="font-medium">{t('scheduling.confirmation.notes_label')} </span>
                     {booking.invitee.notes}
                   </div>
                 </div>
@@ -111,7 +115,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onCl
       {/* Action buttons */}
       <div className="space-y-4">
         <div className="text-sm font-medium text-gray-900 mb-3">
-          Add to your calendar:
+          {t('scheduling.confirmation.add_to_calendar')}
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -123,7 +127,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onCl
             )}
           >
             <ExternalLink className="w-4 h-4" />
-            <span>Google Calendar</span>
+            <span>{t('scheduling.confirmation.google_calendar')}</span>
           </button>
           
           <button
@@ -134,18 +138,18 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onCl
             )}
           >
             <Download className="w-4 h-4" />
-            <span>Download .ics</span>
+            <span>{t('scheduling.confirmation.download_ics')}</span>
           </button>
         </div>
       </div>
 
       {/* Additional info */}
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h5 className="font-medium text-blue-900 mb-2">What's next?</h5>
+        <h5 className="font-medium text-blue-900 mb-2">{t('scheduling.confirmation.whats_next')}</h5>
         <ul className="text-sm text-blue-800 space-y-1">
-          <li>• You'll receive a confirmation email with all the details</li>
-          <li>• Meeting details and access information will be provided</li>
-          <li>• You can reschedule or cancel using the links in your email</li>
+          {t('scheduling.confirmation.next_steps').map((step: string, index: number) => (
+            <li key={index}>• {step}</li>
+          ))}
         </ul>
       </div>
 
@@ -158,14 +162,14 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({ booking, onCl
             'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2'
           )}
         >
-          Close
+          {t('scheduling.common.close')}
         </button>
       </div>
 
       {/* Booking reference */}
       <div className="text-center pt-4 border-t">
         <p className="text-xs text-gray-500">
-          Booking reference: <span className="font-mono">{booking.uuid.split('-')[0].toUpperCase()}</span>
+          {t('scheduling.confirmation.booking_reference')}: <span className="font-mono">{booking.uuid.split('-')[0].toUpperCase()}</span>
         </p>
       </div>
     </div>

@@ -276,6 +276,70 @@ const fr: TranslationDictionary = {
     toggle_language: 'Changer de langue',
     toggle_theme: 'Basculer le thème',
   },
+  scheduling: {
+    form: {
+      title: 'Saisissez vos informations',
+      name: 'Nom complet',
+      email: 'Adresse email',
+      notes_optional: 'Notes supplémentaires (facultatif)',
+      consent_label: 'J\'accepte de recevoir les confirmations de réservation et les mises à jour par email. Vous pouvez vous désabonner à tout moment.',
+      submit: 'Planifier la réunion',
+      booking: 'Réservation...',
+    },
+    common: {
+      back: 'Retour',
+      continue: 'Continuer',
+      close: 'Fermer',
+    },
+    validation: {
+      name_required: 'Le nom est requis',
+      email_required: 'L\'email est requis',
+      email_invalid: 'Veuillez saisir une adresse email valide',
+      consent_required: 'Veuillez accepter les conditions pour continuer',
+    },
+    steps: {
+      event_type: 'Sélectionner le type de réunion',
+      slots: 'Choisir l\'heure',
+      form: 'Vos informations',
+      confirmation: 'Confirmé !',
+    },
+    messages: {
+      booking_created: 'Votre réservation a été créée avec succès',
+      no_event_types: 'Aucun type de réunion disponible pour le moment.',
+      no_slots_available: 'Aucun créneau disponible pour cette date.',
+      select_time: 'Sélectionnez une heure',
+      times_shown_in: 'Heures affichées en',
+    },
+    time: {
+      minutes: 'minutes',
+      duration_minutes: 'minutes',
+    },
+    calendar: {
+      previous_week: 'Semaine précédente',
+      next_week: 'Semaine suivante',
+      today: 'Aujourd\'hui',
+      slots_available: 'créneaux disponibles',
+      slot_available: 'créneau disponible',
+    },
+    trigger: {
+      schedule_meeting: 'Planifier une réunion',
+    },
+    confirmation: {
+      title: 'Tout est prêt !',
+      subtitle: 'Votre réunion a été programmée avec succès. Vous recevrez un email de confirmation sous peu.',
+      add_to_calendar: 'Ajouter à votre calendrier :',
+      google_calendar: 'Google Calendar',
+      download_ics: 'Télécharger .ics',
+      whats_next: 'Et maintenant ?',
+      next_steps: [
+        'Vous recevrez un email de confirmation avec tous les détails',
+        'Les informations de réunion et d\'accès seront fournies',
+        'Vous pouvez reprogrammer ou annuler via les liens dans votre email'
+      ],
+      booking_reference: 'Référence de réservation',
+      notes_label: 'Notes :',
+    },
+  },
 };
 
 export default fr;
