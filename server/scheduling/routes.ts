@@ -97,6 +97,14 @@ export function initializeSchedulingRoutes(
   router.use(generalRateLimit);
 
   /**
+   * GET /api/scheduling/health
+   * Health check for scheduling service
+   */
+  router.get('/health', (req, res) => {
+    res.json({ ok: true, ts: Date.now() });
+  });
+
+  /**
    * GET /api/scheduling/availability
    * Get available time slots for an event type
    */
@@ -148,7 +156,7 @@ export function initializeSchedulingRoutes(
       });
 
     } catch (error) {
-      console.error('Error getting availability:', error);
+      console.error(`Scheduling API error: GET ${req.path} - ${error instanceof Error ? error.message : 'Unknown error'}`);
       res.status(500).json({
         error: 'Internal server error'
       });
@@ -170,7 +178,7 @@ export function initializeSchedulingRoutes(
       res.json({ eventTypes });
 
     } catch (error) {
-      console.error('Error getting event types:', error);
+      console.error(`Scheduling API error: GET ${req.path} - ${error instanceof Error ? error.message : 'Unknown error'}`);
       res.status(500).json({
         error: 'Internal server error'
       });
@@ -226,7 +234,7 @@ export function initializeSchedulingRoutes(
       }
 
     } catch (error) {
-      console.error('Error creating booking:', error);
+      console.error(`Scheduling API error: POST ${req.path} - ${error instanceof Error ? error.message : 'Unknown error'}`);
       res.status(500).json({
         error: 'Internal server error'
       });
@@ -275,7 +283,7 @@ export function initializeSchedulingRoutes(
       res.json(result);
 
     } catch (error) {
-      console.error('Error rescheduling booking:', error);
+      console.error(`Scheduling API error: POST ${req.path} - ${error instanceof Error ? error.message : 'Unknown error'}`);
       res.status(500).json({
         error: 'Internal server error'
       });
@@ -318,7 +326,7 @@ export function initializeSchedulingRoutes(
       res.json(result);
 
     } catch (error) {
-      console.error('Error cancelling booking:', error);
+      console.error(`Scheduling API error: POST ${req.path} - ${error instanceof Error ? error.message : 'Unknown error'}`);
       res.status(500).json({
         error: 'Internal server error'
       });
@@ -358,7 +366,7 @@ export function initializeSchedulingRoutes(
       res.send(icsContent);
 
     } catch (error) {
-      console.error('Error generating ICS file:', error);
+      console.error(`Scheduling API error: GET ${req.path} - ${error instanceof Error ? error.message : 'Unknown error'}`);
       res.status(500).json({
         error: 'Internal server error'
       });
@@ -406,7 +414,7 @@ export function initializeSchedulingRoutes(
       });
 
     } catch (error) {
-      console.error('Error getting booking details:', error);
+      console.error(`Scheduling API error: GET ${req.path} - ${error instanceof Error ? error.message : 'Unknown error'}`);
       res.status(500).json({
         error: 'Internal server error'
       });

@@ -75,6 +75,14 @@ export function initializeSchedulingRoutes(app, db) {
   router.use(generalRateLimit);
 
   /**
+   * GET /api/scheduling/health
+   * Health check for scheduling service
+   */
+  router.get('/health', (req, res) => {
+    res.json({ ok: true, ts: Date.now() });
+  });
+
+  /**
    * GET /api/scheduling/availability
    * Get available time slots for an event type
    */
