@@ -148,9 +148,17 @@ export class EmailNotificationService {
    */
   async sendEmail(emailData, notificationType, bookingId) {
     // Log notification attempt
-    const notificationId = this.logNotification(bookingId, notificationType, emailData.to);
+    let notificationId = null;
+    try {
+      notificationId = this.logNotification(bookingId, notificationType, emailData.to);
+    } catch (error) {
+      console.warn('Failed to log notification attempt:', error.message);
+      // Continue without logging - don't fail email sending due to logging issues
+    }
 
     try {
+      console.log(`📧 Sending ${notificationType} email to ${emailData.to}`);
+      
       if (this.isDevelopment || !this.smtpConfig) {
         // Development: Log email to console
         console.log('\n📧 EMAIL NOTIFICATION (DEV MODE)');
@@ -169,16 +177,37 @@ export class EmailNotificationService {
         console.log('=====================================\n');
 
         // Mark as sent in dev mode
-        this.markNotificationSent(notificationId);
+        if (notificationId) {
+          this.markNotificationSent(notificationId);
+        }
+        
+        console.log(`✅ Email logged successfully (dev mode)`);
       } else {
         // Production: Send via SMTP (scaffolded for future implementation)
         await this.sendViaSMTP(emailData);
-        this.markNotificationSent(notificationId);
+        if (notificationId) {
+          this.markNotificationSent(notificationId);
+        }
+        console.log(`✅ Email sent successfully via SMTP`);
       }
     } catch (error) {
-      console.error('Error sending email:', error);
-      this.markNotificationFailed(notificationId, error.message);
-      throw error;
+      console.error('❌ Error sending email:', {
+        error: error.message,
+        type: notificationType,
+        to: emailData.to,
+        subject: emailData.subject
+      });
+      
+      if (notificationId) {
+        try {
+          this.markNotificationFailed(notificationId, error.message);
+        } catch (logError) {
+          console.warn('Failed to log email failure:', logError.message);
+        }
+      }
+      
+      // Don't throw error - email failure should not break booking creation
+      console.warn('⚠️  Email sending failed but continuing with booking process');
     }
   }
 
@@ -202,28 +231,46 @@ export class EmailNotificationService {
    * Notification logging
    */
   logNotification(bookingId, notificationType, recipientEmail) {
-    const result = this.db.prepare(`
-      INSERT INTO notifications (booking_id, notification_type, recipient_email, status)
-      VALUES (?, ?, ?, 'pending')
-    `).run(bookingId, notificationType, recipientEmail);
+    try {
+      const result = this.db.prepare(`
+        INSERT INTO notifications (booking_id, notification_type, recipient_email, status)
+        VALUES (?, ?, ?, 'pending')
+      `).run(bookingId, notificationType, recipientEmail);
 
-    return result.lastInsertRowid;
+      return result.lastInsertRowid;
+    } catch (error) {
+      // If notifications table doesn't exist or there's a schema issue, just log and continue
+      console.warn('Failed to log notification (table may not exist):', error.message);
+      return null;
+    }
   }
 
   markNotificationSent(notificationId) {
-    this.db.prepare(`
-      UPDATE notifications 
-      SET status = 'sent', sent_at = CURRENT_TIMESTAMP 
-      WHERE id = ?
-    `).run(notificationId);
+    if (!notificationId) return;
+    
+    try {
+      this.db.prepare(`
+        UPDATE notifications 
+        SET status = 'sent', sent_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+      `).run(notificationId);
+    } catch (error) {
+      console.warn('Failed to mark notification as sent:', error.message);
+    }
   }
 
   markNotificationFailed(notificationId, errorMessage) {
-    this.db.prepare(`
-      UPDATE notifications 
-      SET status = 'failed', error_message = ? 
-      WHERE id = ?
-    `).run(errorMessage, notificationId);
+    if (!notificationId) return;
+    
+    try {
+      this.db.prepare(`
+        UPDATE notifications 
+        SET status = 'failed', error_message = ? 
+        WHERE id = ?
+      `).run(errorMessage, notificationId);
+    } catch (error) {
+      console.warn('Failed to mark notification as failed:', error.message);
+    }
   }
 
   /**
