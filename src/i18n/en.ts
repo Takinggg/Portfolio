@@ -236,7 +236,43 @@ const en: TranslationDictionary = {
       remote_missions: 'Remote missions',
       statistics: 'Statistics',
       satisfaction: 'Client satisfaction',
-      response_time_stat: 'Response time'
+      response_time_stat: 'Response time',
+      // Contact method titles
+      email_title: 'Email',
+      phone_title: 'Phone',
+      location_title: 'Location',
+      // Form placeholders and labels
+      name_placeholder: 'Your name',
+      project_placeholder: 'Tell me about your vision, your objectives, your target audience...',
+      select_budget: 'Select a budget',
+      select_timeline: 'Select a timeline',
+      // Success/Error messages
+      success_message: 'Message sent successfully!',
+      success_detail: 'I will get back to you as soon as possible.',
+      error_title: 'Error sending',
+      scheduling_message: 'Your message will be sent then the scheduling widget will open automatically to choose your slot.',
+      // Validation messages
+      validation_error: 'Please correct the errors in the form',
+      validation_data_error: 'Data validation error',
+      general_error: 'An error occurred',
+      // File upload
+      file_size_error: 'File must not exceed 10MB',
+      file_type_error: 'Unsupported file format. Use PDF, DOC, DOCX or TXT',
+      file_remove: 'Remove file',
+      // Contact method actions
+      contact_by: 'Contact by',
+      or: 'or',
+      // Budget ranges
+      budget_5k: '< $5k',
+      budget_5_15k: '$5k - $15k',
+      budget_15_30k: '$15k - $30k',
+      budget_30_50k: '$30k - $50k',
+      budget_50k_plus: '$50k+',
+      // Timeline options
+      timeline_urgent: 'Urgent (< 1 month)',
+      timeline_short: 'Short term (1-3 months)',
+      timeline_medium: 'Medium term (3-6 months)',
+      timeline_long: 'Long term (6+ months)'
     }
   },
   footer: {

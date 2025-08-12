@@ -77,12 +77,12 @@ const Contact = memo(() => {
       if (!validation.isValid) {
         setValidationErrors(validation.errors);
         setSubmitStatus('error');
-        setErrorMessage('Veuillez corriger les erreurs dans le formulaire');
+        setErrorMessage(t('contact.form.validation_error'));
         return;
       }
 
       if (!validation.sanitizedData) {
-        throw new Error('Erreur de validation des données');
+        throw new Error(t('contact.form.validation_data_error'));
       }
 
       // Submit the sanitized message
@@ -105,7 +105,7 @@ const Contact = memo(() => {
         
         // Show success message for contact form
         setSubmitStatus('success');
-        screenReader.announce('Message envoyé avec succès ! Le widget de planification va s\'ouvrir.', 'polite');
+        screenReader.announce(t('contact.form.success_message') + ' Le widget de planification va s\'ouvrir.', 'polite');
         
         // Reset form except for appointment preference
         setFormData(prev => ({
@@ -137,7 +137,7 @@ const Contact = memo(() => {
         setSubmitStatus('success');
         
         // Announce success to screen readers
-        screenReader.announce('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.', 'polite');
+        screenReader.announce(t('contact.form.success_message') + ' Nous vous répondrons dans les plus brefs délais.', 'polite');
         
         // Reset form after successful submission
         setFormData({
@@ -157,11 +157,11 @@ const Contact = memo(() => {
     } catch (error) {
       console.error('Error submitting contact form:', error);
       setSubmitStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'Une erreur est survenue');
+      setErrorMessage(error instanceof Error ? error.message : t('contact.form.general_error'));
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData]);
+  }, [formData, t]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setSubmitStatus('idle');
@@ -186,14 +186,14 @@ const Contact = memo(() => {
     if (file) {
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        setErrorMessage('Le fichier ne doit pas dépasser 10MB');
+        setErrorMessage(t('contact.form.file_size_error'));
         return;
       }
       
       // Validate file type
       const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
       if (!allowedTypes.includes(file.type)) {
-        setErrorMessage('Format de fichier non supporté. Utilisez PDF, DOC, DOCX ou TXT');
+        setErrorMessage(t('contact.form.file_type_error'));
         return;
       }
     }
@@ -202,7 +202,7 @@ const Contact = memo(() => {
       ...formData,
       briefFile: file || null
     });
-  }, [formData]);
+  }, [formData, t]);
 
   // Scheduling handlers
   const handleBookingComplete = useCallback(async (booking: any) => {
@@ -262,43 +262,43 @@ const Contact = memo(() => {
   const contactMethods = [
     {
       icon: Mail,
-      title: "Email",
+      title: t('contact.form.email_title'),
       value: CONTACT_INFO.email,
-      description: "Réponse sous 24h",
+      description: t('contact.form.response_time'),
       gradient: "from-blue-500 to-cyan-500",
       bgGradient: "from-blue-50 to-cyan-50"
     },
     {
       icon: Phone,
-      title: "Téléphone",
+      title: t('contact.form.phone_title'),
       value: CONTACT_INFO.phone,
-      description: "Lun-Ven 9h-18h",
+      description: t('contact.form.working_hours'),
       gradient: "from-purple-500 to-pink-500",
       bgGradient: "from-purple-50 to-pink-50"
     },
     {
       icon: MapPin,
-      title: "Localisation",
+      title: t('contact.form.location_title'),
       value: CONTACT_INFO.location,
-      description: "Missions à distance",
+      description: t('contact.form.remote_missions'),
       gradient: "from-green-500 to-emerald-500",
       bgGradient: "from-green-50 to-emerald-50"
     }
   ];
 
   const budgetRanges = [
-    "< 5k €",
-    "5k - 15k €",
-    "15k - 30k €",
-    "30k - 50k €",
-    "50k+ €"
+    t('contact.form.budget_5k'),
+    t('contact.form.budget_5_15k'),
+    t('contact.form.budget_15_30k'),
+    t('contact.form.budget_30_50k'),
+    t('contact.form.budget_50k_plus')
   ];
 
   const timelineOptions = [
-    "Urgent (< 1 mois)",
-    "Court terme (1-3 mois)",
-    "Moyen terme (3-6 mois)",
-    "Long terme (6+ mois)"
+    t('contact.form.timeline_urgent'),
+    t('contact.form.timeline_short'),
+    t('contact.form.timeline_medium'),
+    t('contact.form.timeline_long')
   ];
 
   return (
@@ -335,8 +335,7 @@ const Contact = memo(() => {
           </h2>
           
           <p className="text-xl text-text-soft max-w-4xl mx-auto leading-relaxed">
-            {t('contact.ambitious_project')} 
-            dont nous pouvons créer quelque chose d'extraordinaire
+            {t('contact.ambitious_project')}
           </p>
         </header>
 
@@ -361,14 +360,14 @@ const Contact = memo(() => {
                   className={`group relative glass-base p-6 rounded-3xl shadow-glass hover:shadow-glass-lg transition-all duration-500 transform hover:-translate-y-2 cursor-pointer focus-within:ring-2 focus-within:ring-liquid-purple focus-within:ring-offset-2 magnetic`}
                   role="button"
                   tabIndex={0}
-                  aria-label={`Contacter par ${method.title.toLowerCase()}: ${method.value}`}
+                  aria-label={`${t('contact.form.contact_by')} ${method.title.toLowerCase()}: ${method.value}`}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
                       // Handle contact method selection
-                      if (method.title === 'Email') {
+                      if (method.title === t('contact.form.email_title')) {
                         window.open(`mailto:${method.value}`, '_blank');
-                      } else if (method.title === 'Téléphone') {
+                      } else if (method.title === t('contact.form.phone_title')) {
                         window.open(`tel:${method.value}`, '_blank');
                       }
                     }
@@ -395,17 +394,17 @@ const Contact = memo(() => {
             <div className="bg-gradient-to-br from-gray-900 to-purple-900 rounded-3xl p-8 text-white mt-8" role="complementary" aria-labelledby="stats-title">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="text-yellow-400" size={20} aria-hidden="true" />
-                <span id="stats-title" className="font-semibold">Statistiques</span>
+                <span id="stats-title" className="font-semibold">{t('contact.form.statistics')}</span>
               </div>
               
               <div className="grid grid-cols-2 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-yellow-400 mb-1" aria-label="98 pourcent">98%</div>
-                  <div className="text-sm text-gray-300">Satisfaction client</div>
+                  <div className="text-sm text-gray-300">{t('contact.form.satisfaction')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-400 mb-1" aria-label="24 heures">24h</div>
-                  <div className="text-sm text-gray-300">Temps de réponse</div>
+                  <div className="text-sm text-gray-300">{t('contact.form.response_time_stat')}</div>
                 </div>
               </div>
             </div>
@@ -433,8 +432,8 @@ const Contact = memo(() => {
                     role="alert"
                     aria-live="polite"
                   >
-                    <p className="font-medium">Message envoyé avec succès !</p>
-                    <p className="text-sm">Je vous répondrai dans les plus brefs délais.</p>
+                    <p className="font-medium">{t('contact.form.success_message')}</p>
+                    <p className="text-sm">{t('contact.form.success_detail')}</p>
                   </div>
                 )}
 
@@ -445,7 +444,7 @@ const Contact = memo(() => {
                     role="alert"
                     aria-live="assertive"
                   >
-                    <p className="font-medium">Erreur lors de l'envoi</p>
+                    <p className="font-medium">{t('contact.form.error_title')}</p>
                     <p className="text-sm">{errorMessage}</p>
                   </div>
                 )}
@@ -464,7 +463,7 @@ const Contact = memo(() => {
                       className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300 dark:group-hover:border-gray-600 ${
                         validationErrors.name ? 'border-red-300 dark:border-red-600' : 'border-gray-200 dark:border-gray-700 dark:border-gray-700'
                       }`}
-                      placeholder="Votre nom"
+                      placeholder={t('contact.form.name_placeholder')}
                       required
                       disabled={isSubmitting}
                       aria-invalid={!!validationErrors.name}
@@ -527,7 +526,7 @@ const Contact = memo(() => {
                       className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300"
                       disabled={isSubmitting}
                     >
-                      <option value="">Sélectionnez un budget</option>
+                      <option value="">{t('contact.form.select_budget')}</option>
                       {budgetRanges.map((range) => (
                         <option key={range} value={range}>{range}</option>
                       ))}
@@ -536,7 +535,7 @@ const Contact = memo(() => {
                   
                   <div className="group">
                     <label htmlFor="timeline" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                      Timeline souhaitée
+                      {t('contact.form.timeline')}
                     </label>
                     <select
                       id="timeline"
@@ -546,7 +545,7 @@ const Contact = memo(() => {
                       className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300"
                       disabled={isSubmitting}
                     >
-                      <option value="">Sélectionnez une timeline</option>
+                      <option value="">{t('contact.form.select_timeline')}</option>
                       {timelineOptions.map((option) => (
                         <option key={option} value={option}>{option}</option>
                       ))}
@@ -576,7 +575,7 @@ const Contact = memo(() => {
                       {formData.wantAppointment && (
                         <div className="mt-3 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700 transition-colors">
                           <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
-                            ✓ Votre message sera envoyé puis le widget de planification s'ouvrira automatiquement pour choisir votre créneau.
+                            ✓ {t('contact.form.scheduling_message')}
                           </p>
                         </div>
                       )}
@@ -586,7 +585,7 @@ const Contact = memo(() => {
 
                 <div className="group">
                   <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                    Sujet du projet *
+                    {t('contact.form.subject')} *
                   </label>
                   <input
                     type="text"
@@ -608,7 +607,7 @@ const Contact = memo(() => {
 
                 <div className="group">
                   <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
-                    Décrivez votre projet *
+                    {t('contact.form.describe_project')} *
                   </label>
                   <textarea
                     id="message"
@@ -619,7 +618,7 @@ const Contact = memo(() => {
                     className={`w-full px-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300 ${
                       validationErrors.message ? 'border-red-300' : 'border-gray-200 dark:border-gray-700'
                     }`}
-                    placeholder="Parlez-moi de votre vision, vos objectifs, votre audience cible..."
+                    placeholder={t('contact.form.project_placeholder')}
                     required
                     disabled={isSubmitting}
                   />
@@ -630,12 +629,12 @@ const Contact = memo(() => {
 
                 {/* Brief Upload/URL Section */}
                 <div className="space-y-4">
-                  <h4 className="text-sm font-semibold text-gray-700">Brief du projet (optionnel)</h4>
+                  <h4 className="text-sm font-semibold text-gray-700">{t('contact.form.brief_title')}</h4>
                   
                   {/* URL Input */}
                   <div className="group">
                     <label htmlFor={briefUrlId.current} className="block text-sm font-medium text-gray-600 mb-2">
-                      Lien vers votre brief (Notion, Google Doc, etc.)
+                      {t('contact.form.brief_link')}
                     </label>
                     <div className="relative">
                       <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -653,11 +652,11 @@ const Contact = memo(() => {
                   </div>
 
                   {/* File Upload */}
-                  <div className="text-center text-sm text-gray-500 py-2">ou</div>
+                  <div className="text-center text-sm text-gray-500 py-2">{t('contact.form.or')}</div>
                   
                   <div className="group">
                     <label htmlFor={briefFileId.current} className="block text-sm font-medium text-gray-600 mb-2">
-                      Télécharger un fichier
+                      {t('contact.form.file_upload')}
                     </label>
                     <div className="relative">
                       <input
@@ -675,7 +674,7 @@ const Contact = memo(() => {
                       >
                         <Upload size={18} className="text-gray-400" />
                         <span className="text-gray-600">
-                          {formData.briefFile ? formData.briefFile.name : 'Choisir un fichier (PDF, DOC, TXT - max 10MB)'}
+                          {formData.briefFile ? formData.briefFile.name : t('contact.form.choose_file')}
                         </span>
                       </label>
                       {formData.briefFile && (
@@ -683,7 +682,7 @@ const Contact = memo(() => {
                           type="button"
                           onClick={() => setFormData({ ...formData, briefFile: null })}
                           className="absolute top-2 right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors"
-                          aria-label="Supprimer le fichier"
+                          aria-label={t('contact.form.file_remove')}
                         >
                           <X size={14} />
                         </button>
@@ -710,9 +709,9 @@ const Contact = memo(() => {
                       aria-describedby={validationErrors.rgpdConsent ? `${rgpdId.current}-error` : undefined}
                     />
                     <label htmlFor={rgpdId.current} className="text-sm text-gray-600 leading-relaxed">
-                      J'accepte que mes données personnelles soient utilisées pour me recontacter concernant ma demande. 
+                      {t('contact.form.privacy_consent')}
                       <a href="/legal/mentions-legales" className="text-purple-600 hover:underline ml-1" target="_blank">
-                        En savoir plus sur la protection des données
+                        {t('contact.form.privacy_link')}
                       </a>
                       <span className="text-red-500 ml-1">*</span>
                     </label>
@@ -738,12 +737,12 @@ const Contact = memo(() => {
                   {isSubmitting ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Envoi en cours...
+                      {t('contact.form.sending')}
                     </>
                   ) : (
                     <>
                       <Send size={20} />
-                      Envoyer le message
+                      {t('contact.form.send')}
                     </>
                   )}
                 </button>
