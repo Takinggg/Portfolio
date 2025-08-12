@@ -206,6 +206,11 @@ export interface TranslationDictionary {
       schedule_call: string;
       schedule_description: string;
       schedule: string;
+      want_appointment: string;
+      appointment_option: string;
+      with_appointment: string;
+      without_appointment: string;
+      book_meeting: string;
       privacy_consent: string;
       privacy_link: string;
       response_time: string;
@@ -268,6 +273,7 @@ export interface TranslationDictionary {
       consent_label: string;
       submit: string;
       booking: string;
+      clear_prefilled: string;
     };
     common: {
       back: string;
@@ -292,6 +298,13 @@ export interface TranslationDictionary {
       no_slots_available: string;
       select_time: string;
       times_shown_in: string;
+    };
+    errors: {
+      network: string;
+      not_found: string;
+      server_error: string;
+      invalid_json: string;
+      generic: string;
     };
     time: {
       minutes: string;

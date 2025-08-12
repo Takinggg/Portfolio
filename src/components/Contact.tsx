@@ -7,6 +7,7 @@ import { validateContactForm, contactFormRateLimiter } from '../lib/validation';
 import { generateId, screenReader } from '../lib/accessibility';
 import { useI18n } from '../hooks/useI18n';
 import { SchedulingWidget } from './scheduling';
+import { saveUserInfoToStorage } from '../utils/userInfoPrefill';
 
 const Contact = memo(() => {
   const { t } = useI18n();
@@ -96,6 +97,12 @@ const Contact = memo(() => {
         // Store message ID for later linking
         window.sessionStorage.setItem('pendingMessageId', messageData.id);
         
+        // Save user info to localStorage for prefilling
+        saveUserInfoToStorage({
+          name: formData.name,
+          email: formData.email
+        });
+        
         // Show success message for contact form
         setSubmitStatus('success');
         screenReader.announce('Message envoyé avec succès ! Le widget de planification va s\'ouvrir.', 'polite');
@@ -121,6 +128,12 @@ const Contact = memo(() => {
         
       } else {
         // Standard success flow for non-appointment messages
+        // Save user info to localStorage for future use
+        saveUserInfoToStorage({
+          name: formData.name,
+          email: formData.email
+        });
+        
         setSubmitStatus('success');
         
         // Announce success to screen readers
@@ -228,23 +241,23 @@ const Contact = memo(() => {
   const handleSchedulingError = useCallback((error: string) => {
     console.error('Scheduling error:', error);
     
-    // Convert technical errors to French user-friendly messages
-    let friendlyMessage = 'Le service de planification est temporairement indisponible';
+    // Convert technical errors to localized user-friendly messages
+    let friendlyMessage = t('scheduling.errors.generic');
     
     if (error.includes('expected JSON but received')) {
-      friendlyMessage = 'Le service de planification est indisponible (réponse non-JSON) — vérifiez la configuration VITE_API_BASE_URL';
+      friendlyMessage = t('scheduling.errors.invalid_json');
     } else if (error.includes('Failed to fetch') || error.includes('Network')) {
-      friendlyMessage = 'Erreur de connexion au service de planification. Vérifiez votre connexion internet.';
+      friendlyMessage = t('scheduling.errors.network');
     } else if (error.includes('HTTP 404')) {
-      friendlyMessage = 'Service de planification non trouvé. Contactez le support technique.';
+      friendlyMessage = t('scheduling.errors.not_found');
     } else if (error.includes('HTTP 500')) {
-      friendlyMessage = 'Erreur serveur du service de planification. Réessayez plus tard.';
+      friendlyMessage = t('scheduling.errors.server_error');
     }
     
     setErrorMessage(friendlyMessage);
     setSubmitStatus('error');
     setShouldOpenScheduling(false); // Close the scheduling widget on error
-  }, []);
+  }, [t]);
 
   const contactMethods = [
     {
