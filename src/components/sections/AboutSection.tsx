@@ -61,26 +61,14 @@ const AboutSection = memo(({ onNavigateToSection }: AboutSectionProps) => {
           {/* Main title - ensure it's visible with proper Safari support */}
           <h1 className={`${styles.mainTitle} relative z-10`}>
             <ShimmerText 
-              className={`${styles.titleFirstWord} bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]`}
-              style={{
-                background: 'linear-gradient(135deg, #374151 0%, #3b82f6 50%, #8b5cf6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}
+              className={styles.titleFirstWord}
             >
               {t('about.about_me').split(' ')[0]}
             </ShimmerText>
             <br />
             <ShimmerText 
               delay={0.5} 
-              className={`${styles.titleSecondPart} bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]`}
-              style={{
-                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}
+              className={styles.titleSecondPart}
             >
               {t('about.about_me').split(' ').slice(1).join(' ')}
             </ShimmerText>
