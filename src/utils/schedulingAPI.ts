@@ -7,7 +7,7 @@ const API_BASE = `${API_CONFIG.baseUrl.replace(/\/$/, '')}/scheduling`;
 /**
  * Helper function to fetch JSON with content-type validation
  */
-async function fetchJson(url: string, init?: RequestInit): Promise<any> {
+async function fetchJson(url: string, init?: RequestInit): Promise<unknown> {
   const response = await fetch(url, init);
   
   const contentType = response.headers.get('content-type') || '';
@@ -23,7 +23,17 @@ async function fetchJson(url: string, init?: RequestInit): Promise<any> {
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: response.statusText }));
     console.error('Scheduling API error:', { url, status: response.status, error });
-    throw new Error(error.error || `HTTP ${response.status}: ${response.statusText}`);
+    
+    // Enhanced error message that includes backend details for debugging
+    let errorMessage = error.error || `HTTP ${response.status}: ${response.statusText}`;
+    
+    // If backend provides validation details (e.g., from Zod), include them
+    if (error.details) {
+      console.error('Backend validation details:', error.details);
+      errorMessage += ` (Details: ${JSON.stringify(error.details)})`;
+    }
+    
+    throw new Error(errorMessage);
   }
   
   return response.json();
@@ -65,9 +75,9 @@ class SchedulingAPI {
     const url = `${API_BASE}/book`;
 
     // Defensive normalization to avoid backend VALIDATION_ERRORs
-    const payload: any = {
+    const payload: BookingRequest = {
       ...request,
-      eventTypeId: Number((request as any).eventTypeId),
+      eventTypeId: Number(request.eventTypeId),
       start: new Date(request.start).toISOString(),
       end: new Date(request.end).toISOString(),
     };
@@ -84,7 +94,7 @@ class SchedulingAPI {
   /**
    * Get booking details by UUID
    */
-  async getBooking(uuid: string): Promise<any> {
+  async getBooking(uuid: string): Promise<BookingResponse> {
     const url = `${API_BASE}/booking/${uuid}`;
     return fetchJson(url);
   }
@@ -104,7 +114,7 @@ class SchedulingAPI {
     token: string,
     newStart: string,
     newEnd: string
-  ): Promise<any> {
+  ): Promise<BookingResponse> {
     const url = `${API_BASE}/reschedule`;
     return fetchJson(url, {
       method: 'POST',
@@ -127,7 +137,7 @@ class SchedulingAPI {
     bookingId: string,
     token: string,
     reason?: string
-  ): Promise<any> {
+  ): Promise<BookingResponse> {
     const url = `${API_BASE}/cancel`;
     return fetchJson(url, {
       method: 'POST',

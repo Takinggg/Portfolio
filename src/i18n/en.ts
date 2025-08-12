@@ -362,6 +362,9 @@ const en: TranslationDictionary = {
       invalid_event_type: 'Invalid event type. Please select a valid event type.',
       invalid_email: 'Invalid email address. Please enter a valid email address.',
       invalid_time: 'Invalid time slot. Please select a new time slot.',
+      invalid_start_time: 'Invalid start time. Please select a valid start time.',
+      invalid_end_time: 'Invalid end time. Please select a valid end time.',
+      end_before_start: 'End time must be after start time. Please check your selection.',
     },
     time: {
       minutes: 'minutes',
