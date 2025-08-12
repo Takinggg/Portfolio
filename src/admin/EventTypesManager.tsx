@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, Clock, Users, MapPin } from 'lucide-react';
-import { handleApiError, safeJsonParse } from '../lib/api-utils';
+import * as adminApi from '../utils/adminApi';
+import { ApiError } from '../utils/adminApi';
+import ErrorBanner from '../components/admin/ErrorBanner';
 
 interface EventType {
   id: number;
@@ -28,7 +30,7 @@ interface EventTypesManagerProps {
 const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }) => {
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState<Partial<EventType>>({
@@ -49,22 +51,13 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
 
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/scheduling/event-types', {
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!response.ok) {
-        await handleApiError(response, 'Failed to fetch event types');
-      }
-
-      const result = await safeJsonParse(response);
-      setEventTypes(result.eventTypes || []);
       setError(null);
+      
+      const result = await adminApi.fetchJSON('/api/admin/scheduling/event-types');
+      setEventTypes((result as { eventTypes: EventType[] }).eventTypes || []);
     } catch (err) {
       console.error('Error fetching event types:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch event types');
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -76,22 +69,10 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
 
   const handleSave = async () => {
     try {
-      const method = editingId ? 'PATCH' : 'POST';
-      const url = editingId 
-        ? `/api/admin/scheduling/event-types/${editingId}`
-        : '/api/admin/scheduling/event-types';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        await handleApiError(response, 'Failed to save event type');
+      if (editingId) {
+        await adminApi.patchJSON(`/api/admin/scheduling/event-types/${editingId}`, formData);
+      } else {
+        await adminApi.postJSON('/api/admin/scheduling/event-types', formData);
       }
 
       await fetchEventTypes();
@@ -111,7 +92,8 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
       });
     } catch (err) {
       console.error('Error saving event type:', err);
-      alert(err instanceof Error ? err.message : 'Failed to save event type');
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
   };
 
@@ -119,21 +101,12 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
     if (!confirm('Are you sure you want to delete this event type?')) return;
 
     try {
-      const response = await fetch(`/api/admin/scheduling/event-types/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!response.ok) {
-        await handleApiError(response, 'Failed to delete event type');
-      }
-
+      await adminApi.deleteJSON(`/api/admin/scheduling/event-types/${id}`);
       await fetchEventTypes();
     } catch (err) {
       console.error('Error deleting event type:', err);
-      alert(err instanceof Error ? err.message : 'Failed to delete event type');
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
   };
 
@@ -206,16 +179,10 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800 font-medium">Error loading event types</p>
-          <p className="text-red-600 text-sm mt-1">{error}</p>
-          <button
-            onClick={fetchEventTypes}
-            className="mt-3 px-4 py-2 bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorBanner 
+          error={error} 
+          onRetry={fetchEventTypes}
+        />
       </div>
     );
   }

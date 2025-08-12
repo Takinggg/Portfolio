@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Users, Clock, Activity, TrendingUp, TrendingDown } from 'lucide-react';
-import { handleApiError, safeJsonParse } from '../lib/api-utils';
+import * as adminApi from '../utils/adminApi';
+import { ApiError } from '../utils/adminApi';
+import ErrorBanner from '../components/admin/ErrorBanner';
 
 interface DashboardStats {
   eventTypes: { count: number };
@@ -31,29 +33,20 @@ interface AdminOverviewProps {
 const AdminOverview: React.FC<AdminOverviewProps> = ({ isAuthenticated }) => {
   const [data, setData] = useState<OverviewData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
 
   const fetchOverview = async () => {
     if (!isAuthenticated) return;
     
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/scheduling/overview', {
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!response.ok) {
-        await handleApiError(response, 'Failed to fetch overview');
-      }
-
-      const result = await safeJsonParse(response);
-      setData(result);
       setError(null);
+      
+      const result = await adminApi.fetchJSON('/api/admin/scheduling/overview');
+      setData(result as OverviewData);
     } catch (err) {
       console.error('Error fetching overview:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch overview');
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -87,16 +80,10 @@ const AdminOverview: React.FC<AdminOverviewProps> = ({ isAuthenticated }) => {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800 font-medium">Error loading overview</p>
-          <p className="text-red-600 text-sm mt-1">{error}</p>
-          <button
-            onClick={fetchOverview}
-            className="mt-3 px-4 py-2 bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorBanner 
+          error={error} 
+          onRetry={fetchOverview}
+        />
       </div>
     );
   }

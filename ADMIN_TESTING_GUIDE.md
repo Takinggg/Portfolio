@@ -1,109 +1,271 @@
-# Admin Panel Manual Testing Guide
+# Manual Testing Guide for Admin Scheduling API Error Handling
 
-## Overview
-This guide documents the fixes applied to the admin panel and how to manually test them.
+This guide provides manual testing steps to verify that the admin scheduling views handle various API response scenarios correctly.
 
-## Critical Issues Fixed
+## Prerequisites
 
-### 1. JavaScript Errors in ProjectManager
-**Issue**: "Cannot read properties of undefined (reading 'technologies')"
-**Fix**: Added comprehensive null/undefined checks and data validation
+- Admin credentials configured in environment variables:
+  - `VITE_ADMIN_USERNAME`
+  - `VITE_ADMIN_PASSWORD`
+- Server running with scheduling API endpoints
+- Access to browser developer tools (Network panel)
 
-**Test Steps**:
-1. Navigate to http://localhost:5173/admin
-2. Login with admin/password
-3. Click on "Projets" in the sidebar
-4. Verify no console errors appear
-5. Try creating a new project (should work without errors)
-6. Try editing an existing project (should work without errors)
+## Testing Scenarios
 
-### 2. Accessibility and Contrast Issues
-**Issue**: Poor contrast ratios and accessibility
-**Fix**: Enhanced color scheme, improved contrast ratios, added ARIA labels
+### 1. Successful JSON Responses
 
-**Test Steps**:
-1. Check error messages have red-900 on red-50 background
-2. Verify buttons have proper focus indicators
-3. Test keyboard navigation through all form elements
-4. Verify all buttons have descriptive ARIA labels
-5. Check status badges are readable (darker colors with borders)
+**Test**: Verify admin views load correctly with valid JSON responses.
 
-### 3. Admin Login Hanging
-**Issue**: Authentication service caused infinite loading
-**Fix**: Simplified authentication with direct credential validation
+```bash
+# Test Overview endpoint
+curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -v
 
-**Test Steps**:
-1. Navigate to /admin
-2. Should see login form immediately (no hanging)
-3. Enter admin/password
-4. Should login successfully and show dashboard
+# Expected: 200 OK with application/json content-type
+# Response should contain stats and auditStats objects
+```
 
-## Expected Behavior
+**Frontend verification**:
+1. Open Admin → Overview
+2. Check Network panel shows `application/json` content-type
+3. Verify data loads without errors
+4. No error banners should be visible
 
-### ProjectManager Component
-- ✅ No JavaScript errors when loading projects
-- ✅ Safe handling of missing/null project data
-- ✅ Proper fallbacks for undefined technologies/images arrays
-- ✅ Enhanced form validation with better error messages
+### 2. HTML Error Responses (Server Returns HTML Instead of JSON)
 
-### UI/UX Improvements  
-- ✅ Blue color scheme instead of purple for better contrast
-- ✅ Enhanced error message visibility with high contrast borders
-- ✅ Improved button styling with focus indicators
-- ✅ Better form input contrast and accessibility
-- ✅ Professional admin dashboard layout
+**Test**: Simulate server returning HTML error pages.
 
-### Accessibility Enhancements
-- ✅ ARIA labels on all interactive elements
-- ✅ Proper form labels and input associations  
-- ✅ High contrast error messages (WCAG AA compliant)
-- ✅ Keyboard navigation support
-- ✅ Screen reader friendly interface
+```bash
+# Test with invalid endpoint that might return HTML 404
+curl -X GET "http://localhost:3001/api/admin/scheduling/nonexistent" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -v
 
-## Manual Testing Checklist
+# Expected: 404 with text/html content-type
+```
 
-### Admin Login
-- [ ] Navigate to /admin loads login form
-- [ ] Login with admin/password works
-- [ ] No infinite loading or hanging issues
+**Frontend verification**:
+1. Temporarily modify API URL in code to point to invalid endpoint
+2. Open Admin → Overview  
+3. Should see error banner with message: "Le serveur a retourné du text/html au lieu de JSON"
+4. Click "Détails" to see response snippet, URL, and status code
+5. Click "Réessayer" button should retry the request
 
-### Project Management
-- [ ] Projects list loads without errors
-- [ ] Can create new project successfully
-- [ ] Can edit existing project without errors
-- [ ] Technologies field accepts comma-separated values
-- [ ] Image URLs field accepts newline-separated values
-- [ ] Form validation shows clear error messages
-- [ ] All action buttons (edit, view, delete) work
+### 3. Authentication Errors (401/403)
 
-### Accessibility
-- [ ] High contrast throughout interface
-- [ ] All buttons have proper focus indicators
-- [ ] Error messages are clearly visible
-- [ ] Form inputs have associated labels
-- [ ] Can navigate entire interface with keyboard
-- [ ] Screen reader compatibility
+**Test**: Verify handling of authentication failures.
 
-### UI/Design
-- [ ] Consistent blue color scheme
-- [ ] Professional appearance
-- [ ] Clear visual hierarchy
-- [ ] Proper spacing and typography
-- [ ] Status badges are readable
-- [ ] Loading states work properly
+```bash
+# Test with invalid credentials
+curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic invalid_credentials" \
+  -v
 
-## Default Credentials
-- Username: admin
-- Password: password
+# Expected: 401 Unauthorized
+```
 
-## Files Modified
-1. `src/components/admin/ProjectManager.tsx` - Critical error fixes and accessibility
-2. `src/components/admin/SimpleAdminLogin.tsx` - New simplified login component  
-3. `src/components/admin/AdminDashboard.tsx` - Enhanced layout and contrast
-4. `src/App.tsx` - Updated to use SimpleAdminLogin
+**Frontend verification**:
+1. Temporarily use invalid admin credentials
+2. Open Admin → Overview
+3. Should see yellow authentication error banner
+4. Message should be: "Session expirée. Veuillez vous reconnecter."
+5. Click "Se reconnecter" should prompt for re-authentication or reload page
 
-## Notes
-- All changes maintain existing functionality while improving reliability and accessibility
-- Color scheme changed from purple to blue for better WCAG compliance
-- Data validation ensures no JavaScript errors with malformed/missing data
-- Admin authentication simplified to prevent hanging issues
+### 4. 302 HTML Redirects
+
+**Test**: Server returns HTML redirect response.
+
+```bash
+# Test endpoint that might redirect
+curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
+  -H "Accept: application/json" \
+  -L \
+  -v
+
+# Check if server returns 302 with HTML content
+```
+
+**Frontend verification**:
+1. Configure server to return 302 redirects for admin endpoints
+2. Try accessing any admin view
+3. Should see error banner explaining HTML redirect was received
+4. Details should show status 302 and HTML snippet
+
+### 5. 400 JSON Validation Errors
+
+**Test**: Send invalid data to trigger validation errors.
+
+```bash
+# Test creating event type with invalid data
+curl -X POST "http://localhost:3001/api/admin/scheduling/event-types" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -d '{"name":"","duration_minutes":"invalid"}' \
+  -v
+
+# Expected: 400 Bad Request with JSON error details
+```
+
+**Frontend verification**:
+1. Open Admin → Event Types
+2. Try creating event type with empty name
+3. Should see alert with clear validation error message
+4. No "Session expirée" message should appear
+
+### 6. Invalid JSON Responses
+
+**Test**: Server returns malformed JSON.
+
+```bash
+# Modify server temporarily to return invalid JSON
+# Or test with endpoint that might return corrupted JSON
+curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -v
+
+# Check response body for malformed JSON
+```
+
+**Frontend verification**:
+1. Configure server to return malformed JSON (e.g., truncated response)
+2. Open Admin → Overview
+3. Should see error banner: "Réponse JSON invalide du serveur"
+4. Details should show the attempted JSON parse error
+
+### 7. Network Failures
+
+**Test**: Simulate network connectivity issues.
+
+**Frontend verification**:
+1. Disconnect from network or block localhost in firewall
+2. Try opening Admin → Overview
+3. Should see blue network error banner
+4. Message: "Erreur de connexion. Vérifiez votre connexion internet."
+5. Reconnect and click "Réessayer" should work
+
+### 8. Mixed Content Types in Single Session
+
+**Test**: Verify consistent handling across different admin views.
+
+```bash
+# Test multiple endpoints
+curl -X GET "http://localhost:3001/api/admin/scheduling/event-types" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -v
+
+curl -X GET "http://localhost:3001/api/admin/scheduling/bookings" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -v
+
+curl -X GET "http://localhost:3001/api/admin/scheduling/availability-rules" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -v
+```
+
+**Frontend verification**:
+1. Navigate through all admin views: Overview, Event Types, Bookings, Availability, Notifications, Agenda
+2. Verify all show proper loading states
+3. Check Network panel shows `application/json` for all requests
+4. Verify `credentials: include` is set on all requests
+5. Confirm consistent error handling if any endpoint fails
+
+## Network Panel Verification
+
+For all tests, verify in browser Developer Tools → Network panel:
+
+**Request Headers Should Include**:
+- `Accept: application/json`
+- `Content-Type: application/json` (for POST/PATCH requests)
+- `Authorization: Basic [base64-encoded-credentials]`
+- Request shows `credentials: include`
+
+**Response Headers Should Show**:
+- `Content-Type: application/json` for successful responses
+- Proper status codes (200, 201, 400, 401, 404, 500, etc.)
+
+## Error Banner Testing
+
+For each error scenario, verify the ErrorBanner component:
+
+**Visual Elements**:
+- ✅ Appropriate colored background (red for errors, yellow for auth, blue for network)
+- ✅ Clear error icon
+- ✅ Primary error message in user's language (French)
+- ✅ "Réessayer" button for retryable errors
+- ✅ "Se reconnecter" button for auth errors
+- ✅ "Détails" button with expandable technical information
+
+**Technical Details Section**:
+- ✅ Shows HTTP status code
+- ✅ Shows request URL
+- ✅ Shows response Content-Type
+- ✅ Shows response snippet (first 200 characters)
+- ✅ Formatted clearly with proper spacing
+
+## CRUD Operations Testing
+
+Test error handling for each CRUD operation:
+
+```bash
+# CREATE - Event Type
+curl -X POST "http://localhost:3001/api/admin/scheduling/event-types" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -d '{"name":"Test Event","duration_minutes":30,"location_type":"visio","color":"#FF0000"}'
+
+# READ - List Bookings  
+curl -X GET "http://localhost:3001/api/admin/scheduling/bookings" \
+  -H "Accept: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)"
+
+# UPDATE - Modify Event Type
+curl -X PATCH "http://localhost:3001/api/admin/scheduling/event-types/1" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -d '{"name":"Updated Event"}'
+
+# DELETE - Remove Event Type
+curl -X DELETE "http://localhost:3001/api/admin/scheduling/event-types/1" \
+  -H "Authorization: Basic $(echo -n 'admin:password' | base64)"
+```
+
+## Expected Outcomes Summary
+
+| Scenario | Expected Error Message | Banner Color | Has Retry | Has Details |
+|----------|----------------------|--------------|-----------|-------------|
+| HTML Response | "Le serveur a retourné du text/html au lieu de JSON" | Red | ✅ | ✅ |
+| 401/403 Auth | "Session expirée. Veuillez vous reconnecter." | Yellow | ❌ | ✅ |
+| Network Error | "Erreur de connexion. Vérifiez votre connexion internet." | Blue | ✅ | ❌ |
+| Invalid JSON | "Réponse JSON invalide du serveur" | Red | ✅ | ✅ |
+| 400 Validation | [Specific validation message] | Alert | ❌ | ❌ |
+| 500 Server Error | "Erreur interne du serveur. Veuillez réessayer plus tard." | Red | ✅ | ✅ |
+
+## Test Completion Checklist
+
+- [ ] All admin views load successfully with valid responses
+- [ ] HTML error responses show proper error banners with details
+- [ ] 401/403 responses trigger authentication error banners
+- [ ] Network failures show connectivity error messages
+- [ ] Malformed JSON responses are handled gracefully
+- [ ] Error details are expandable and contain useful debugging info
+- [ ] Retry functionality works for retryable errors
+- [ ] All requests include proper headers (Accept, Authorization, credentials)
+- [ ] Response Content-Type is validated for all endpoints
+- [ ] CRUD operations handle errors consistently across all admin views
+
+## Notes for Operators
+
+- Server should always return `application/json` content-type for API endpoints
+- Proxy configurations should preserve content-type headers
+- Authentication middleware should return JSON error responses, not HTML redirects
+- Consider implementing proper CORS headers if accessing from different domains
+- Monitor server logs for HTML responses being sent to API endpoints

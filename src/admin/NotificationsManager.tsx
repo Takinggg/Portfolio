@@ -5,6 +5,8 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
 import { toast } from 'react-hot-toast';
+import * as adminApi from '../utils/adminApi';
+import ErrorBanner from '../components/admin/ErrorBanner';
 
 interface NotificationSettings {
   emailProvider: string;
@@ -52,6 +54,7 @@ export const NotificationsManager: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSendingTest, setIsSendingTest] = useState(false);
   const [isProcessingReminders, setIsProcessingReminders] = useState(false);
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
     fetchData();
@@ -60,32 +63,18 @@ export const NotificationsManager: React.FC = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const [settingsRes, statsRes] = await Promise.all([
-        fetch('/api/admin/scheduling/notifications/settings', {
-          headers: {
-            'Authorization': `Basic ${btoa(`${process.env.VITE_ADMIN_USERNAME}:${process.env.VITE_ADMIN_PASSWORD}`)}`
-          }
-        }),
-        fetch('/api/admin/scheduling/notifications/stats', {
-          headers: {
-            'Authorization': `Basic ${btoa(`${process.env.VITE_ADMIN_USERNAME}:${process.env.VITE_ADMIN_PASSWORD}`)}`
-          }
-        })
+      setError(null);
+      
+      const [settingsData, statsData] = await Promise.all([
+        adminApi.fetchJSON('/api/admin/scheduling/notifications/settings'),
+        adminApi.fetchJSON('/api/admin/scheduling/notifications/stats')
       ]);
-
-      if (settingsRes.ok && statsRes.ok) {
-        const [settingsData, statsData] = await Promise.all([
-          settingsRes.json(),
-          statsRes.json()
-        ]);
-        setSettings(settingsData.settings);
-        setStats(statsData.stats);
-      } else {
-        throw new Error('Failed to fetch notification data');
-      }
-    } catch (error) {
-      console.error('Error fetching notification data:', error);
-      toast.error('Failed to load notification settings');
+      
+      setSettings((settingsData as any).settings);
+      setStats((statsData as any).stats);
+    } catch (err) {
+      console.error('Error fetching notification data:', err);
+      setError(err);
     } finally {
       setIsLoading(false);
     }
@@ -99,28 +88,22 @@ export const NotificationsManager: React.FC = () => {
 
     try {
       setIsSendingTest(true);
-      const response = await fetch('/api/admin/scheduling/notifications/test-send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${process.env.VITE_ADMIN_USERNAME}:${process.env.VITE_ADMIN_PASSWORD}`)}`
-        },
-        body: JSON.stringify({ to: testEmail })
+      const result = await adminApi.postJSON('/api/admin/scheduling/notifications/test-send', { 
+        to: testEmail 
       });
 
-      const result = await response.json();
-
-      if (response.ok && result.success) {
+      if ((result as any).success) {
         toast.success('Test email sent successfully!');
         setTestEmail('');
         // Refresh stats to show the sent email
         setTimeout(fetchData, 1000);
       } else {
-        toast.error(result.error || 'Failed to send test email');
+        toast.error((result as any).error || 'Failed to send test email');
       }
-    } catch (error) {
-      console.error('Error sending test email:', error);
-      toast.error('Failed to send test email');
+    } catch (err) {
+      console.error('Error sending test email:', err);
+      const { message } = adminApi.formatErrorMessage(err);
+      toast.error(message);
     } finally {
       setIsSendingTest(false);
     }
@@ -129,25 +112,19 @@ export const NotificationsManager: React.FC = () => {
   const processReminders = async () => {
     try {
       setIsProcessingReminders(true);
-      const response = await fetch('/api/admin/scheduling/notifications/process-reminders', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${btoa(`${process.env.VITE_ADMIN_USERNAME}:${process.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
+      const result = await adminApi.postJSON('/api/admin/scheduling/notifications/process-reminders', {});
 
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        toast.success(`Processed ${result.processed} reminders`);
+      if ((result as any).success) {
+        toast.success(`Processed ${(result as any).processed} reminders`);
         // Refresh stats
         fetchData();
       } else {
         toast.error('Failed to process reminders');
       }
-    } catch (error) {
-      console.error('Error processing reminders:', error);
-      toast.error('Failed to process reminders');
+    } catch (err) {
+      console.error('Error processing reminders:', err);
+      const { message } = adminApi.formatErrorMessage(err);
+      toast.error(message);
     } finally {
       setIsProcessingReminders(false);
     }
@@ -182,6 +159,17 @@ export const NotificationsManager: React.FC = () => {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <ErrorBanner 
+          error={error} 
+          onRetry={fetchData}
+        />
       </div>
     );
   }
