@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Calendar, Clock, AlertCircle } from 'lucide-react';
+import * as adminApi from '../utils/adminApi';
+import ErrorBanner from '../components/admin/ErrorBanner';
 
 interface AvailabilityRule {
   id: number;
@@ -41,7 +43,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
   const [exceptions, setExceptions] = useState<AvailabilityException[]>([]);
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<any>(null);
 
   // Form states
   const [showRuleForm, setShowRuleForm] = useState(false);
@@ -76,50 +78,20 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       setError(null);
 
       // Fetch event types
-      const eventTypesResponse = await fetch('/api/admin/scheduling/event-types', {
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!eventTypesResponse.ok) {
-        throw new Error('Failed to fetch event types');
-      }
-
-      const eventTypesData = await eventTypesResponse.json();
-      setEventTypes(eventTypesData.eventTypes || []);
+      const eventTypesData = await adminApi.fetchJSON('/api/admin/scheduling/event-types');
+      setEventTypes((eventTypesData as any).eventTypes || []);
 
       // Fetch availability rules
-      const rulesResponse = await fetch('/api/admin/scheduling/availability-rules', {
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!rulesResponse.ok) {
-        throw new Error('Failed to fetch availability rules');
-      }
-
-      const rulesData = await rulesResponse.json();
-      setRules(rulesData.availabilityRules || []);
+      const rulesData = await adminApi.fetchJSON('/api/admin/scheduling/availability-rules');
+      setRules((rulesData as any).availabilityRules || []);
 
       // Fetch exceptions
-      const exceptionsResponse = await fetch('/api/admin/scheduling/exceptions', {
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!exceptionsResponse.ok) {
-        throw new Error('Failed to fetch exceptions');
-      }
-
-      const exceptionsData = await exceptionsResponse.json();
-      setExceptions(exceptionsData.availabilityExceptions || []);
+      const exceptionsData = await adminApi.fetchJSON('/api/admin/scheduling/exceptions');
+      setExceptions((exceptionsData as any).availabilityExceptions || []);
 
     } catch (err) {
       console.error('Error fetching data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch data');
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -131,36 +103,10 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
 
   const handleCreateRule = async () => {
     try {
-      const response = await fetch('/api/admin/scheduling/availability-rules', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        },
-        body: JSON.stringify({
-          ...ruleForm,
-          event_type_id: parseInt(ruleForm.event_type_id)
-        })
+      await adminApi.postJSON('/api/admin/scheduling/availability-rules', {
+        ...ruleForm,
+        event_type_id: parseInt(ruleForm.event_type_id)
       });
-
-      if (!response.ok) {
-        // Try to parse error as JSON, but handle cases where server returns HTML
-        let errorMessage;
-        try {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json();
-            errorMessage = errorData.error || `HTTP ${response.status}`;
-          } else {
-            // Server returned non-JSON (likely HTML error page)
-            errorMessage = `Server error (${response.status})`;
-          }
-        } catch (parseError) {
-          // JSON parsing failed - server likely returned HTML
-          errorMessage = `Server error (${response.status})`;
-        }
-        throw new Error(errorMessage);
-      }
 
       setShowRuleForm(false);
       setRuleForm({
@@ -174,44 +120,20 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       await fetchData();
     } catch (err) {
       console.error('Error creating rule:', err);
-      alert(err instanceof Error ? err.message : 'Failed to create rule');
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
+  };
   };
 
   const handleCreateException = async () => {
     try {
-      const response = await fetch('/api/admin/scheduling/exceptions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        },
-        body: JSON.stringify({
-          ...exceptionForm,
-          event_type_id: parseInt(exceptionForm.event_type_id),
-          start_time: exceptionForm.exception_type === 'custom_hours' ? exceptionForm.start_time : undefined,
-          end_time: exceptionForm.exception_type === 'custom_hours' ? exceptionForm.end_time : undefined
-        })
+      await adminApi.postJSON('/api/admin/scheduling/exceptions', {
+        ...exceptionForm,
+        event_type_id: parseInt(exceptionForm.event_type_id),
+        start_time: exceptionForm.exception_type === 'custom_hours' ? exceptionForm.start_time : undefined,
+        end_time: exceptionForm.exception_type === 'custom_hours' ? exceptionForm.end_time : undefined
       });
-
-      if (!response.ok) {
-        // Try to parse error as JSON, but handle cases where server returns HTML
-        let errorMessage;
-        try {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json();
-            errorMessage = errorData.error || `HTTP ${response.status}`;
-          } else {
-            // Server returned non-JSON (likely HTML error page)
-            errorMessage = `Server error (${response.status})`;
-          }
-        } catch (parseError) {
-          // JSON parsing failed - server likely returned HTML
-          errorMessage = `Server error (${response.status})`;
-        }
-        throw new Error(errorMessage);
-      }
 
       setShowExceptionForm(false);
       setExceptionForm({
@@ -226,7 +148,8 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       await fetchData();
     } catch (err) {
       console.error('Error creating exception:', err);
-      alert(err instanceof Error ? err.message : 'Failed to create exception');
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
   };
 
@@ -234,36 +157,12 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
     if (!confirm('Are you sure you want to delete this availability rule?')) return;
 
     try {
-      const response = await fetch(`/api/admin/scheduling/availability-rules/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!response.ok) {
-        // Try to parse error as JSON, but handle cases where server returns HTML
-        let errorMessage;
-        try {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json();
-            errorMessage = errorData.error || `HTTP ${response.status}`;
-          } else {
-            // Server returned non-JSON (likely HTML error page)
-            errorMessage = `Server error (${response.status})`;
-          }
-        } catch (parseError) {
-          // JSON parsing failed - server likely returned HTML
-          errorMessage = `Server error (${response.status})`;
-        }
-        throw new Error(errorMessage);
-      }
-
+      await adminApi.deleteJSON(`/api/admin/scheduling/availability-rules/${id}`);
       await fetchData();
     } catch (err) {
       console.error('Error deleting rule:', err);
-      alert(err instanceof Error ? err.message : 'Failed to delete rule');
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
   };
 
@@ -271,36 +170,12 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
     if (!confirm('Are you sure you want to delete this exception?')) return;
 
     try {
-      const response = await fetch(`/api/admin/scheduling/exceptions/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-        }
-      });
-
-      if (!response.ok) {
-        // Try to parse error as JSON, but handle cases where server returns HTML
-        let errorMessage;
-        try {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const errorData = await response.json();
-            errorMessage = errorData.error || `HTTP ${response.status}`;
-          } else {
-            // Server returned non-JSON (likely HTML error page)
-            errorMessage = `Server error (${response.status})`;
-          }
-        } catch (parseError) {
-          // JSON parsing failed - server likely returned HTML
-          errorMessage = `Server error (${response.status})`;
-        }
-        throw new Error(errorMessage);
-      }
-
+      await adminApi.deleteJSON(`/api/admin/scheduling/exceptions/${id}`);
       await fetchData();
     } catch (err) {
       console.error('Error deleting exception:', err);
-      alert(err instanceof Error ? err.message : 'Failed to delete exception');
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
   };
 
@@ -324,16 +199,10 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800 font-medium">Error loading availability</p>
-          <p className="text-red-600 text-sm mt-1">{error}</p>
-          <button
-            onClick={fetchData}
-            className="mt-3 px-4 py-2 bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorBanner 
+          error={error} 
+          onRetry={fetchData}
+        />
       </div>
     );
   }

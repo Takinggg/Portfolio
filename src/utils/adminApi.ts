@@ -3,37 +3,104 @@
  * Prevents SyntaxError when server returns HTML responses
  */
 
+export interface ApiError {
+  message: string;
+  status?: number;
+  url?: string;
+  contentType?: string;
+  responseSnippet?: string;
+  isAuthError?: boolean;
+  isNetworkError?: boolean;
+}
+
 /**
- * Safe JSON parsing with content-type validation
- * Maps common HTTP status codes to i18n error keys
+ * Safe JSON parsing with enhanced error handling and debugging info
+ * Maps common HTTP status codes to user-friendly messages
  */
-export async function safeJson(response: Response): Promise<unknown> {
-  // Check if response is ok first
+export async function safeJson(response: Response, url?: string): Promise<unknown> {
+  const contentType = response.headers.get('content-type') || '';
+  
+  // Handle authentication errors (401/403) specially
+  if (response.status === 401 || response.status === 403) {
+    const error: ApiError = {
+      message: 'Session expirée. Veuillez vous reconnecter.',
+      status: response.status,
+      url,
+      contentType,
+      isAuthError: true
+    };
+    throw error;
+  }
+
+  // If response is not ok, try to extract error details
   if (!response.ok) {
-    // Map common status codes to i18n keys
+    let errorMessage = `Erreur serveur (${response.status})`;
+    let responseSnippet = '';
+    
+    try {
+      if (contentType.includes('application/json')) {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+      } else {
+        // Server returned HTML or other non-JSON content
+        const textContent = await response.text();
+        responseSnippet = textContent.substring(0, 200);
+        errorMessage = `Le serveur a retourné du ${contentType} au lieu de JSON`;
+      }
+    } catch {
+      // Failed to read response body
+      errorMessage = `Erreur serveur (${response.status}) - réponse illisible`;
+    }
+
+    const error: ApiError = {
+      message: errorMessage,
+      status: response.status,
+      url,
+      contentType,
+      responseSnippet
+    };
+    
+    // Map specific status codes to user-friendly messages
     switch (response.status) {
       case 404:
-        throw new Error('scheduling.errors.not_found');
+        error.message = 'Ressource non trouvée';
+        break;
       case 500:
       case 502:
       case 503:
-        throw new Error('scheduling.errors.server_error');
-      default:
-        throw new Error('scheduling.errors.server_error');
+        error.message = 'Erreur interne du serveur. Veuillez réessayer plus tard.';
+        break;
     }
+    
+    throw error;
   }
 
-  // Check content-type header
-  const contentType = response.headers.get('content-type');
-  if (!contentType || !contentType.includes('application/json')) {
-    throw new Error('scheduling.errors.invalid_json');
+  // Check content-type header for successful responses
+  if (!contentType.includes('application/json')) {
+    const textContent = await response.text();
+    const responseSnippet = textContent.substring(0, 200);
+    
+    const error: ApiError = {
+      message: `Réponse JSON attendue mais reçu ${contentType}`,
+      status: response.status,
+      url,
+      contentType,
+      responseSnippet
+    };
+    throw error;
   }
 
   try {
     return await response.json();
   } catch {
     // JSON parsing failed - server returned invalid JSON
-    throw new Error('scheduling.errors.invalid_json');
+    const error: ApiError = {
+      message: 'Réponse JSON invalide du serveur',
+      status: response.status,
+      url,
+      contentType
+    };
+    throw error;
   }
 }
 
@@ -55,38 +122,50 @@ export function getAdminAuthHeader(): Record<string, string> {
 }
 
 /**
- * Fetch JSON with proper headers and safe parsing
- * Automatically adds Accept header and admin auth if available
+ * Fetch JSON with proper headers, authentication, and comprehensive error handling
+ * Automatically adds Accept header, credentials, and admin auth if available
  */
 export async function fetchJSON(url: string, init: RequestInit = {}): Promise<unknown> {
   try {
     const response = await fetch(url, {
+      credentials: 'include', // Always include credentials for session handling
       ...init,
       headers: {
         'Accept': 'application/json',
+        'Content-Type': 'application/json',
         ...getAdminAuthHeader(),
         ...init.headers,
       },
     });
 
-    return await safeJson(response);
+    return await safeJson(response, url);
   } catch (error) {
-    // Network errors or fetch failures
-    if (error instanceof Error) {
-      // If it's already an i18n key, pass it through
-      if (error.message.startsWith('scheduling.errors.')) {
-        throw error;
-      }
-      // Network error
-      throw new Error('scheduling.errors.network');
+    // Check if it's already our enhanced ApiError
+    if (error && typeof error === 'object' && 'isAuthError' in error) {
+      throw error;
     }
-    // Unknown error
-    throw new Error('scheduling.errors.generic');
+    
+    // Network errors or fetch failures
+    if (error instanceof TypeError || (error instanceof Error && error.message.includes('fetch'))) {
+      const networkError: ApiError = {
+        message: 'Erreur de connexion. Vérifiez votre connexion internet.',
+        url,
+        isNetworkError: true
+      };
+      throw networkError;
+    }
+    
+    // Re-throw other errors as ApiError
+    const apiError: ApiError = {
+      message: error instanceof Error ? error.message : 'Erreur inconnue',
+      url
+    };
+    throw apiError;
   }
 }
 
 /**
- * POST JSON with proper headers and safe parsing
+ * POST JSON with proper headers, authentication, and comprehensive error handling
  * For POST requests with JSON body
  */
 export async function postJSON(url: string, data: unknown, init: RequestInit = {}): Promise<unknown> {
@@ -99,4 +178,67 @@ export async function postJSON(url: string, data: unknown, init: RequestInit = {
     body: JSON.stringify(data),
     ...init,
   });
+}
+
+/**
+ * PATCH JSON for updates
+ */
+export async function patchJSON(url: string, data: unknown, init: RequestInit = {}): Promise<unknown> {
+  return fetchJSON(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...init.headers,
+    },
+    body: JSON.stringify(data),
+    ...init,
+  });
+}
+
+/**
+ * DELETE with proper headers and authentication
+ */
+export async function deleteJSON(url: string, init: RequestInit = {}): Promise<unknown> {
+  return fetchJSON(url, {
+    method: 'DELETE',
+    ...init,
+  });
+}
+
+/**
+ * Utility function to check if an error is an authentication error
+ */
+export function isAuthError(error: unknown): error is ApiError {
+  return error !== null && typeof error === 'object' && (error as ApiError).isAuthError === true;
+}
+
+/**
+ * Utility function to check if an error is a network error
+ */
+export function isNetworkError(error: unknown): error is ApiError {
+  return error !== null && typeof error === 'object' && (error as ApiError).isNetworkError === true;
+}
+
+/**
+ * Format error message for display with optional details
+ */
+export function formatErrorMessage(error: unknown): { message: string; details?: string } {
+  if (error && typeof error === 'object' && 'message' in error) {
+    const apiError = error as ApiError;
+    const details = [
+      apiError.status && `Status: ${apiError.status}`,
+      apiError.url && `URL: ${apiError.url}`,
+      apiError.contentType && `Content-Type: ${apiError.contentType}`,
+      apiError.responseSnippet && `Response: ${apiError.responseSnippet}`
+    ].filter(Boolean).join('\n');
+    
+    return {
+      message: apiError.message,
+      details: details || undefined
+    };
+  }
+  
+  return {
+    message: error instanceof Error ? error.message : 'Erreur inconnue'
+  };
 }

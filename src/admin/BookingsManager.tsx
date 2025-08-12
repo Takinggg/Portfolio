@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Download, Calendar, Mail, X, Edit, MapPin } from 'lucide-react';
 import { useI18n } from '../context/I18nProvider';
 import * as adminApi from '../utils/adminApi';
+import ErrorBanner from '../components/admin/ErrorBanner';
 
 interface Booking {
   id: number;
@@ -38,7 +39,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<any>(null);
   
   // Filters
   const [filters, setFilters] = useState({
@@ -73,7 +74,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       if (filters.event_type_id) queryParams.append('event_type_id', filters.event_type_id);
 
       const result = await adminApi.fetchJSON(`/api/admin/scheduling/bookings?${queryParams}`);
-      let fetchedBookings = result.bookings || [];
+      let fetchedBookings = (result as any).bookings || [];
 
       // Client-side search filter
       if (filters.search) {
@@ -88,10 +89,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       setBookings(fetchedBookings);
     } catch (err) {
       console.error('Error fetching bookings:', err);
-      const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
-        ? t(err.message) 
-        : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
-      setError(errorMessage);
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -102,7 +100,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
 
     try {
       const result = await adminApi.fetchJSON('/api/admin/scheduling/event-types');
-      setEventTypes(result.eventTypes || []);
+      setEventTypes((result as any).eventTypes || []);
     } catch (err) {
       console.error('Error fetching event types:', err);
     }
@@ -139,10 +137,8 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       await fetchBookings();
     } catch (err) {
       console.error('Error cancelling booking:', err);
-      const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
-        ? t(err.message) 
-        : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
-      alert(errorMessage);
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
   };
 
@@ -160,10 +156,8 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       await fetchBookings();
     } catch (err) {
       console.error('Error rescheduling booking:', err);
-      const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
-        ? t(err.message) 
-        : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
-      alert(errorMessage);
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
   };
 
@@ -177,6 +171,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
 
       // For CSV export, we need to handle blob response differently
       const response = await fetch(`/api/admin/scheduling/bookings.csv?${queryParams}`, {
+        credentials: 'include',
         headers: {
           'Accept': 'text/csv',
           ...adminApi.getAdminAuthHeader(),
@@ -184,7 +179,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       });
 
       if (!response.ok) {
-        throw new Error(t('scheduling.errors.server_error'));
+        throw new Error('Erreur lors de l\'export CSV');
       }
 
       const blob = await response.blob();
@@ -198,10 +193,8 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       document.body.removeChild(a);
     } catch (err) {
       console.error('Error exporting CSV:', err);
-      const errorMessage = err instanceof Error && err.message.startsWith('scheduling.errors.') 
-        ? t(err.message) 
-        : (err instanceof Error ? err.message : t('scheduling.errors.generic'));
-      alert(errorMessage);
+      const { message } = adminApi.formatErrorMessage(err);
+      alert(message);
     }
   };
 
@@ -325,16 +318,11 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
 
       {/* Error */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-red-800 font-medium">Error loading bookings</p>
-          <p className="text-red-600 text-sm mt-1">{error}</p>
-          <button
-            onClick={fetchBookings}
-            className="mt-3 px-4 py-2 bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorBanner 
+          error={error} 
+          onRetry={fetchBookings}
+          className="mb-6"
+        />
       )}
 
       {/* Bookings Table */}
