@@ -112,9 +112,17 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
   const handleBookingSubmit = async (bookingData: Parameters<typeof schedulingAPI.createBooking>[0]) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
+    // Normalize payload to avoid backend VALIDATION_ERROR
+    const normalized = {
+      ...bookingData,
+      eventTypeId: Number((bookingData as any).eventTypeId),
+      start: new Date(bookingData.start).toISOString(),
+      end: new Date(bookingData.end).toISOString(),
+    };
+    
     try {
-      console.log('Creating booking with data:', bookingData); // Debug log
-      const response = await schedulingAPI.createBooking(bookingData);
+      console.log('Creating booking with data:', normalized); // Debug log
+      const response = await schedulingAPI.createBooking(normalized);
       
       if (response.success && response.booking) {
         console.log('Booking created successfully, transitioning to confirmation'); // Debug log
@@ -138,7 +146,7 @@ const SchedulingWidget: React.FC<SchedulingWidgetProps> = ({
         // Log detailed error for debugging
         console.error('Booking creation failed:', {
           error: error.message,
-          bookingData,
+          bookingData: normalized,
           stack: error.stack
         });
         
