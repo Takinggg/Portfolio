@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, Settings, LogOut, BarChart3, Mail, CalendarDays } from 'lucide-react';
+import * as adminApi from '../utils/adminApi';
 import AdminOverview from './AdminOverview';
 import EventTypesManager from './EventTypesManager';
 import AvailabilityManager from './AvailabilityManager';
@@ -22,10 +23,8 @@ const AdminSchedulingLayout: React.FC<AdminSchedulingLayoutProps> = ({ onLogout 
     const checkAuth = async () => {
       try {
         // Use cookie-based session; no frontend secrets
-        const response = await fetch('/api/admin/scheduling/overview', {
-          credentials: 'include'
-        });
-        setIsAuthenticated(response.ok);
+        await adminApi.fetchJSON('/admin/scheduling/overview');
+        setIsAuthenticated(true);
       } catch (error) {
         console.error('Auth check failed:', error);
         setIsAuthenticated(false);

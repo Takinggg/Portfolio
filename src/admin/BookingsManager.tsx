@@ -73,7 +73,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       if (filters.status) queryParams.append('status', filters.status);
       if (filters.event_type_id) queryParams.append('event_type_id', filters.event_type_id);
 
-      const result = await adminApi.fetchJSON(`/api/admin/scheduling/bookings?${queryParams}`);
+      const result = await adminApi.fetchJSON(`/admin/scheduling/bookings?${queryParams}`);
       let fetchedBookings = (result as any).bookings || [];
 
       // Client-side search filter
@@ -99,7 +99,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
     if (!isAuthenticated) return;
 
     try {
-      const result = await adminApi.fetchJSON('/api/admin/scheduling/event-types');
+      const result = await adminApi.fetchJSON('/admin/scheduling/event-types');
       setEventTypes((result as any).eventTypes || []);
     } catch (err) {
       console.error('Error fetching event types:', err);
@@ -127,7 +127,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
     if (!selectedBooking) return;
 
     try {
-      await adminApi.postJSON(`/api/admin/scheduling/bookings/${selectedBooking.uuid}/cancel`, {
+      await adminApi.postJSON(`/admin/scheduling/bookings/${selectedBooking.uuid}/cancel`, {
         reason: cancelReason
       });
 
@@ -146,7 +146,7 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
     if (!selectedBooking) return;
 
     try {
-      await adminApi.postJSON(`/api/admin/scheduling/bookings/${selectedBooking.uuid}/reschedule`, 
+      await adminApi.postJSON(`/admin/scheduling/bookings/${selectedBooking.uuid}/reschedule`, 
         rescheduleData
       );
 
@@ -169,8 +169,11 @@ const BookingsManager: React.FC<BookingsManagerProps> = ({ isAuthenticated }) =>
       if (filters.status) queryParams.append('status', filters.status);
       if (filters.event_type_id) queryParams.append('event_type_id', filters.event_type_id);
 
-      // For CSV export, we need to handle blob response differently
-      const response = await fetch(`/api/admin/scheduling/bookings.csv?${queryParams}`, {
+      // Construct URL with proper base URL for CSV export
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+      const csvUrl = `${baseUrl}/admin/scheduling/bookings.csv?${queryParams}`;
+      
+      const response = await fetch(csvUrl, {
         credentials: 'include',
         headers: {
           'Accept': 'text/csv',

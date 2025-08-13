@@ -42,7 +42,7 @@ const AdminOverview: React.FC<AdminOverviewProps> = ({ isAuthenticated }) => {
       setLoading(true);
       setError(null);
       
-      const result = await adminApi.fetchJSON('/api/admin/scheduling/overview');
+      const result = await adminApi.fetchJSON('/admin/scheduling/overview');
       setData(result as OverviewData);
     } catch (err) {
       console.error('Error fetching overview:', err);

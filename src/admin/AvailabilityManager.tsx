@@ -78,15 +78,15 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
       setError(null);
 
       // Fetch event types
-      const eventTypesData = await adminApi.fetchJSON('/api/admin/scheduling/event-types');
+      const eventTypesData = await adminApi.fetchJSON('/admin/scheduling/event-types');
       setEventTypes((eventTypesData as any).eventTypes || []);
 
       // Fetch availability rules
-      const rulesData = await adminApi.fetchJSON('/api/admin/scheduling/availability-rules');
+      const rulesData = await adminApi.fetchJSON('/admin/scheduling/availability-rules');
       setRules((rulesData as any).availabilityRules || []);
 
       // Fetch exceptions
-      const exceptionsData = await adminApi.fetchJSON('/api/admin/scheduling/exceptions');
+      const exceptionsData = await adminApi.fetchJSON('/admin/scheduling/exceptions');
       setExceptions((exceptionsData as any).availabilityExceptions || []);
 
     } catch (err) {
@@ -103,7 +103,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
 
   const handleCreateRule = async () => {
     try {
-      await adminApi.postJSON('/api/admin/scheduling/availability-rules', {
+      await adminApi.postJSON('/admin/scheduling/availability-rules', {
         ...ruleForm,
         event_type_id: parseInt(ruleForm.event_type_id)
       });
@@ -127,7 +127,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
 
   const handleCreateException = async () => {
     try {
-      await adminApi.postJSON('/api/admin/scheduling/exceptions', {
+      await adminApi.postJSON('/admin/scheduling/exceptions', {
         ...exceptionForm,
         event_type_id: parseInt(exceptionForm.event_type_id),
         start_time: exceptionForm.exception_type === 'custom_hours' ? exceptionForm.start_time : undefined,
@@ -156,7 +156,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
     if (!confirm('Are you sure you want to delete this availability rule?')) return;
 
     try {
-      await adminApi.deleteJSON(`/api/admin/scheduling/availability-rules/${id}`);
+      await adminApi.deleteJSON(`/admin/scheduling/availability-rules/${id}`);
       await fetchData();
     } catch (err) {
       console.error('Error deleting rule:', err);
@@ -169,7 +169,7 @@ const AvailabilityManager: React.FC<AvailabilityManagerProps> = ({ isAuthenticat
     if (!confirm('Are you sure you want to delete this exception?')) return;
 
     try {
-      await adminApi.deleteJSON(`/api/admin/scheduling/exceptions/${id}`);
+      await adminApi.deleteJSON(`/admin/scheduling/exceptions/${id}`);
       await fetchData();
     } catch (err) {
       console.error('Error deleting exception:', err);

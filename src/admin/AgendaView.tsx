@@ -104,7 +104,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({ isAuthenticated }) => {
           end_date: formatDateForAPI(endDate),
         });
 
-        const result = await adminApi.fetchJSON(`/api/admin/scheduling/bookings?${queryParams}`);
+        const result = await adminApi.fetchJSON(`/admin/scheduling/bookings?${queryParams}`);
         const fetchedBookings = result.bookings || [];
 
         // Sort bookings by start time

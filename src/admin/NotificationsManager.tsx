@@ -66,8 +66,8 @@ export const NotificationsManager: React.FC = () => {
       setError(null);
       
       const [settingsData, statsData] = await Promise.all([
-        adminApi.fetchJSON('/api/admin/scheduling/notifications/settings'),
-        adminApi.fetchJSON('/api/admin/scheduling/notifications/stats')
+        adminApi.fetchJSON('/admin/scheduling/notifications/settings'),
+        adminApi.fetchJSON('/admin/scheduling/notifications/stats')
       ]);
       
       setSettings((settingsData as any).settings);
@@ -88,7 +88,7 @@ export const NotificationsManager: React.FC = () => {
 
     try {
       setIsSendingTest(true);
-      const result = await adminApi.postJSON('/api/admin/scheduling/notifications/test-send', { 
+      const result = await adminApi.postJSON('/admin/scheduling/notifications/test-send', { 
         to: testEmail 
       });
 
@@ -112,7 +112,7 @@ export const NotificationsManager: React.FC = () => {
   const processReminders = async () => {
     try {
       setIsProcessingReminders(true);
-      const result = await adminApi.postJSON('/api/admin/scheduling/notifications/process-reminders', {});
+      const result = await adminApi.postJSON('/admin/scheduling/notifications/process-reminders', {});
 
       if ((result as any).success) {
         toast.success(`Processed ${(result as any).processed} reminders`);

@@ -53,7 +53,7 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
       setLoading(true);
       setError(null);
       
-      const result = await adminApi.fetchJSON('/api/admin/scheduling/event-types');
+      const result = await adminApi.fetchJSON('/admin/scheduling/event-types');
       setEventTypes((result as { eventTypes: EventType[] }).eventTypes || []);
     } catch (err) {
       console.error('Error fetching event types:', err);
@@ -70,9 +70,9 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
   const handleSave = async () => {
     try {
       if (editingId) {
-        await adminApi.patchJSON(`/api/admin/scheduling/event-types/${editingId}`, formData);
+        await adminApi.patchJSON(`/admin/scheduling/event-types/${editingId}`, formData);
       } else {
-        await adminApi.postJSON('/api/admin/scheduling/event-types', formData);
+        await adminApi.postJSON('/admin/scheduling/event-types', formData);
       }
 
       await fetchEventTypes();
@@ -101,7 +101,7 @@ const EventTypesManager: React.FC<EventTypesManagerProps> = ({ isAuthenticated }
     if (!confirm('Are you sure you want to delete this event type?')) return;
 
     try {
-      await adminApi.deleteJSON(`/api/admin/scheduling/event-types/${id}`);
+      await adminApi.deleteJSON(`/admin/scheduling/event-types/${id}`);
       await fetchEventTypes();
     } catch (err) {
       console.error('Error deleting event type:', err);
