@@ -14,17 +14,27 @@ export interface ApiError {
 }
 
 /**
- * Resolve absolute API URL using VITE_API_BASE_URL when provided.
- * - If url is absolute (http/https), keep as-is
- * - If base is set and url is relative, prefix with base
+ * Resolve API URL to avoid duplicated "/api" prefixes
+ * - If url is fully qualified (http/https), return unchanged
+ * - If url is absolute (starts with '/'), return unchanged  
+ * - If url is relative, prefix with '/api'
  */
-function resolveApiUrl(url: string): string {
+export function resolveApiUrl(url: string): string {
   try {
+    // Return fully qualified URLs unchanged
+    if (/^https?:\/\//i.test(url)) {
+      return url;
+    }
+    
+    // Return absolute paths unchanged (including /api/... paths)
+    if (url.startsWith('/')) {
+      return url;
+    }
+    
+    // For relative paths, prefix with '/api' (or VITE_API_BASE_URL if set)
     const base = import.meta.env.VITE_API_BASE_URL as string | undefined;
-    if (!base) return url;
-    if (/^https?:\/\//i.test(url)) return url;
-
-    const normalizedBase = base.replace(/\/$/, '');
+    const apiBase = base || '/api';
+    const normalizedBase = apiBase.replace(/\/$/, '');
     const normalizedPath = url.startsWith('/') ? url : `/${url}`;
     return `${normalizedBase}${normalizedPath}`;
   } catch {

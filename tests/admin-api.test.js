@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchJSON, postJSON, patchJSON, deleteJSON, isAuthError, isNetworkError, formatErrorMessage } from '../src/utils/adminApi';
+import { fetchJSON, postJSON, patchJSON, deleteJSON, isAuthError, isNetworkError, formatErrorMessage, resolveApiUrl } from '../src/utils/adminApi';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -25,10 +25,13 @@ describe('adminApi fetchJSON', () => {
   describe('Successful JSON responses', () => {
     it('should handle successful JSON response', async () => {
       const mockData = { data: 'test', success: true };
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.resolve(mockData)
       });
 
@@ -45,10 +48,13 @@ describe('adminApi fetchJSON', () => {
 
     it('should handle 200 OK with valid JSON', async () => {
       const mockData = { eventTypes: [{ id: 1, name: 'Meeting' }] };
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json; charset=utf-8');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Map([['content-type', 'application/json; charset=utf-8']]),
+        headers: mockHeaders,
         json: () => Promise.resolve(mockData)
       });
 
@@ -60,10 +66,13 @@ describe('adminApi fetchJSON', () => {
   describe('HTML error responses', () => {
     it('should handle HTML response with descriptive error', async () => {
       const htmlContent = '<html><body><h1>500 Internal Server Error</h1><p>Something went wrong</p></body></html>';
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'text/html; charset=UTF-8');
+      
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 500,
-        headers: new Map([['content-type', 'text/html; charset=UTF-8']]),
+        headers: mockHeaders,
         text: () => Promise.resolve(htmlContent)
       });
 
@@ -81,10 +90,13 @@ describe('adminApi fetchJSON', () => {
 
     it('should handle 302 HTML redirect response', async () => {
       const htmlContent = '<html><head><title>Redirecting...</title></head><body>You are being redirected...</body></html>';
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'text/html');
+      
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 302,
-        headers: new Map([['content-type', 'text/html']]),
+        headers: mockHeaders,
         text: () => Promise.resolve(htmlContent)
       });
 
@@ -101,10 +113,13 @@ describe('adminApi fetchJSON', () => {
 
   describe('Authentication errors (401/403)', () => {
     it('should handle 401 authentication error', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.resolve({ error: 'Unauthorized' })
       });
 
@@ -121,10 +136,13 @@ describe('adminApi fetchJSON', () => {
     });
 
     it('should handle 403 forbidden error', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'text/html');
+      
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 403,
-        headers: new Map([['content-type', 'text/html']]),
+        headers: mockHeaders,
         text: () => Promise.resolve('<html><body>Forbidden</body></html>')
       });
 
@@ -150,10 +168,13 @@ describe('adminApi fetchJSON', () => {
         }
       };
       
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.resolve(errorResponse)
       });
 
@@ -170,10 +191,13 @@ describe('adminApi fetchJSON', () => {
 
   describe('Invalid JSON responses', () => {
     it('should handle malformed JSON response', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.reject(new SyntaxError('Unexpected token'))
       });
 
@@ -189,10 +213,13 @@ describe('adminApi fetchJSON', () => {
     });
 
     it('should handle successful response with non-JSON content-type', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'text/plain');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Map([['content-type', 'text/plain']]),
+        headers: mockHeaders,
         text: () => Promise.resolve('Plain text response')
       });
 
@@ -239,10 +266,13 @@ describe('adminApi fetchJSON', () => {
   describe('HTTP methods', () => {
     it('should handle POST requests with JSON body', async () => {
       const mockData = { success: true, id: 123 };
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.resolve(mockData)
       });
 
@@ -261,10 +291,13 @@ describe('adminApi fetchJSON', () => {
 
     it('should handle PATCH requests', async () => {
       const mockData = { success: true };
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.resolve(mockData)
       });
 
@@ -278,10 +311,13 @@ describe('adminApi fetchJSON', () => {
 
     it('should handle DELETE requests', async () => {
       const mockData = { success: true };
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.resolve(mockData)
       });
 
@@ -296,10 +332,13 @@ describe('adminApi fetchJSON', () => {
 
   describe('Credentials and headers', () => {
     it('should always include credentials', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.resolve({})
       });
 
@@ -311,10 +350,13 @@ describe('adminApi fetchJSON', () => {
     });
 
     it('should include proper Accept header', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        headers: new Map([['content-type', 'application/json']]),
+        headers: mockHeaders,
         json: () => Promise.resolve({})
       });
 
@@ -365,6 +407,75 @@ describe('adminApi fetchJSON', () => {
       
       expect(message).toBe('Generic error');
       expect(details).toBeUndefined();
+    });
+  });
+
+  describe('URL resolution', () => {
+    it('should not duplicate /api prefix for absolute API paths', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: mockHeaders,
+        json: () => Promise.resolve({ data: 'test' })
+      });
+
+      await fetchJSON('/api/admin/scheduling/overview');
+      
+      // Should call fetch with the same path (no duplication)
+      expect(mockFetch).toHaveBeenCalledWith('/api/admin/scheduling/overview', expect.any(Object));
+    });
+
+    it('should handle fully qualified URLs unchanged', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: mockHeaders,
+        json: () => Promise.resolve({ data: 'test' })
+      });
+
+      await fetchJSON('https://example.com/api/test');
+      
+      // Should call fetch with the same URL
+      expect(mockFetch).toHaveBeenCalledWith('https://example.com/api/test', expect.any(Object));
+    });
+
+    it('should prefix relative paths with /api', async () => {
+      const mockHeaders = new Headers();
+      mockHeaders.set('content-type', 'application/json');
+      
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: mockHeaders,
+        json: () => Promise.resolve({ data: 'test' })
+      });
+
+      await fetchJSON('admin/scheduling/overview');
+      
+      // Should call fetch with /api prefix added
+      expect(mockFetch).toHaveBeenCalledWith('/api/admin/scheduling/overview', expect.any(Object));
+    });
+
+    it('should handle resolveApiUrl function directly', () => {
+      // Test absolute paths starting with /api/
+      expect(resolveApiUrl('/api/admin/scheduling/overview')).toBe('/api/admin/scheduling/overview');
+      
+      // Test fully qualified URLs
+      expect(resolveApiUrl('https://example.com/api/test')).toBe('https://example.com/api/test');
+      expect(resolveApiUrl('http://localhost:3001/api/test')).toBe('http://localhost:3001/api/test');
+      
+      // Test relative paths
+      expect(resolveApiUrl('admin/scheduling/overview')).toBe('/api/admin/scheduling/overview');
+      expect(resolveApiUrl('test')).toBe('/api/test');
+      
+      // Test other absolute paths
+      expect(resolveApiUrl('/other/path')).toBe('/other/path');
     });
   });
 });
