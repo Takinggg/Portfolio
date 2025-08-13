@@ -4,9 +4,7 @@ This guide provides manual testing steps to verify that the admin scheduling vie
 
 ## Prerequisites
 
-- Admin credentials configured in environment variables:
-  - `VITE_ADMIN_USERNAME`
-  - `VITE_ADMIN_PASSWORD`
+- Session-based authentication (cookie)
 - Server running with scheduling API endpoints
 - Access to browser developer tools (Network panel)
 
@@ -17,10 +15,10 @@ This guide provides manual testing steps to verify that the admin scheduling vie
 **Test**: Verify admin views load correctly with valid JSON responses.
 
 ```bash
-# Test Overview endpoint
+# Test Overview endpoint with session cookie
 curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -v
 
 # Expected: 200 OK with application/json content-type
@@ -41,7 +39,7 @@ curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
 # Test with invalid endpoint that might return HTML 404
 curl -X GET "http://localhost:3001/api/admin/scheduling/nonexistent" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -v
 
 # Expected: 404 with text/html content-type
@@ -59,10 +57,9 @@ curl -X GET "http://localhost:3001/api/admin/scheduling/nonexistent" \
 **Test**: Verify handling of authentication failures.
 
 ```bash
-# Test with invalid credentials
+# Test with invalid or missing session cookie
 curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic invalid_credentials" \
   -v
 
 # Expected: 401 Unauthorized
@@ -83,6 +80,7 @@ curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
 # Test endpoint that might redirect
 curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
   -H "Accept: application/json" \
+  -b "admin_session=your-session-cookie" \
   -L \
   -v
 
@@ -104,7 +102,7 @@ curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
 curl -X POST "http://localhost:3001/api/admin/scheduling/event-types" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -d '{"name":"","duration_minutes":"invalid"}' \
   -v
 
@@ -126,7 +124,7 @@ curl -X POST "http://localhost:3001/api/admin/scheduling/event-types" \
 # Or test with endpoint that might return corrupted JSON
 curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -v
 
 # Check response body for malformed JSON
@@ -157,17 +155,17 @@ curl -X GET "http://localhost:3001/api/admin/scheduling/overview" \
 # Test multiple endpoints
 curl -X GET "http://localhost:3001/api/admin/scheduling/event-types" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -v
 
 curl -X GET "http://localhost:3001/api/admin/scheduling/bookings" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -v
 
 curl -X GET "http://localhost:3001/api/admin/scheduling/availability-rules" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -v
 ```
 
@@ -185,7 +183,7 @@ For all tests, verify in browser Developer Tools → Network panel:
 **Request Headers Should Include**:
 - `Accept: application/json`
 - `Content-Type: application/json` (for POST/PATCH requests)
-- `Authorization: Basic [base64-encoded-credentials]`
+- `Cookie: admin_session=[session-value]` (session cookie)
 - Request shows `credentials: include`
 
 **Response Headers Should Show**:
@@ -219,23 +217,23 @@ Test error handling for each CRUD operation:
 # CREATE - Event Type
 curl -X POST "http://localhost:3001/api/admin/scheduling/event-types" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -d '{"name":"Test Event","duration_minutes":30,"location_type":"visio","color":"#FF0000"}'
 
 # READ - List Bookings  
 curl -X GET "http://localhost:3001/api/admin/scheduling/bookings" \
   -H "Accept: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)"
+  -b "admin_session=your-session-cookie"
 
 # UPDATE - Modify Event Type
 curl -X PATCH "http://localhost:3001/api/admin/scheduling/event-types/1" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)" \
+  -b "admin_session=your-session-cookie" \
   -d '{"name":"Updated Event"}'
 
 # DELETE - Remove Event Type
 curl -X DELETE "http://localhost:3001/api/admin/scheduling/event-types/1" \
-  -H "Authorization: Basic $(echo -n 'admin:password' | base64)"
+  -b "admin_session=your-session-cookie"
 ```
 
 ## Expected Outcomes Summary
@@ -258,7 +256,7 @@ curl -X DELETE "http://localhost:3001/api/admin/scheduling/event-types/1" \
 - [ ] Malformed JSON responses are handled gracefully
 - [ ] Error details are expandable and contain useful debugging info
 - [ ] Retry functionality works for retryable errors
-- [ ] All requests include proper headers (Accept, Authorization, credentials)
+- [ ] All requests include proper headers (Accept, session cookie, credentials)
 - [ ] Response Content-Type is validated for all endpoints
 - [ ] CRUD operations handle errors consistently across all admin views
 

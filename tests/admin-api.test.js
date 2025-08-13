@@ -10,11 +10,10 @@ import { fetchJSON, postJSON, patchJSON, deleteJSON, isAuthError, isNetworkError
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-// Mock environment variables
+// Mock environment variables - no longer using VITE_ADMIN_*
 vi.mock('meta', () => ({
   env: {
-    VITE_ADMIN_USERNAME: 'testuser',
-    VITE_ADMIN_PASSWORD: 'testpass'
+    // Session-based auth - no frontend credentials needed
   }
 }));
 

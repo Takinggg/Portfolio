@@ -21,10 +21,9 @@ const AdminSchedulingLayout: React.FC<AdminSchedulingLayoutProps> = ({ onLogout 
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Use cookie-based session; no frontend secrets
         const response = await fetch('/api/admin/scheduling/overview', {
-          headers: {
-            'Authorization': `Basic ${btoa(`${import.meta.env.VITE_ADMIN_USERNAME}:${import.meta.env.VITE_ADMIN_PASSWORD}`)}`
-          }
+          credentials: 'include'
         });
         setIsAuthenticated(response.ok);
       } catch (error) {
