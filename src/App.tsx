@@ -20,7 +20,7 @@ import { SEOHead } from './components/seo';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { EnhancedParticleSystem } from './components/ui/liquid-glass';
 import { MobileFabMenu } from './components/navigation/MobileFabMenu';
-import { ADMIN_CONFIG } from './config';
+
 
 type PageType = 'home' | 'blog' | 'post' | 'projects' | 'project';
 
@@ -111,14 +111,22 @@ function App() {
     }
   };
 
-  const handleAdminLogin = (credentials: { username: string; password: string }) => {
-    // Use environment variables for admin authentication
-    // TODO: Replace with secure JWT-based authentication
-    if (credentials.username === ADMIN_CONFIG.username && 
-        credentials.password === ADMIN_CONFIG.password) {
-      setIsLoggedIn(true);
-      localStorage.setItem('admin_logged_in', 'true');
-      return true;
+  const handleAdminLogin = async (credentials: { username: string; password: string }) => {
+    // Delegate auth to backend; expects it to set a session cookie
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+        credentials: 'include'
+      });
+      if (res.ok) {
+        setIsLoggedIn(true);
+        localStorage.setItem('admin_logged_in', 'true');
+        return true;
+      }
+    } catch (e) {
+      console.error('Login failed', e);
     }
     return false;
   };

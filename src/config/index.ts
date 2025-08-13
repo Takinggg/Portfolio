@@ -16,11 +16,7 @@ export const API_CONFIG = {
   emailServiceUrl: import.meta.env.VITE_EMAIL_SERVICE_URL || 'http://localhost:3001/api/contact',
 } as const;
 
-// Admin Configuration - Environment variables for security
-export const ADMIN_CONFIG = {
-  username: import.meta.env.VITE_ADMIN_USERNAME || 'admin',
-  password: import.meta.env.VITE_ADMIN_PASSWORD || 'password',
-} as const;
+
 
 // Application Metadata for SEO
 export const APP_METADATA = {
@@ -51,9 +47,7 @@ export const validateConfig = () => {
     warnings.push('VITE_CONTACT_PHONE is not configured');
   }
 
-  if (ADMIN_CONFIG.username === 'admin' && ADMIN_CONFIG.password === 'password') {
-    warnings.push('Default admin credentials detected - SECURITY RISK!');
-  }
+
 
   if (warnings.length > 0 && import.meta.env.PROD) {
     console.error('Configuration warnings:', warnings);
