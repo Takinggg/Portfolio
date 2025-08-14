@@ -1349,6 +1349,20 @@ try {
   initializeAdminSchedulingRoutes(app, db);
   adminSchedulingHealthy = true;
   console.log('✅ Admin scheduling system initialized successfully');
+  
+  // Log admin configuration status
+  const adminEnabled = process.env.ADMIN_ENABLED === 'true';
+  const hasCredentials = !!(process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD);
+  const hasActionTokenSecret = !!process.env.ACTION_TOKEN_SECRET;
+  
+  console.log(`📋 Admin Configuration Status:`);
+  console.log(`   • Admin Enabled: ${adminEnabled ? '✅' : '❌'}`);
+  console.log(`   • Credentials: ${hasCredentials ? '✅ Configured' : '❌ Missing'}`);
+  console.log(`   • Action Token: ${hasActionTokenSecret ? '✅ Configured' : '❌ Missing'}`);
+  
+  if (adminEnabled && hasCredentials) {
+    console.log(`   • Login URL: ${process.env.NODE_ENV === 'production' ? 'https://back.maxence.design' : `http://localhost:${PORT}`}/api/admin/scheduling/login`);
+  }
 } catch (error) {
   console.error('❌ Failed to initialize admin scheduling system:', error);
   console.warn('Admin scheduling panel will not be available');

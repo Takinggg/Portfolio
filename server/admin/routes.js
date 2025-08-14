@@ -142,6 +142,23 @@ export function initializeAdminSchedulingRoutes(app, db) {
     });
 
     /**
+     * GET /api/admin/scheduling/login - Login endpoint to trigger Basic Auth
+     * Uses same Basic Auth middleware as other admin endpoints
+     * Returns 401 with WWW-Authenticate if unauthenticated, 204 if authenticated
+     */
+    router.get('/login', (req, res, next) => {
+      // Apply admin configuration checks and basic auth middleware
+      checkAdminConfiguration(req, res, (err) => {
+        if (err) return next(err);
+        basicAuthMiddleware(req, res, (err) => {
+          if (err) return next(err);
+          // If we reach here, authentication was successful
+          res.status(204).end(); // No Content - authentication successful
+        });
+      });
+    });
+
+    /**
      * Defensive configuration check middleware
      */
     const checkAdminConfiguration = (req, res, next) => {
@@ -184,9 +201,9 @@ export function initializeAdminSchedulingRoutes(app, db) {
         legacyHeaders: false,
     });
 
-    // Apply middleware selectively - health endpoint bypasses all checks
+    // Apply middleware selectively - health and login endpoints have special handling
     router.use((req, res, next) => {
-      if (req.path === '/health') {
+      if (req.path === '/health' || req.path === '/login') {
         return next();
       }
       adminRateLimit(req, res, (err) => {
