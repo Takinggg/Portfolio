@@ -337,9 +337,15 @@ export class BookingService {
     }
     /**
      * Admin-only booking cancellation without token validation
+     * Returns structured result with success boolean and message
      */
-    async cancelBookingAdmin(bookingUuid, reason) {
+    async cancelBooking(bookingUuid, reason = null) {
         try {
+            // Validate input 
+            if (!bookingUuid || typeof bookingUuid !== 'string') {
+                return { success: false, message: 'Valid booking UUID is required' };
+            }
+
             const booking = this.getBooking(bookingUuid);
             if (!booking) {
                 return { success: false, message: 'Booking not found' };
@@ -347,6 +353,7 @@ export class BookingService {
             if (booking.status === 'cancelled') {
                 return { success: false, message: 'Booking is already cancelled' };
             }
+            
             // Update booking status
             const stmt = this.db.prepare(`
         UPDATE bookings 
@@ -357,6 +364,7 @@ export class BookingService {
         WHERE uuid = ?
       `);
             stmt.run(reason || 'Cancelled by admin', bookingUuid);
+            
             return {
                 success: true,
                 message: 'Booking cancelled successfully',
@@ -369,10 +377,20 @@ export class BookingService {
         }
     }
     /**
-     * Admin-only booking rescheduling without token validation
+     * Admin-only booking rescheduling without token validation  
+     * Returns structured result with success boolean and message
      */
-    async rescheduleBookingAdmin(bookingUuid, newStart, newEnd) {
+    async rescheduleBooking(bookingUuid, newStart, newEnd, reason = null) {
         try {
+            // Validate input parameters
+            if (!bookingUuid || typeof bookingUuid !== 'string') {
+                return { success: false, message: 'Valid booking UUID is required' };
+            }
+            
+            if (!newStart || !newEnd) {
+                return { success: false, message: 'New start and end times are required' };
+            }
+
             const booking = this.getBooking(bookingUuid);
             if (!booking) {
                 return { success: false, message: 'Booking not found' };
@@ -380,27 +398,44 @@ export class BookingService {
             if (booking.status !== 'confirmed') {
                 return { success: false, message: 'Only confirmed bookings can be rescheduled' };
             }
-            // Validate new time slot
+            
+            // Validate new time slot with safe date parsing
             const startTime = DateTime.fromISO(newStart);
             const endTime = DateTime.fromISO(newEnd);
             if (!startTime.isValid || !endTime.isValid) {
-                return { success: false, message: 'Invalid date format' };
+                return { success: false, message: 'Invalid date format. Please use ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)' };
             }
             if (endTime <= startTime) {
                 return { success: false, message: 'End time must be after start time' };
             }
-            // Get event type
+            
+            // Get event type to validate duration
             const eventType = this.getEventType(booking.event_type_id);
             if (!eventType) {
                 console.warn(`❌ Event type ${booking.event_type_id} not found or is inactive`);
                 return { success: false, message: `Event type with ID ${booking.event_type_id} not found or is inactive` };
             }
+            
+            // Validate duration matches event type
+            const duration = endTime.diff(startTime, 'minutes').minutes;
+            if (duration !== eventType.duration_minutes) {
+                return { 
+                    success: false, 
+                    message: `Duration mismatch: expected ${eventType.duration_minutes} minutes, got ${duration} minutes` 
+                };
+            }
+            
             // Check if new slot is available (excluding current booking)
-            const isSlotAvailable = await this.slotEngine.isSlotAvailable(booking.event_type_id, newStart, newEnd, bookingUuid // Exclude current booking from overlap check
+            const isSlotAvailable = await this.slotEngine.isSlotAvailable(
+                booking.event_type_id, 
+                newStart, 
+                newEnd, 
+                bookingUuid // Exclude current booking from overlap check
             );
             if (!isSlotAvailable) {
                 return { success: false, message: 'Selected time slot is not available' };
             }
+            
             // Update booking
             const stmt = this.db.prepare(`
         UPDATE bookings 
@@ -411,6 +446,7 @@ export class BookingService {
         WHERE uuid = ?
       `);
             stmt.run(newStart, newEnd, bookingUuid);
+            
             return {
                 success: true,
                 message: 'Booking rescheduled successfully',
