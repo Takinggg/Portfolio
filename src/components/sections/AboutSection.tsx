@@ -7,6 +7,7 @@ import { PulseButton } from '../ui/PulseButton';
 import { GlassmorphismPhotoCard } from '../ui/GlassmorphismPhotoCard';
 import { AnimatedPhilosophyCard } from '../ui/AnimatedPhilosophyCard';
 import { FadeInWrapper } from '../ui/FadeInWrapper';
+import { Timeline } from '../about/Timeline';
 import styles from './AboutSection.module.css';
 
 interface AboutSectionProps {
@@ -42,6 +43,52 @@ const AboutSection = memo(({ onNavigateToSection }: AboutSectionProps) => {
       description: t('about.values.perseverance.description'),
       gradient: "from-amber-600 to-yellow-600"
     }
+  ];
+
+  const timelineEvents = [
+    {
+      year: '2019',
+      title: 'Début en Design Graphique',
+      description: "Formation autodidacte et premiers projets en freelance. Découverte de l'univers du design numérique.",
+      type: 'education' as const,
+      location: 'Formation en ligne',
+    },
+    {
+      year: '2020',
+      title: 'Spécialisation UX/UI',
+      description: "Transition vers l'UX/UI design. Formation intensive sur les méthodologies centrées utilisateur.",
+      type: 'education' as const,
+      location: 'Remote',
+    },
+    {
+      year: '2021',
+      title: 'Premier poste UI Designer',
+      description: "Intégration dans une startup tech. Conception d'interfaces SaaS et développement de design systems.",
+      type: 'work' as const,
+      company: 'TechStart Inc.',
+      location: 'Paris',
+    },
+    {
+      year: '2022',
+      title: 'Lead UX Designer',
+      description: "Promotion avec responsabilité d'équipe. Gestion de projets complexes et formation de juniors.",
+      type: 'work' as const,
+      company: 'Scale-Up Co.',
+      location: 'Remote',
+    },
+    {
+      year: '2023',
+      title: 'Certifications avancées',
+      description: 'Google UX Design Certificate et spécialisation en Research. Expansion vers le Product Design.',
+      type: 'certification' as const,
+      location: 'En ligne',
+    },
+    {
+      year: '2024',
+      title: 'Designer Freelance Senior',
+      description: 'Lancement en indépendant. Focus sur les projets à fort impact avec des clients premium.',
+      type: 'milestone' as const,
+    },
   ];
 
   return (
@@ -135,6 +182,14 @@ const AboutSection = memo(({ onNavigateToSection }: AboutSectionProps) => {
             </div>
           </FadeInWrapper>
         </div>
+
+        {/* Timeline Section */}
+        <FadeInWrapper direction="up" delay={1.0} once>
+          <Timeline 
+            events={timelineEvents}
+            className="mt-20"
+          />
+        </FadeInWrapper>
       </div>
     </section>
   );
