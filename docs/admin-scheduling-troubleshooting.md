@@ -2,6 +2,31 @@
 
 This guide helps operators diagnose and fix common issues with the admin scheduling panel.
 
+## New Login Flow
+
+The admin panel now features an improved authentication experience:
+
+### Login Button Functionality
+- **"Se connecter (Basic Auth)"** button opens `/api/admin/scheduling/login` endpoint in a new tab
+- This triggers the browser's HTTP Basic Authentication dialog
+- Enter admin credentials when prompted
+- Tab closes automatically after successful authentication
+- Use **"Réessayer"** button to check if authentication succeeded
+
+### Authentication Error Messages
+The panel now provides specific error information:
+
+- **401 with JSON response**: "Authentication required"
+- **401 with HTML response**: "HTTP Basic Authentication required. The server is not accepting browser sessions."
+- **HTML instead of JSON**: "Server returned HTML instead of JSON. This may indicate a proxy configuration issue."
+- **Network errors**: "Unable to connect to admin API. Check your network connection."
+
+### API Base URL Validation
+The panel automatically validates the API configuration:
+- Warns if using localhost URLs in production environments
+- Shows current vs expected VITE_API_BASE_URL values
+- Provides guidance on fixing configuration issues
+
 ## Health Endpoint
 
 The admin scheduling system provides a health endpoint that can be used to diagnose configuration issues:
@@ -25,6 +50,45 @@ This endpoint returns a JSON response with the current system status:
   "timestamp": "2024-01-15T10:30:00.000Z"
 }
 ```
+
+## Login Endpoint
+
+The system also provides a dedicated login endpoint to trigger Basic Authentication:
+
+```bash
+GET /api/admin/scheduling/login
+```
+
+**Unauthenticated response** (triggers browser auth prompt):
+```
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Basic realm="Admin Panel"
+Content-Type: application/json
+
+{"error":"Authentication required"}
+```
+
+**Authenticated response**:
+```
+HTTP/1.1 204 No Content
+```
+
+This endpoint is used by the frontend login button to trigger the browser's Basic Auth dialog.
+
+## Startup Configuration Logging
+
+The server now logs admin configuration status on startup:
+
+```
+✅ Admin scheduling system initialized successfully
+📋 Admin Configuration Status:
+   • Admin Enabled: ✅
+   • Credentials: ✅ Configured
+   • Action Token: ✅ Configured
+   • Login URL: http://localhost:3001/api/admin/scheduling/login
+```
+
+This logging helps operators quickly verify the admin configuration without exposing sensitive credentials.
 
 ## Required Environment Variables
 

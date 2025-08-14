@@ -79,6 +79,41 @@ SMTP_SECURE=false
    - Use the credentials from your environment variables
    - Authentication is handled server-side for security
 
+### New Login Flow
+
+The admin panel now includes an improved authentication experience:
+
+1. **Initial Access**: When you first visit the admin panel, you'll see a login interface with:
+   - Clear error messages for configuration issues
+   - API base URL validation warnings
+   - System health diagnostics
+
+2. **Login Button**: Click "Se connecter (Basic Auth)" to trigger the browser's authentication prompt
+   - This opens the `/api/admin/scheduling/login` endpoint in a new tab
+   - Your browser will show the HTTP Basic Auth dialog
+   - Enter your admin credentials when prompted
+   - The tab will close automatically after successful authentication
+
+3. **Retry Options**: After authentication, use "Réessayer" to check if login was successful
+
+4. **Health Diagnostics**: Click "Voir le diagnostic" to see:
+   - Admin panel status (enabled/disabled)
+   - Credential configuration status
+   - Action token configuration
+   - Database connection status
+   - Number of tables available
+
+### Troubleshooting Authentication
+
+If authentication fails, the panel will show specific error messages:
+
+- **401 with Basic Auth**: "HTTP Basic Authentication required"
+- **HTML Response**: "Server returned HTML instead of JSON" (indicates proxy issues)
+- **Network Error**: "Unable to connect to admin API"
+- **Configuration Error**: Warnings about incorrect API base URL
+
+**API Base URL Validation**: The panel automatically detects if you're using localhost URLs in production and warns you to update `VITE_API_BASE_URL`.
+
 ## Features
 
 ### Overview Dashboard
