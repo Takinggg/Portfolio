@@ -13,7 +13,6 @@ interface NewNavbarProps {
   onBack?: () => void;
   backLabel?: string;
   currentPage?: 'home' | 'blog' | 'post' | 'projects';
-  isAuthenticated?: boolean;
 }
 
 const NewNavbar: React.FC<NewNavbarProps> = ({ 
@@ -25,7 +24,6 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
   showBackButton = false, // eslint-disable-line @typescript-eslint/no-unused-vars
   onBack, // eslint-disable-line @typescript-eslint/no-unused-vars
   backLabel, // eslint-disable-line @typescript-eslint/no-unused-vars
-  isAuthenticated = false // eslint-disable-line @typescript-eslint/no-unused-vars
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -186,16 +184,6 @@ const NewNavbar: React.FC<NewNavbarProps> = ({
           <div className="flex items-center gap-3">
             {/* Language Switcher */}
             <LanguageSwitcher className="hidden sm:flex" />
-            
-            {/* Admin Link */}
-            <motion.a
-              href="/admin"
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 rounded"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              admin
-            </motion.a>
 
             {/* Collaborer CTA */}
             <motion.button
