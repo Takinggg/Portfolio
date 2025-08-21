@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppProviders } from './AppProviders';
-import App from './App.tsx';
+import { AppRouter } from './AppRouter';
 import { initSecurity } from './lib/security';
 import { performanceMonitor } from './lib/performance';
 import './index.css';
@@ -31,7 +31,7 @@ window.addEventListener('beforeunload', () => {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppProviders>
-      <App />
+      <AppRouter />
     </AppProviders>
   </StrictMode>
 );
