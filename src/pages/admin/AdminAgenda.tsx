@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from './AdminLayout';
-import { Calendar, Clock, User, Mail, Phone, MessageSquare } from 'lucide-react';
+import { Calendar, Clock, Mail, Phone } from 'lucide-react';
+import { useAuthorizedFetch } from '../../context/AdminAuthContext';
 
 interface Appointment {
   id: string;
@@ -20,10 +21,7 @@ export const AdminAgenda: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-  const [credentials] = useState(() => {
-    // In a real app, you'd get these from secure storage or context
-    return { username: 'admin', password: 'password' };
-  });
+  const authorizedFetch = useAuthorizedFetch();
 
   useEffect(() => {
     fetchAppointments();
@@ -32,11 +30,7 @@ export const AdminAgenda: React.FC = () => {
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/appointments', {
-        headers: {
-          'Authorization': `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`
-        }
-      });
+      const response = await authorizedFetch('/api/appointments');
 
       if (response.ok) {
         const data = await response.json();
@@ -46,6 +40,7 @@ export const AdminAgenda: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching appointments:', error);
+      // Error handling is done by the context (401 auto-logout)
     } finally {
       setLoading(false);
     }
@@ -53,11 +48,10 @@ export const AdminAgenda: React.FC = () => {
 
   const updateAppointmentStatus = async (appointmentId: string, newStatus: string) => {
     try {
-      const response = await fetch(`/api/appointments/${appointmentId}`, {
+      const response = await authorizedFetch(`/api/appointments/${appointmentId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`
         },
         body: JSON.stringify({ status: newStatus })
       });
@@ -67,19 +61,20 @@ export const AdminAgenda: React.FC = () => {
         setAppointments(prev => 
           prev.map(apt => 
             apt.id === appointmentId 
-              ? { ...apt, status: newStatus as any, updatedAt: new Date().toISOString() }
+              ? { ...apt, status: newStatus as Appointment['status'], updatedAt: new Date().toISOString() }
               : apt
           )
         );
         
         if (selectedAppointment?.id === appointmentId) {
-          setSelectedAppointment(prev => prev ? { ...prev, status: newStatus as any } : null);
+          setSelectedAppointment(prev => prev ? { ...prev, status: newStatus as Appointment['status'] } : null);
         }
       } else {
         console.error('Failed to update appointment status');
       }
     } catch (error) {
       console.error('Error updating appointment status:', error);
+      // Error handling is done by the context (401 auto-logout)
     }
   };
 
