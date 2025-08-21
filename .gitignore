@@ -34,3 +34,8 @@ dist-ssr
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Data storage (file-based database)
+var/data/
+!var/data/availability.json
+!var/data/exceptions.json
