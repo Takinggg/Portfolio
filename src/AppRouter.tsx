@@ -12,6 +12,16 @@ import { AdminAgenda } from './pages/admin/AdminAgenda';
 // Import demo page
 import { WidgetsDemo } from './pages/WidgetsDemo';
 
+// Import admin auth provider
+import { AdminAuthProvider } from './context/AdminAuthContext';
+
+// Wrapper component for admin routes with auth provider
+const AdminWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <AdminAuthProvider>
+    {children}
+  </AdminAuthProvider>
+);
+
 export const AppRouter: React.FC = () => {
   return (
     <Router>
@@ -22,10 +32,22 @@ export const AppRouter: React.FC = () => {
         {/* Widgets demo page */}
         <Route path="/widgets" element={<WidgetsDemo />} />
         
-        {/* Admin routes */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/messages" element={<AdminMessages />} />
-        <Route path="/admin/agenda" element={<AdminAgenda />} />
+        {/* Admin routes - wrapped with auth provider */}
+        <Route path="/admin" element={
+          <AdminWrapper>
+            <AdminDashboard />
+          </AdminWrapper>
+        } />
+        <Route path="/admin/messages" element={
+          <AdminWrapper>
+            <AdminMessages />
+          </AdminWrapper>
+        } />
+        <Route path="/admin/agenda" element={
+          <AdminWrapper>
+            <AdminAgenda />
+          </AdminWrapper>
+        } />
       </Routes>
     </Router>
   );

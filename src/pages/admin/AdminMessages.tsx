@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from './AdminLayout';
 import { Search, Eye, Mail, Phone, Calendar, Filter } from 'lucide-react';
+import { useAuthorizedFetch } from '../../context/AdminAuthContext';
 
 interface Message {
   id: string;
@@ -20,10 +21,7 @@ export const AdminMessages: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [credentials] = useState(() => {
-    // In a real app, you'd get these from secure storage or context
-    return { username: 'admin', password: 'password' };
-  });
+  const authorizedFetch = useAuthorizedFetch();
 
   useEffect(() => {
     fetchMessages();
@@ -35,11 +33,7 @@ export const AdminMessages: React.FC = () => {
       const params = new URLSearchParams();
       if (searchQuery) params.append('q', searchQuery);
       
-      const response = await fetch(`/api/messages?${params}`, {
-        headers: {
-          'Authorization': `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`
-        }
-      });
+      const response = await authorizedFetch(`/api/messages?${params}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -49,6 +43,7 @@ export const AdminMessages: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
+      // Error handling is done by the context (401 auto-logout)
     } finally {
       setLoading(false);
     }
@@ -56,11 +51,10 @@ export const AdminMessages: React.FC = () => {
 
   const updateMessageStatus = async (messageId: string, newStatus: string) => {
     try {
-      const response = await fetch(`/api/messages/${messageId}`, {
+      const response = await authorizedFetch(`/api/messages/${messageId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`
         },
         body: JSON.stringify({ status: newStatus })
       });
