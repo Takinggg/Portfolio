@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from './AdminLayout';
-import { Search, Eye, Mail, Phone, Calendar, Filter } from 'lucide-react';
+import { Search, Mail, Phone, Calendar, Filter } from 'lucide-react';
 import { useAuthorizedFetch } from '../../context/AdminAuthContext';
 
 interface Message {
@@ -63,14 +63,14 @@ export const AdminMessages: React.FC = () => {
         // Update local state
         setMessages(prev => 
           prev.map(msg => 
-            msg.id === messageId 
-              ? { ...msg, status: newStatus as any, updatedAt: new Date().toISOString() }
+            msg.id === messageId
+              ? { ...msg, status: newStatus as Message['status'], updatedAt: new Date().toISOString() }
               : msg
           )
         );
         
         if (selectedMessage?.id === messageId) {
-          setSelectedMessage(prev => prev ? { ...prev, status: newStatus as any } : null);
+          setSelectedMessage(prev => prev ? { ...prev, status: newStatus as Message['status'] } : null);
         }
       } else {
         console.error('Failed to update message status');

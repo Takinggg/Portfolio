@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from './AdminLayout';
-import { Calendar, Clock, User, Mail, Phone, MessageSquare } from 'lucide-react';
+import { Calendar, Clock, Mail, Phone } from 'lucide-react';
 import { useAuthorizedFetch } from '../../context/AdminAuthContext';
 
 interface Appointment {
@@ -61,13 +61,13 @@ export const AdminAgenda: React.FC = () => {
         setAppointments(prev => 
           prev.map(apt => 
             apt.id === appointmentId 
-              ? { ...apt, status: newStatus as any, updatedAt: new Date().toISOString() }
+              ? { ...apt, status: newStatus as Appointment['status'], updatedAt: new Date().toISOString() }
               : apt
           )
         );
         
         if (selectedAppointment?.id === appointmentId) {
-          setSelectedAppointment(prev => prev ? { ...prev, status: newStatus as any } : null);
+          setSelectedAppointment(prev => prev ? { ...prev, status: newStatus as Appointment['status'] } : null);
         }
       } else {
         console.error('Failed to update appointment status');
