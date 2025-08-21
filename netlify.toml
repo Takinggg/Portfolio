@@ -1,12 +1,9 @@
 # Netlify configuration for Vite build output and SPA routing
-# This configuration avoids accidental backend proxying in production
 
 [build]
   publish = "dist"
   command = "npm run build"
 
-# Note: Environment variables like VITE_API_BASE_URL are configured 
-# in Netlify UI to avoid committing secrets to version control
 [build.environment]
   NODE_VERSION = "20"
 
@@ -17,12 +14,7 @@
   to = "/index.html"
   status = 200
 
-# We intentionally do NOT proxy /api routes in Netlify because:
-# - The frontend targets the backend via VITE_API_BASE_URL instead
-# - This avoids CORS confusion in production
-# - Backend is deployed separately and accessed directly
-
-# Optional: cache headers for assets
+# Cache headers for assets
 [[headers]]
   for = "/assets/*"
   [headers.values]
