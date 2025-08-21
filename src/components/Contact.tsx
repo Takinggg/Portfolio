@@ -6,6 +6,7 @@ import { validateContactForm, contactFormRateLimiter } from '../lib/validation';
 import { generateId, screenReader } from '../lib/accessibility';
 import { useI18n } from '../hooks/useI18n';
 import { saveUserInfoToStorage } from '../utils/userInfoPrefill';
+import { BookingWidget } from '../../components/BookingWidget';
 
 const Contact = memo(() => {
   const { t } = useI18n();
@@ -18,7 +19,12 @@ const Contact = memo(() => {
     timeline: '',
     rgpdConsent: false,
     briefUrl: '',
-    briefFile: null as File | null
+    briefFile: null as File | null,
+    // Anti-spam fields
+    hp: '', // honeypot
+    a: Math.floor(Math.random() * 10) + 1,
+    b: Math.floor(Math.random() * 10) + 1,
+    answer: ''
   });
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,21 +83,33 @@ const Contact = memo(() => {
         return;
       }
 
-      // Create mailto link with form data
-      const subject = encodeURIComponent(formData.subject || 'Contact depuis le portfolio');
-      const body = encodeURIComponent(
-        `Nom: ${formData.name}\n` +
-        `Email: ${formData.email}\n` +
-        `Budget: ${formData.budget}\n` +
-        `Timeline: ${formData.timeline}\n\n` +
-        `Message:\n${formData.message}` +
-        (formData.briefUrl ? `\n\nBrief URL: ${formData.briefUrl}` : '')
-      );
-      
-      const mailtoLink = `mailto:${CONTACT_INFO.email}?subject=${subject}&body=${body}`;
-      
-      // Open email client
-      window.location.href = mailtoLink;
+      // Create API request payload
+      const apiPayload = {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        phone: '', // Contact form doesn't have phone, but API expects it
+        hp: formData.hp,
+        a: formData.a,
+        b: formData.b,
+        answer: formData.answer
+      };
+
+      // Submit to API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiPayload)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Une erreur est survenue lors de l\'envoi');
+      }
 
       // Save user info to localStorage for future use
       saveUserInfoToStorage({
@@ -102,7 +120,7 @@ const Contact = memo(() => {
       setSubmitStatus('success');
       
       // Announce success to screen readers
-      screenReader.announce(t('contact.form.success_message') + ' Votre client email va s\'ouvrir.', 'polite');
+      screenReader.announce(t('contact.form.success_message'), 'polite');
       
       // Reset form after successful submission
       setFormData({
@@ -114,7 +132,12 @@ const Contact = memo(() => {
         timeline: '',
         rgpdConsent: false,
         briefUrl: '',
-        briefFile: null
+        briefFile: null,
+        // Reset anti-spam fields
+        hp: '',
+        a: Math.floor(Math.random() * 10) + 1,
+        b: Math.floor(Math.random() * 10) + 1,
+        answer: ''
       });
 
     } catch (error) {
@@ -333,6 +356,17 @@ const Contact = memo(() => {
                 noValidate
                 aria-labelledby="contact-title"
               >
+                {/* Honeypot field - hidden from users */}
+                <input
+                  type="text"
+                  name="hp"
+                  value={formData.hp}
+                  onChange={handleChange}
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+
                 {/* Success Message */}
                 {submitStatus === 'success' && (
                   <div 
@@ -569,6 +603,23 @@ const Contact = memo(() => {
                   </div>
                 </div>
 
+                {/* Simple captcha */}
+                <div className="group">
+                  <label htmlFor="captcha-answer" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+                    Vérification: Combien font {formData.a} + {formData.b} ? *
+                  </label>
+                  <input
+                    type="number"
+                    id="captcha-answer"
+                    name="answer"
+                    value={formData.answer}
+                    onChange={handleChange}
+                    className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white/50 dark:bg-gray-900/60 dark:text-gray-100 backdrop-blur-sm group-hover:border-gray-300"
+                    placeholder="Réponse"
+                    required
+                    disabled={isSubmitting}
+                  />
+                </div>
 
 
                 {/* RGPD Consent */}
@@ -626,6 +677,21 @@ const Contact = memo(() => {
                 </button>
               </form>
             </div>
+          </div>
+        </div>
+
+        {/* Booking Widget Section */}
+        <div className={`mt-16 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors">
+              Ou planifiez un appel
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 transition-colors">
+              Réservez directement un créneau pour discuter de votre projet
+            </p>
+          </div>
+          <div className="max-w-2xl mx-auto">
+            <BookingWidget />
           </div>
         </div>
       </div>
