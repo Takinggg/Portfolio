@@ -1,6 +1,62 @@
 import { useEffect, useState } from "react";
-import { blogService as apiService, projectService as apiProjectService } from "../lib/api";
-import { adaptPost, adaptProject, adaptPostArray, adaptProjectArray, NormalizedProject, NormalizedBlogPost } from "../lib/adapters";
+import { blogPosts } from "../data/blogPosts";
+import { caseStudies } from "../data/caseStudies";
+
+// Define local types for normalized data
+export interface NormalizedBlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  publishedAt: string;
+  updatedAt?: string;
+  featuredImage: string;
+  tags: string[];
+  category: string;
+  readTime: number;
+  featured: boolean;
+}
+
+export interface NormalizedProject {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  client: string;
+  year: number;
+  duration: string;
+  role: string;
+  team: string[];
+  subtitle: string;
+  description: string;
+  challenge: string;
+  solution: string;
+  featuredImage: string;
+  heroImage: string;
+  images: string[];
+}
+
+// Convert case studies to normalized projects
+const convertCaseStudyToProject = (caseStudy: any): NormalizedProject => ({
+  id: caseStudy.id,
+  title: caseStudy.title,
+  slug: caseStudy.slug,
+  category: caseStudy.category,
+  client: caseStudy.client,
+  year: caseStudy.year,
+  duration: caseStudy.duration,
+  role: caseStudy.role,
+  team: caseStudy.team,
+  subtitle: caseStudy.subtitle,
+  description: caseStudy.description,
+  challenge: caseStudy.challenge,
+  solution: caseStudy.solution,
+  featuredImage: caseStudy.featuredImage,
+  heroImage: caseStudy.heroImage,
+  images: caseStudy.images
+});
 
 // Récupère tous les posts du blog
 export function useBlogPosts() {
@@ -14,25 +70,11 @@ export function useBlogPosts() {
         setLoading(true);
         setError(null);
         
-        // Try API first
-        const result = await apiService.getAllPosts();
-        
-        if (result.error) {
-          console.warn('API failed, falling back to mock data:', result.error.message);
-          
-          // Fallback to mock data
-          const { blogService: mockService } = await import("../lib/database");
-          const mockResult = await mockService.getAllPosts();
-          const adaptedPosts = adaptPostArray(mockResult.data || []);
-          setPosts(adaptedPosts);
-        } else {
-          // Use API data
-          const adaptedPosts = adaptPostArray(result.data || []);
-          setPosts(adaptedPosts);
-        }
+        // Use local blog posts data
+        setPosts(blogPosts);
       } catch (err) {
-        console.error('Error fetching posts:', err);
-        setError(err instanceof Error ? err.message : 'Error fetching posts');
+        console.error('Error loading posts:', err);
+        setError(err instanceof Error ? err.message : 'Error loading posts');
         setPosts([]);
       } finally {
         setLoading(false);
@@ -45,7 +87,7 @@ export function useBlogPosts() {
   return { posts, loading, error };
 }
 
-// Récupère un post du blog par son id
+// Récupère un post du blog par son id ou slug
 export function useBlogPost(id: number | string) {
   const [post, setPost] = useState<NormalizedBlogPost | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,27 +105,17 @@ export function useBlogPost(id: number | string) {
         setLoading(true);
         setError(null);
         
-        // Try API first - note: API uses slug, mock uses id
-        let result;
-        try {
-          result = await apiService.getPostBySlug(String(id));
-        } catch (apiErr) {
-          console.warn('API failed, falling back to mock data:', apiErr);
-          
-          // Fallback to mock data
-          const { blogService: mockService } = await import("../lib/database");
-          result = await mockService.getPostById(id);
+        // Find post by id or slug in local data
+        const foundPost = blogPosts.find(p => p.id === String(id) || p.slug === String(id));
+        
+        if (!foundPost) {
+          throw new Error('Post not found');
         }
         
-        if (result.error) {
-          throw result.error;
-        }
-        
-        const adaptedPost = adaptPost(result.data);
-        setPost(adaptedPost);
+        setPost(foundPost);
       } catch (err) {
-        console.error('Error fetching post:', err);
-        setError(err instanceof Error ? err.message : 'Error fetching post');
+        console.error('Error loading post:', err);
+        setError(err instanceof Error ? err.message : 'Error loading post');
         setPost(null);
       } finally {
         setLoading(false);
@@ -108,25 +140,12 @@ export function useProjects() {
         setLoading(true);
         setError(null);
         
-        // Try API first
-        const result = await apiProjectService.getAllProjects();
-        
-        if (result.error) {
-          console.warn('API failed, falling back to mock data:', result.error.message);
-          
-          // Fallback to mock data
-          const { projectService: mockService } = await import("../lib/database");
-          const mockResult = await mockService.getAllProjects();
-          const adaptedProjects = adaptProjectArray(mockResult.data || []);
-          setProjects(adaptedProjects);
-        } else {
-          // Use API data
-          const adaptedProjects = adaptProjectArray(result.data || []);
-          setProjects(adaptedProjects);
-        }
+        // Convert case studies to normalized projects
+        const normalizedProjects = caseStudies.map(convertCaseStudyToProject);
+        setProjects(normalizedProjects);
       } catch (err) {
-        console.error('Error fetching projects:', err);
-        setError(err instanceof Error ? err.message : 'Error fetching projects');
+        console.error('Error loading projects:', err);
+        setError(err instanceof Error ? err.message : 'Error loading projects');
         setProjects([]);
       } finally {
         setLoading(false);
@@ -157,27 +176,18 @@ export function useProject(id: number | string) {
         setLoading(true);
         setError(null);
         
-        // Try API first
-        let result;
-        try {
-          result = await apiProjectService.getProjectById(String(id));
-        } catch (apiErr) {
-          console.warn('API failed, falling back to mock data:', apiErr);
-          
-          // Fallback to mock data
-          const { projectService: mockService } = await import("../lib/database");
-          result = await mockService.getProjectById(id);
+        // Find project by id in case studies
+        const foundCaseStudy = caseStudies.find(cs => cs.id === String(id) || cs.slug === String(id));
+        
+        if (!foundCaseStudy) {
+          throw new Error('Project not found');
         }
         
-        if (result.error) {
-          throw result.error;
-        }
-        
-        const adaptedProject = adaptProject(result.data);
-        setProject(adaptedProject);
+        const normalizedProject = convertCaseStudyToProject(foundCaseStudy);
+        setProject(normalizedProject);
       } catch (err) {
-        console.error('Error fetching project:', err);
-        setError(err instanceof Error ? err.message : 'Error fetching project');
+        console.error('Error loading project:', err);
+        setError(err instanceof Error ? err.message : 'Error loading project');
         setProject(null);
       } finally {
         setLoading(false);

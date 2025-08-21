@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { memo, useCallback } from 'react';
-import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles, Calendar, Upload, Link as LinkIcon, X } from 'lucide-react';
-import { contactService } from '../lib/api';
+import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles, Upload, Link as LinkIcon, X } from 'lucide-react';
 import { CONTACT_INFO } from '../config';
 import { validateContactForm, contactFormRateLimiter } from '../lib/validation';
 import { generateId, screenReader } from '../lib/accessibility';
 import { useI18n } from '../hooks/useI18n';
-import { SchedulingWidget } from './scheduling';
 import { saveUserInfoToStorage } from '../utils/userInfoPrefill';
 
 const Contact = memo(() => {
@@ -20,15 +18,13 @@ const Contact = memo(() => {
     timeline: '',
     rgpdConsent: false,
     briefUrl: '',
-    briefFile: null as File | null,
-    wantAppointment: false // New field for appointment option
+    briefFile: null as File | null
   });
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [shouldOpenScheduling, setShouldOpenScheduling] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   
   // Generate unique IDs for accessibility
@@ -71,7 +67,7 @@ const Contact = memo(() => {
         throw new Error(`Trop de tentatives. Veuillez attendre avant de réessayer. Tentatives restantes: ${remaining}`);
       }
 
-      // Validate and sanitize form data
+      // Validate form data
       const validation = validateContactForm(formData);
       
       if (!validation.isValid) {
@@ -81,81 +77,48 @@ const Contact = memo(() => {
         return;
       }
 
-      if (!validation.sanitizedData) {
-        throw new Error(t('contact.form.validation_data_error'));
-      }
+      // Create mailto link with form data
+      const subject = encodeURIComponent(formData.subject || 'Contact depuis le portfolio');
+      const body = encodeURIComponent(
+        `Nom: ${formData.name}\n` +
+        `Email: ${formData.email}\n` +
+        `Budget: ${formData.budget}\n` +
+        `Timeline: ${formData.timeline}\n\n` +
+        `Message:\n${formData.message}` +
+        (formData.briefUrl ? `\n\nBrief URL: ${formData.briefUrl}` : '')
+      );
+      
+      const mailtoLink = `mailto:${CONTACT_INFO.email}?subject=${subject}&body=${body}`;
+      
+      // Open email client
+      window.location.href = mailtoLink;
 
-      // Submit the sanitized message
-      const { data: messageData, error } = await contactService.submitMessage(validation.sanitizedData);
-
-      if (error) {
-        throw error;
-      }
-
-      // If appointment is requested, trigger scheduling workflow
-      if (formData.wantAppointment && messageData) {
-        // Store message ID for later linking
-        window.sessionStorage.setItem('pendingMessageId', messageData.id);
-        
-        // Save user info to localStorage for prefilling
-        saveUserInfoToStorage({
-          name: formData.name,
-          email: formData.email
-        });
-        
-        // Show success message for contact form
-        setSubmitStatus('success');
-        screenReader.announce(t('contact.form.success_message') + ' Le widget de planification va s\'ouvrir.', 'polite');
-        
-        // Reset form except for appointment preference
-        setFormData(prev => ({
-          name: '',
-          email: '',
-          subject: '',
-          message: '',
-          budget: '',
-          timeline: '',
-          rgpdConsent: false,
-          briefUrl: '',
-          briefFile: null,
-          wantAppointment: prev.wantAppointment // Keep the appointment preference
-        }));
-        
-        // Trigger scheduling widget programmatically after a short delay
-        setTimeout(() => {
-          setShouldOpenScheduling(true);
-        }, 1000);
-        
-      } else {
-        // Standard success flow for non-appointment messages
-        // Save user info to localStorage for future use
-        saveUserInfoToStorage({
-          name: formData.name,
-          email: formData.email
-        });
-        
-        setSubmitStatus('success');
-        
-        // Announce success to screen readers
-        screenReader.announce(t('contact.form.success_message') + ' Nous vous répondrons dans les plus brefs délais.', 'polite');
-        
-        // Reset form after successful submission
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: '',
-          budget: '',
-          timeline: '',
-          rgpdConsent: false,
-          briefUrl: '',
-          briefFile: null,
-          wantAppointment: false
-        });
-      }
+      // Save user info to localStorage for future use
+      saveUserInfoToStorage({
+        name: formData.name,
+        email: formData.email
+      });
+      
+      setSubmitStatus('success');
+      
+      // Announce success to screen readers
+      screenReader.announce(t('contact.form.success_message') + ' Votre client email va s\'ouvrir.', 'polite');
+      
+      // Reset form after successful submission
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        budget: '',
+        timeline: '',
+        rgpdConsent: false,
+        briefUrl: '',
+        briefFile: null
+      });
 
     } catch (error) {
-      console.error('Error submitting contact form:', error);
+      console.error('Error processing contact form:', error);
       setSubmitStatus('error');
       setErrorMessage(error instanceof Error ? error.message : t('contact.form.general_error'));
     } finally {
@@ -203,61 +166,6 @@ const Contact = memo(() => {
       briefFile: file || null
     });
   }, [formData, t]);
-
-  // Scheduling handlers
-  const handleBookingComplete = useCallback(async (booking: any) => {
-    console.log('Booking completed:', booking);
-    
-    // Get the pending message ID and link the booking
-    const pendingMessageId = window.sessionStorage.getItem('pendingMessageId');
-    if (pendingMessageId && booking.uuid) {
-      try {
-        await contactService.updateMessage(pendingMessageId, { 
-          booking_uuid: booking.uuid 
-        });
-        console.log('Successfully linked booking to contact message:', pendingMessageId, booking.uuid);
-        
-        // Clear the pending message ID
-        window.sessionStorage.removeItem('pendingMessageId');
-        
-        // Show enhanced success message
-        setSubmitStatus('success');
-        setErrorMessage('');
-        screenReader.announce(
-          `Rendez-vous confirmé ! Votre créneau du ${new Date(booking.start_time).toLocaleDateString('fr-FR')} à ${new Date(booking.start_time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} est réservé.`,
-          'polite'
-        );
-        
-      } catch (error) {
-        console.error('Failed to link booking to contact message:', error);
-        // Don't show this error to user as the booking was successful
-      }
-    }
-    
-    // Close the scheduling widget
-    setShouldOpenScheduling(false);
-  }, []);
-
-  const handleSchedulingError = useCallback((error: string) => {
-    console.error('Scheduling error:', error);
-    
-    // Convert technical errors to localized user-friendly messages
-    let friendlyMessage = t('scheduling.errors.generic');
-    
-    if (error.includes('expected JSON but received')) {
-      friendlyMessage = t('scheduling.errors.invalid_json');
-    } else if (error.includes('Failed to fetch') || error.includes('Network')) {
-      friendlyMessage = t('scheduling.errors.network');
-    } else if (error.includes('HTTP 404')) {
-      friendlyMessage = t('scheduling.errors.not_found');
-    } else if (error.includes('HTTP 500')) {
-      friendlyMessage = t('scheduling.errors.server_error');
-    }
-    
-    setErrorMessage(friendlyMessage);
-    setSubmitStatus('error');
-    setShouldOpenScheduling(false); // Close the scheduling widget on error
-  }, [t]);
 
   const contactMethods = [
     {
@@ -553,36 +461,6 @@ const Contact = memo(() => {
                   </div>
                 </div>
 
-                {/* Appointment Option */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6 transition-colors">
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      id="wantAppointment"
-                      name="wantAppointment"
-                      checked={formData.wantAppointment}
-                      onChange={handleChange}
-                      className="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      disabled={isSubmitting}
-                    />
-                    <div className="flex-1">
-                      <label htmlFor="wantAppointment" className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1 transition-colors cursor-pointer">
-                        {t('contact.form.want_appointment')}
-                      </label>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
-                        {t('contact.form.schedule_description')}
-                      </p>
-                      {formData.wantAppointment && (
-                        <div className="mt-3 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700 transition-colors">
-                          <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
-                            ✓ {t('contact.form.scheduling_message')}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
                 <div className="group">
                   <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors">
                     {t('contact.form.subject')} *
@@ -751,15 +629,6 @@ const Contact = memo(() => {
           </div>
         </div>
       </div>
-      
-      {/* Automatic Scheduling Widget - Opens when appointment is requested */}
-      {shouldOpenScheduling && (
-        <SchedulingWidget
-          autoOpen={true}
-          onBookingComplete={handleBookingComplete}
-          onError={handleSchedulingError}
-        />
-      )}
     </section>
   );
 });
