@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { config } from 'dotenv';
+
+// Load environment variables from .env.local (for development)
+config({ path: '.env.local' });
 
 // Import route handlers - note: using relative paths with .js extension for ES modules
 import contactRoute from './routes/contact.js';
