@@ -129,6 +129,17 @@ npm run dev:client  # Frontend on :5173
 npm run dev:server  # Backend on :3001
 ```
 
+### 5. Production Server
+```bash
+# Start only the backend API server (for production deployment)
+npm start
+# or
+npm run server
+
+# Both commands run: node server/index.js
+# Server will be available on port 3001 (or PORT environment variable)
+```
+
 ## 📝 API Documentation
 
 ### Contact Form
