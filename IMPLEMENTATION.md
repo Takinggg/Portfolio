@@ -198,6 +198,24 @@ PATCH /api/messages/{id} {"status": "read"}
 PATCH /api/appointments/{id} {"status": "COMPLETED"}
 ```
 
+### Analytics Endpoints
+
+#### Performance Metrics
+```http
+POST /api/analytics/performance
+Content-Type: application/json
+
+{
+  "metric": "CLS",
+  "value": 0.1,
+  "timestamp": 1692704400000,
+  "url": "https://example.com/",
+  "userAgent": "Mozilla/5.0..."
+}
+```
+
+**Response**: `204 No Content` (no-op endpoint to prevent 404 errors)
+
 ## 🎛️ Admin Interface
 
 Access the admin interface at `/admin`:
@@ -240,6 +258,32 @@ function MyPage() {
 ```
 
 ## 🔧 Configuration
+
+### Environment Variables
+
+#### Frontend Environment Variables (Exposed via Vite)
+- `VITE_API_BASE_URL`: Backend API base URL (default: `http://localhost:3001/api`)
+- `VITE_FRONTEND_URL`: Frontend application URL (default: `http://localhost:5173`)
+- `VITE_ENABLE_PERF_ANALYTICS`: Enable performance analytics (default: `false`)
+- `VITE_CONTACT_EMAIL`: Contact email address
+- `VITE_CONTACT_PHONE`: Contact phone number
+- `VITE_CONTACT_LOCATION`: Contact location
+
+#### Production Server Configuration
+When deploying to production, ensure:
+1. `VITE_API_BASE_URL` points to your backend server (e.g., `https://api.yourdomain.com/api`)
+2. Backend and frontend are on different domains/subdomains
+3. CORS is properly configured in the backend for your frontend domain
+
+### Analytics and Performance Monitoring
+
+#### Performance Analytics Endpoint
+- **Endpoint**: `POST /api/analytics/performance`
+- **Purpose**: No-op endpoint to prevent 404 errors from frontend performance monitoring
+- **Response**: 204 No Content
+- **Control**: Disabled by default, enable with `VITE_ENABLE_PERF_ANALYTICS=true`
+
+When `VITE_ENABLE_PERF_ANALYTICS=true`, the frontend will send Core Web Vitals metrics to this endpoint.
 
 ### Business Hours Format
 Minutes from midnight in local time (Europe/Paris):

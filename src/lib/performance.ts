@@ -2,6 +2,8 @@
  * Performance monitoring utilities for Core Web Vitals and other metrics
  */
 
+import { API_CONFIG } from '../config';
+
 // Types for Web Vitals metrics
 interface Metric {
   name: string;
@@ -243,6 +245,9 @@ class PerformanceMonitor {
    * Send metrics to analytics service
    */
   private sendToAnalytics(name: string, value: number) {
+    // Check if performance analytics is enabled
+    const PERF_ENABLED = import.meta.env.VITE_ENABLE_PERF_ANALYTICS === 'true';
+    
     // Example implementation for Google Analytics
     if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
       const gtag = (window as any).gtag;
@@ -253,9 +258,9 @@ class PerformanceMonitor {
       });
     }
 
-    // Example for custom analytics endpoint
-    if (typeof fetch !== 'undefined') {
-      fetch('/api/analytics/performance', {
+    // Custom analytics endpoint - only if enabled
+    if (typeof fetch !== 'undefined' && PERF_ENABLED) {
+      fetch(`${API_CONFIG.baseUrl}/analytics/performance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -268,7 +273,7 @@ class PerformanceMonitor {
       }).catch((error) => {
         // Silently fail - performance monitoring shouldn't break the app
         // Only log in development to avoid console spam in production
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.warn(`Performance analytics failed for ${name}:`, error.message);
         }
       });

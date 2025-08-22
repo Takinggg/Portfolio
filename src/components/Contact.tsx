@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { memo, useCallback } from 'react';
 import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles, Upload, Link as LinkIcon, X } from 'lucide-react';
-import { CONTACT_INFO } from '../config';
+import { CONTACT_INFO, API_CONFIG } from '../config';
 import { validateContactForm, contactFormRateLimiter } from '../lib/validation';
 import { generateId, screenReader } from '../lib/accessibility';
 import { useI18n } from '../hooks/useI18n';
@@ -97,7 +97,7 @@ const Contact = memo(() => {
       };
 
       // Submit to API
-      const response = await fetch('/api/contact', {
+      const response = await fetch(`${API_CONFIG.baseUrl}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,7 +105,13 @@ const Contact = memo(() => {
         body: JSON.stringify(apiPayload)
       });
 
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        // Handle empty or non-JSON responses
+        result = {};
+      }
 
       if (!response.ok) {
         throw new Error(result.error || 'Une erreur est survenue lors de l\'envoi');

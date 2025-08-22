@@ -40,6 +40,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Analytics performance endpoint (no-op to prevent 404s)
+app.post('/api/analytics/performance', (req, res) => {
+  // No-op endpoint to prevent 404 errors from frontend performance monitoring
+  // Simply acknowledge the request without processing
+  res.status(204).send(); // 204 No Content
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📋 Admin Configuration Status:`);

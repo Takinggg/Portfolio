@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Send, AlertCircle } from 'lucide-react';
+import { API_CONFIG } from '../src/config';
 
 interface ContactFormProps {
   className?: string;
@@ -46,7 +47,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(`${API_CONFIG.baseUrl}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +55,13 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className = '' }) => {
         body: JSON.stringify(formData)
       });
 
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        // Handle empty or non-JSON responses
+        result = {};
+      }
 
       if (response.ok) {
         setSubmitStatus('success');
