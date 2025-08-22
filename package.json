@@ -41,6 +41,7 @@
     "clsx": "^2.1.1",
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
     "express": "^4.21.2",
     "framer-motion": "^12.23.12",
     "lottie-react": "^2.4.1",

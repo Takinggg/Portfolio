@@ -57,9 +57,63 @@ router.post('/', async (req, res) => {
     // Store in file
     await appendJSONL('messages.jsonl', messageRecord);
 
-    // Send confirmation email
-    try {
-      if (process.env.SMTP_HOST && process.env.MAIL_FROM) {
+    // Check if SMTP is configured
+    const smtpConfigured = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.MAIL_FROM;
+    
+    if (!smtpConfigured) {
+      const missingVars = [];
+      if (!process.env.SMTP_HOST) missingVars.push('SMTP_HOST');
+      if (!process.env.SMTP_USER) missingVars.push('SMTP_USER');
+      if (!process.env.SMTP_PASS) missingVars.push('SMTP_PASS');
+      if (!process.env.MAIL_FROM) missingVars.push('MAIL_FROM');
+      
+      console.warn(`[contact] email skipped: missing SMTP env vars (${missingVars.join(', ')})`);
+    } else {
+      // Send admin notification email
+      try {
+        const adminEmail = process.env.CONTACT_NOTIFICATION_TO || process.env.MAIL_FROM;
+        const adminEmailAddress = adminEmail.match(/<([^>]+)>/)?.[1] || adminEmail;
+        
+        await sendMail({
+          to: adminEmailAddress,
+          from: process.env.MAIL_FROM,
+          subject: `[Portfolio] Nouveau message de contact: ${subject}`,
+          html: `
+            <h2>Nouveau message de contact reçu</h2>
+            
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <h3>Informations du contact :</h3>
+              <p><strong>Nom :</strong> ${name}</p>
+              <p><strong>Email :</strong> ${email}</p>
+              ${phone ? `<p><strong>Téléphone :</strong> ${phone}</p>` : ''}
+              <p><strong>Sujet :</strong> ${subject}</p>
+              <p><strong>IP :</strong> ${clientIP}</p>
+              <p><strong>ID :</strong> ${messageRecord.id}</p>
+              <p><strong>Date :</strong> ${new Date(messageRecord.createdAt).toLocaleString('fr-FR')}</p>
+            </div>
+            
+            <div style="background: #ffffff; padding: 20px; border: 1px solid #e9ecef; border-radius: 8px;">
+              <h3>Message :</h3>
+              <p style="white-space: pre-wrap;">${message}</p>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px;">
+              <p><strong>Note :</strong> Vous pouvez répondre directement à cette adresse email : ${email}</p>
+            </div>
+          `
+        });
+        console.log(`[contact] admin notification sent to: ${adminEmailAddress}`);
+      } catch (adminEmailError) {
+        console.error('[contact] failed to send admin notification:', {
+          error: adminEmailError.message,
+          messageId: messageRecord.id,
+          adminEmail: process.env.CONTACT_NOTIFICATION_TO || process.env.MAIL_FROM
+        });
+        // Continue to try sending visitor confirmation
+      }
+
+      // Send visitor confirmation email
+      try {
         await sendMail({
           to: email,
           from: process.env.MAIL_FROM,
@@ -75,10 +129,15 @@ router.post('/', async (req, res) => {
             <p>Merci de votre confiance.</p>
           `
         });
+        console.log(`[contact] visitor confirmation sent to: ${email}`);
+      } catch (confirmationEmailError) {
+        console.error('[contact] failed to send visitor confirmation:', {
+          error: confirmationEmailError.message,
+          messageId: messageRecord.id,
+          visitorEmail: email
+        });
+        // Don't fail the request if email fails
       }
-    } catch (emailError) {
-      console.error('Failed to send confirmation email:', emailError);
-      // Don't fail the request if email fails
     }
 
     res.json({ 
